@@ -1,14 +1,21 @@
+#!/usr/bin/env python3
 from OpenSSL import SSL
 import ssl
 import json
+import csv
 import socket
 import requests
 import matplotlib.pyplot as plot
 import re
 import sys
+import argparse
+from pathlib import Path
 
 MAX_TIMEOUT = 10
-VERIFY_CERTIFICATE = False # This is for testing on localhost (i.e. with self-signed certificate). Should be True when doing "real" tests.
+VERIFY_CERTIFICATE = False  # This is for testing on localhost (i.e. with self-signed certificate). Should be True when doing "real" tests.
+
+OUTPUT_DIR = Path(".")
+CSV_OUT_NAME = "results.csv"
 
 # API for ranking cipher suites based on their security
 ciphersuites = None
@@ -257,285 +264,419 @@ def makePlot(xAxis, xAxisDenote, colors, title, fileName):
     plot.ylabel('%')
     plot.title(title, pad=10)
     plot.ylim(0, 100)
-    plot.savefig(fileName)
+    plot.savefig(str(OUTPUT_DIR / fileName))
     pass
 
 
-def run(givenFile):
-    with open(givenFile, 'r') as file:
-        websites = file.readlines()
-        totalWebsites = len(websites) # Total number of websites that is tested
+def run(givenFile=None, domains=None, csv_out_name=None, output_dir="."):
+    global OUTPUT_DIR, CSV_OUT_NAME
+    OUTPUT_DIR = Path(output_dir)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    if csv_out_name:
+        CSV_OUT_NAME = csv_out_name
 
-        if(totalWebsites < 1):
-            print("ERROR: No websites in the given file.")
-            exit()
+    if domains is not None:
+        websites = [d.strip() + ("\n" if not d.endswith("\n") else "") for d in domains]
+    else:
+        with open(givenFile, 'r') as file:
+            websites = file.readlines()
+    totalWebsites = len(websites) # Total number of websites that is tested
 
-        print("Given file is", givenFile,"with", totalWebsites, "number of websites.")
+    if(totalWebsites < 1):
+        print("ERROR: No websites in the given file.")
+        exit()
 
-        # Testing if website reachable over HTTPS. If so, store result (header + body) in requests object for further use.
-        print("Testing HTTPS support...")
-        rs = []
-        HTTPSConnectErrors = 0
-        for website in websites:
-            websiteFixed = website.replace(' ', '').replace('\n', '').replace('\r', '')
-            try:
-                r = requests.get("https://" + websiteFixed, timeout=MAX_TIMEOUT, verify=VERIFY_CERTIFICATE)
-                rs.append(r)
-            except:
-                print("Error when connecting to " + websiteFixed + " over HTTPS. Will not be included in further results.")
-                websites.remove(website) # If the website does not support HTTPS, it is excluded from future tests
-                HTTPSConnectErrors += 1
+    print("Given file is", givenFile,"with", totalWebsites, "number of websites." if givenFile else "with provided domains.")
+
+    # Testing if website reachable over HTTPS. If so, store result (header + body) in requests object for further use.
+    print("Testing HTTPS support...")
+    rs = []
+    # per-site rows only for HTTPS-reachable sites
+    per_site = []
+    HTTPSConnectErrors = 0
+    for website in websites:
+        websiteFixed = website.replace(' ', '').replace('\n', '').replace('\r', '')
+        try:
+            r = requests.get("https://" + websiteFixed, timeout=MAX_TIMEOUT, verify=VERIFY_CERTIFICATE)
+            rs.append(r)
+            per_site.append({
+                "host": websiteFixed,
+                "https_ok": True,
+                "referrer_policy_present": False, "referrer_policy_correct": False,
+                "x_content_type_options_present": False, "x_content_type_options_correct": False,
+                "x_frame_options_present": False, "x_frame_options_correct": False,
+                "csp_present": False, "csp_reasonable": False,
+                "hsts_present": False, "hsts_includeSubDomains": False,
+                "hsts_max_age_ge_31536000": False, "hsts_preload": False,
+                "revealing_headers": False,
+                "securitytxt_present": False, "securitytxt_correctness": "none",
+                "normal_cipher_security": "error",
+                "redirection_http_to_https": None,
+                "TLS1_3": -1, "TLS1_2": -1, "TLS1_1": -1, "TLS1_0": -1,
+                "CBC": -1, "SHA1": -1
+            })
+        except:
+            print("Error when connecting to " + websiteFixed + " over HTTPS. Will not be included in further results.")
+            websites.remove(website) # If the website does not support HTTPS, it is excluded from future tests
+            HTTPSConnectErrors += 1
+    
+    if len(websites) == 0:
+        print("No websites to test. Program exited.")
+        exit()
+
+    # HTTPS handshake successful
+    xAxis = [((totalWebsites - HTTPSConnectErrors) / totalWebsites) * 100, (HTTPSConnectErrors / totalWebsites) * 100]
+    xAxisDenote = ['Yes', 'No (no certificate, wrong host name,\ntimeout reached or other error.)']
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Successful HTTPS connection?", "HTTPS_normal_connection.png")
+
+    totalWebsites = len(websites) # Updating the total number of website (incase one or more did not support HTTPS and was excluded)
+
+    # HTTP security headers
+    # Making all headers (keys and values) into lowercase for more reliability
+    headersLowerCase = [{k.lower(): v.lower() for k, v in d.items()} for d in [r.headers for r in rs]]
+
+    # Referrer-Policy
+    print("Testing Referrer-Policy support...")
+    RP = [r.headers.get('referrer-policy') != None for r in rs] # if they implement, true/false
+    implemented = len([v for v in RP if v == True])
+    notImplemented = len([v for v in RP if v == False])
+    RPValues = [val for val in [r.get('referrer-policy') for r in headersLowerCase if r.get('referrer-policy') != None]]
+    RPCorrect = [val for val in RPValues if ("same-origin" in val or "strict-origin" in val or "strict-origin-when-cross-origin" in val or "no-referrer" in val) ] # websites that have implemented correctly
+
+    # Graph for Referrer-Policy implementation
+    xAxis = []
+    xAxisDenote = ['Yes', 'No']
+    if len(RP) > 0:
+        xAxis = [(implemented / len(RP)) * 100, (notImplemented / len(RP)) * 100]
+    else:
+        xAxis = [0, 100]
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented Referrer-Policy header?", "ReferrerPolicy_implementation.png")
+
+    # Graph for Referrer-Policy correctness
+    if implemented > 0: # Atleast if one website implemented this the correctness graph should be created
+        xAxis = [(len(RPCorrect) / implemented) * 100, ((implemented - len(RPCorrect)) / implemented) * 100]
+        makePlot(xAxis, xAxisDenote, ['green', 'red'], "If Referrer-Policy header implemented, is it correctly\nimplemented?", "ReferrerPolicy_correctness.png")
+
+    # per-site flags for RP
+    for i, h in enumerate(headersLowerCase):
+        has = h.get('referrer-policy') is not None
+        per_site[i]["referrer_policy_present"] = has
+        if has:
+            v = h.get('referrer-policy', '')
+            per_site[i]["referrer_policy_correct"] = ("same-origin" in v or "strict-origin" in v or "strict-origin-when-cross-origin" in v or "no-referrer" in v)
+
+    # X-Content-Type-Options
+    print("Testing X-Content-Type-Options support...")
+    XCTO = [r.headers.get('x-content-type-options') != None for r in rs] # if they implement, true/false
+    implemented = len([v for v in XCTO if v == True])
+    notImplemented = len([v for v in XCTO if v == False])
+    XCTOValues = [val for val in [r.get('x-content-type-options') for r in headersLowerCase if r.get('x-content-type-options') != None]]
+    XCTOCorrect = [val for val in XCTOValues if ('nosniff' in val) ] # websites that have implemented correctly
+
+    # Graph for X-Content-Type-Options implementation
+    xAxis = []
+    xAxisDenote = ['Yes', 'No']
+    if len(XCTO) > 0:
+        xAxis = [(implemented / len(XCTO)) * 100, (notImplemented / len(XCTO)) * 100]
+    else:
+        xAxis = [0, 100]
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented X-Content-Type-Options header?", "XContentTypeOptions_implementation.png")
+
+    # Graph for X-Content-Type-Options correctness
+    if implemented > 0:
+        xAxis = [(len(XCTOCorrect) / implemented) * 100, ((implemented - len(XCTOCorrect)) / implemented) * 100]
+        xAxisDenote = ['Yes', 'No']
+        makePlot(xAxis, xAxisDenote, ['green', 'red'], "If X-Content-Type-Options header implemented, is it correctly\nimplemented?", "XContentTypeOptions_correctness.png")
+
+    for i, h in enumerate(headersLowerCase):
+        has = h.get('x-content-type-options') is not None
+        per_site[i]["x_content_type_options_present"] = has
+        if has:
+            per_site[i]["x_content_type_options_correct"] = ('nosniff' in h.get('x-content-type-options',''))
+
+    # X-Frame-Options
+    print("Testing X-Frame-Options support...")
+    XFO = [r.headers.get('x-frame-options') != None for r in rs] # if they implement, true/false
+    implemented = len([v for v in XFO if v == True])
+    notImplemented = len([v for v in XFO if v == False])
+    XFOValues = [val for val in [r.get('x-frame-options') for r in headersLowerCase if r.get('x-frame-options') != None]]
+    XFOCorrect = [val for val in XFOValues if ('deny' in val or 'sameorigin' in val) ] # websites that have implemented correctly
+
+    # Graph for X-Frame-Options implementation
+    xAxis = []
+    xAxisDenote = ['Yes', 'No']
+    if len(XFO) > 0:
+        xAxis = [(implemented / len(XFO)) * 100, (notImplemented / len(XFO)) * 100]
+    else:
+        xAxis = [0, 100]
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented X-Frame-Options header?", "XFrameOptions_implementation.png")
+
+    # Graph for X-Frame-Options correctness
+    if implemented > 0:
+        xAxis = [(len(XFOCorrect) / implemented) * 100, ((implemented - len(XFOCorrect)) / implemented) * 100]
+        makePlot(xAxis, xAxisDenote, ['green', 'red'], "If X-Frame-Options header implemented, is it correctly\nimplemented?", "XFrameOptions_correctness.png")
+
+    for i, h in enumerate(headersLowerCase):
+        has = h.get('x-frame-options') is not None
+        per_site[i]["x_frame_options_present"] = has
+        if has:
+            v = h.get('x-frame-options','')
+            per_site[i]["x_frame_options_correct"] = ('deny' in v or 'sameorigin' in v)
+
+    # Content-Security-Policy
+    print("Testing Content-Security-Policy support...")
+    CSP = [r.headers.get('content-security-policy') != None for r in rs] # if they implement, true/false
+    implemented = len([v for v in CSP if v == True])
+    notImplemented = len([v for v in CSP if v == False])
+    CSPValues = [val for val in [r.get('content-security-policy') for r in headersLowerCase if r.get('content-security-policy') != None]]
+    CSPCorrect = [val for val in CSPValues if ((('default-src' in val or ('script-src' in val and 'object-src' in val)) and ('data:' not in val and 'unsafe-inline' not in val))) ] # websites that have includeSubDomains
+
+    # Graph for Content-Security-Policy implementation
+    xAxis = []
+    xAxisDenote = ['Yes', 'No']
+    if len(CSP) > 0:
+        xAxis = [(len([v for v in CSP if v == True]) / len(CSP)) * 100, (len([v for v in CSP if v == False]) / len(CSP)) * 100]
+    else:
+        xAxis = [0, 100]
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented Content-Security-Policy header?", "ContentSecurityPolicy_implementation.png")
         
-        if len(websites) == 0:
-            print("No websites to test. Program exited.")
-            exit()
+    # Graph for Content-Security-Policy correctness
+    if implemented > 0:
+        xAxis = [(len(CSPCorrect) / implemented) * 100, ((implemented - len(CSPCorrect)) / implemented) * 100]
+        makePlot(xAxis, xAxisDenote, ['green', 'red'], "If Content-Security-Policy header implemented, is it correctly\nimplemented?", "ContentSecurityPolicy_correctness.png")
 
-        # HTTPS handshake successful
-        xAxis = [((totalWebsites - HTTPSConnectErrors) / totalWebsites) * 100, (HTTPSConnectErrors / totalWebsites) * 100]
-        xAxisDenote = ['Yes', 'No (no certificate, wrong host name,\ntimeout reached or other error.)']
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Successful HTTPS connection?", "HTTPS_normal_connection.png")
+    for i, h in enumerate(headersLowerCase):
+        has = h.get('content-security-policy') is not None
+        per_site[i]["csp_present"] = has
+        if has:
+            v = h.get('content-security-policy','')
+            per_site[i]["csp_reasonable"] = (('default-src' in v or ('script-src' in v and 'object-src' in v)) and ('data:' not in v and 'unsafe-inline' not in v))
 
-        totalWebsites = len(websites) # Updating the total number of website (incase one or more did not support HTTPS and was excluded)
+    # HSTS  
+    print("Testing HSTS support...")
+    HSTS = [r.headers.get('strict-transport-security') != None for r in rs] # if they implement, true/false
+    implemented = len([v for v in HSTS if v == True])
+    notImplemented = len([v for v in HSTS if v == False])
+    HSTSValues = [val for val in [r.get('strict-transport-security') for r in headersLowerCase if r.get('strict-transport-security') != None]]
+    includeSubDomains = [val for val in HSTSValues if('includesubdomains' in val)] # websites that have includeSubDomains
+    maxAge = [v for v in [re.findall(r'\d+', v) for v in HSTSValues] if(int(v[0]) >= 31536000)] # websites that have atleast 31536000 max-age
 
-        # HTTP security headers
-        # Making all headers (keys and values) into lowercase for more reliability
-        headersLowerCase = [{k.lower(): v.lower() for k, v in d.items()} for d in [r.headers for r in rs]]
+    # Graph for HSTS implementation
+    xAxisDenote = ['Yes', 'No']
+    xAxis = []
+    if len(HSTS) > 0:
+        xAxis = [(len([v for v in HSTS if v == True]) / len(HSTS)) * 100, (len([v for v in HSTS if v == False]) / len(HSTS)) * 100]
+    else:
+        xAxis = [0, 100]
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implements Strict-Transport-Security?", "HSTS_implements.png")
 
-        # Referrer-Policy
-        print("Testing Referrer-Policy support...")
-        RP = [r.headers.get('referrer-policy') != None for r in rs] # if they implement, true/false
-        implemented = len([v for v in RP if v == True])
-        notImplemented = len([v for v in RP if v == False])
-        RPValues = [val for val in [r.get('referrer-policy') for r in headersLowerCase if r.get('referrer-policy') != None]]
-        RPCorrect = [val for val in RPValues if ("same-origin" in val or "strict-origin" in val or "strict-origin-when-cross-origin" in val or "no-referrer" in val) ] # websites that have implemented correctly
+    # Graph for HSTS correctness
+    if implemented > 0:
+        xAxis = [(len(includeSubDomains) / implemented) * 100, (len(maxAge) / implemented) * 100]
+        xAxisDenote = ['includeSubDomains', 'max-age is atleast 31536000']
+        makePlot(xAxis, xAxisDenote, ['lightblue'], "Strict-Transport-Security correctness", "HSTS_correctness.png")
 
-        # Graph for Referrer-Policy implementation
-        xAxis = []
-        xAxisDenote = ['Yes', 'No']
-        if len(RP) > 0:
-            xAxis = [(implemented / len(RP)) * 100, (notImplemented / len(RP)) * 100]
-        else:
-            xAxis = [0, 100]
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented Referrer-Policy header?", "ReferrerPolicy_implementation.png")
+    for i, h in enumerate(headersLowerCase):
+        has = h.get('strict-transport-security') is not None
+        per_site[i]["hsts_present"] = has
+        if has:
+            v = h.get('strict-transport-security','')
+            per_site[i]["hsts_includeSubDomains"] = ('includesubdomains' in v)
+            try:
+                per_site[i]["hsts_max_age_ge_31536000"] = (int(re.findall(r'\d+', v)[0]) >= 31536000)
+            except:
+                per_site[i]["hsts_max_age_ge_31536000"] = False
+            per_site[i]["hsts_preload"] = ('preload' in v)
 
-        # Graph for Referrer-Policy correctness
-        if implemented > 0: # Atleast if one website implemented this the correctness graph should be created
-            xAxis = [(len(RPCorrect) / implemented) * 100, ((implemented - len(RPCorrect)) / implemented) * 100]
-            makePlot(xAxis, xAxisDenote, ['green', 'red'], "If Referrer-Policy header implemented, is it correctly\nimplemented?", "ReferrerPolicy_correctness.png")
+    # Checking the website for HTTP header revealing information
+    print("Testing revealing headers...")
+    result = checkRevealingHeaders(rs) # number of websites that have revealing information
+    xAxis = [(result / totalWebsites) * 100, ((totalWebsites - result) / totalWebsites) * 100]
+    xAxisDenote = ['Yes', 'No']
+    makePlot(xAxis, xAxisDenote, ['red', 'green'], "Revealing unecessary information in header?", "RevealingHeaders.png")
+    for i, r0 in enumerate(rs):
+        per_site[i]["revealing_headers"] = any(k.lower() in [x.lower() for x in revealingHeaders] for k in r0.headers.keys())
 
-        # X-Content-Type-Options
-        print("Testing X-Content-Type-Options support...")
-        XCTO = [r.headers.get('x-content-type-options') != None for r in rs] # if they implement, true/false
-        implemented = len([v for v in XCTO if v == True])
-        notImplemented = len([v for v in XCTO if v == False])
-        XCTOValues = [val for val in [r.get('x-content-type-options') for r in headersLowerCase if r.get('x-content-type-options') != None]]
-        XCTOCorrect = [val for val in XCTOValues if ('nosniff' in val) ] # websites that have implemented correctly
+    # Checking security.txt implementation
+    print("Testing security.txt support...")
+    securitytxtRes = [securitytxt(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]  # Storing result in a list
+    yesProcent = (len([sec for sec in securitytxtRes if sec[0] == True]) / len(securitytxtRes)) * 100
+    noProcent = (len([sec for sec in securitytxtRes if sec[0] == False]) / len(securitytxtRes)) * 100
+    xAxis = [yesProcent, noProcent]
+    xAxisDenote = ['Implements', 'Does not implement']
+    makePlot(xAxis, xAxisDenote, ['green', 'red'], "security.txt implementations.", "securitytxt_exists.png")
+    for i, sec in enumerate(securitytxtRes):
+        per_site[i]["securitytxt_present"] = bool(sec[0])
 
-        # Graph for X-Content-Type-Options implementation
-        xAxis = []
-        xAxisDenote = ['Yes', 'No']
-        if len(XCTO) > 0:
-            xAxis = [(implemented / len(XCTO)) * 100, (notImplemented / len(XCTO)) * 100]
-        else:
-            xAxis = [0, 100]
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented X-Content-Type-Options header?", "XContentTypeOptions_implementation.png")
+    # Checking the correctness of the security.txt implementation; i.e., if "Contact" and "Expires" fields exist.
+    if yesProcent > 0:
+        print("Testing security.txt correctness...")
+        securitytxtCorrectnessRes = [securitytxtCorrectness(sec[1]) for sec in securitytxtRes if sec[0] == True]
+        bothProcent = 0
+        contactProcent = 0
+        expiresProcent = 0
+        noneProcent = 0
+        if len(securitytxtCorrectnessRes) > 0:
+            bothProcent = (len([f for f in securitytxtCorrectnessRes if f == 'both']) / len(securitytxtCorrectnessRes   )) * 100
+            contactProcent = (len([f for f in securitytxtCorrectnessRes if f == 'contact']) / len(securitytxtCorrectnessRes)) * 100
+            expiresProcent = (len([f for f in securitytxtCorrectnessRes if f == 'expires']) / len(securitytxtCorrectnessRes)) * 100
+            noneProcent = (len([f for f in securitytxtCorrectnessRes if f == 'none']) / len(securitytxtCorrectnessRes)) * 100
+        xAxis = [bothProcent, contactProcent, expiresProcent, noneProcent]
+        xAxisDenote = ['Both', 'Only "Contact"', 'Only "Expires"', 'None']
+        makePlot(xAxis, xAxisDenote, ['lightblue'], "Out of the websites implemented security.txt, do they include the\nmandatory fields 'Contact' and 'Expires'?", "securitytxt_correctness.png")
+        for i, sec in enumerate(securitytxtRes):
+            if sec[0] == True:
+                per_site[i]["securitytxt_correctness"] = securitytxtCorrectness(sec[1])
 
-        # Graph for X-Content-Type-Options correctness
-        if implemented > 0:
-            xAxis = [(len(XCTOCorrect) / implemented) * 100, ((implemented - len(XCTOCorrect)) / implemented) * 100]
-            xAxisDenote = ['Yes', 'No']
-            makePlot(xAxis, xAxisDenote, ['green', 'red'], "If X-Content-Type-Options header implemented, is it correctly\nimplemented?", "XContentTypeOptions_correctness.png")
+    # Doing normal handshake and noting cipher suite selection from server
+    print("Testing normal HTTPS handshake cipher suite strength...")
+    normalRes = [normal(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]  # Storing result in a list
+    successCountNormal = len(normalRes)
+    # Dictionary to store number of recommended, securre, weak, and insecure server cipher picks
+    counts = {item: normalRes.count(item) for item in set(normalRes)}
+    # Calculating percentages
+    weakProcent = counts.get('weak', 0) / successCountNormal * 100
+    insecureProcent = counts.get('insecure', 0) / successCountNormal * 100
+    secureProcent = counts.get('secure', 0) / successCountNormal * 100
+    recommendedProcent = counts.get('recommended', 0) / successCountNormal * 100
+    errorProcent = counts.get('error', 0) / successCountNormal * 100
 
-        # X-Frame-Options
-        print("Testing X-Frame-Options support...")
-        XFO = [r.headers.get('x-frame-options') != None for r in rs] # if they implement, true/false
-        implemented = len([v for v in XFO if v == True])
-        notImplemented = len([v for v in XFO if v == False])
-        XFOValues = [val for val in [r.get('x-frame-options') for r in headersLowerCase if r.get('x-frame-options') != None]]
-        XFOCorrect = [val for val in XFOValues if ('deny' in val or 'sameorigin' in val) ] # websites that have implemented correctly
+    # Plotting and exporting the graph of the results
+    xAxis = [recommendedProcent, secureProcent, weakProcent, insecureProcent, errorProcent]
+    xAxisDenote = ['Recommended', 'Secure', 'Weak', 'Insecure', 'Could not connect']
+    makePlot(xAxis, xAxisDenote, ['green', 'green', 'yellow', 'red', 'gray'], "Normal handshake, security level of server selected cipher suite.", "normal_handshake_cipher_security.png")
+    for i, v in enumerate(normalRes):
+        per_site[i]["normal_cipher_security"] = v
 
-        # Graph for X-Frame-Options implementation
-        xAxis = []
-        xAxisDenote = ['Yes', 'No']
-        if len(XFO) > 0:
-            xAxis = [(implemented / len(XFO)) * 100, (notImplemented / len(XFO)) * 100]
-        else:
-            xAxis = [0, 100]
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented X-Frame-Options header?", "XFrameOptions_implementation.png")
+    # Checking redirection from HTTP to HTTPS
+    print("Testing redirection from HTTP to HTTPS support...")
+    reDir = [redirection(website.replace(' ', '').replace(
+        '\n', '').replace('\r', '')) for website in websites]  # Storing results in a list
+    reDirImplements = [implements for implements in reDir if implements == True]  # Storing all websites that have redirection in a list
+    reDirNotImplements = [implements for implements in reDir if implements == False]  # Storing all websites that does not have redirection in a list
+    reDirError = [implements for implements in reDir if implements == -1]  # Returned error
+    # Calculating percentages
+    yesProcent = (len(reDirImplements) / len(reDir)) *  100
+    noProcent = (len(reDirNotImplements) / len(reDir)) * 100
+    errorProcent = (len(reDirError) / len(reDir)) * 100
+    xAxis = [yesProcent, noProcent, errorProcent]
+    xAxisDenote = ['Yes', 'No', 'Could not connect']
+    makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "Do the given websites redirect from HTTP to HTTPS?", "redirection.png")
+    for i, v in enumerate(reDir):
+        per_site[i]["redirection_http_to_https"] = v
 
-        # Graph for X-Frame-Options correctness
-        if implemented > 0:
-            xAxis = [(len(XFOCorrect) / implemented) * 100, ((implemented - len(XFOCorrect)) / implemented) * 100]
-            makePlot(xAxis, xAxisDenote, ['green', 'red'], "If X-Frame-Options header implemented, is it correctly\nimplemented?", "XFrameOptions_correctness.png")
+    print("Testing SHA1 support...")
+    sha1 = [SHA_1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    SHA1_support = [implements for implements in sha1 if implements == True]
+    SHA1_notSupport = [implements for implements in sha1 if implements == False]
+    SHA1_error = [implements for implements in sha1 if implements == -1]
+    xAxis = [(len(SHA1_support) / len(sha1)) * 100, (len(SHA1_notSupport) / len(sha1)) * 100, (len(SHA1_error) / len(sha1)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['red', 'green',  'lightblue'], "SHA1 cipher suite support", "SHA1support.png")
+    for i, v in enumerate(sha1):
+        per_site[i]["SHA1"] = v
 
-        # Content-Security-Policy
-        print("Testing Content-Security-Policy support...")
-        CSP = [r.headers.get('content-security-policy') != None for r in rs] # if they implement, true/false
-        implemented = len([v for v in CSP if v == True])
-        notImplemented = len([v for v in CSP if v == False])
-        CSPValues = [val for val in [r.get('content-security-policy') for r in headersLowerCase if r.get('content-security-policy') != None]]
-        CSPCorrect = [val for val in CSPValues if ((('default-src' in val or ('script-src' in val and 'object-src' in val)) and ('data:' not in val and 'unsafe-inline' not in val))) ] # websites that have includeSubDomains
+    print("Testing CBC support...")
+    cbc = [CBC(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    CBC_support = [implements for implements in cbc if implements == True]
+    CBC_notSupport = [implements for implements in cbc if implements == False]
+    CBC_error = [implements for implements in cbc if implements == -1]
+    xAxis = [(len(CBC_support) / len(cbc)) * 100, (len(CBC_notSupport) / len(cbc)) * 100, (len(CBC_error) / len(cbc)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "CBC cipher suite support", "CBCsupport.png")
+    for i, v in enumerate(cbc):
+        per_site[i]["CBC"] = v
 
-        # Graph for Content-Security-Policy implementation
-        xAxis = []
-        xAxisDenote = ['Yes', 'No']
-        if len(CSP) > 0:
-            xAxis = [(len([v for v in CSP if v == True]) / len(CSP)) * 100, (len([v for v in CSP if v == False]) / len(CSP)) * 100]
-        else:
-            xAxis = [0, 100]
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implemented Content-Security-Policy header?", "ContentSecurityPolicy_implementation.png")
-            
-        # Graph for Content-Security-Policy correctness
-        if implemented > 0:
-            xAxis = [(len(CSPCorrect) / implemented) * 100, ((implemented - len(CSPCorrect)) / implemented) * 100]
-            makePlot(xAxis, xAxisDenote, ['green', 'red'], "If Content-Security-Policy header implemented, is it correctly\nimplemented?", "ContentSecurityPolicy_correctness.png")
+    # TLS 1.3
+    allTLS1_3 = [TLS1_3(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    TLS1_3support = [implements for implements in allTLS1_3 if implements == True]
+    TLS1_3notSupport = [implements for implements in allTLS1_3 if implements == False]
+    TLS1_3error = [implements for implements in allTLS1_3 if implements == -1]
+    xAxis = [(len(TLS1_3support) / len(allTLS1_3)) * 100, (len(TLS1_3notSupport) / len(allTLS1_3)) * 100, (len(TLS1_3error) / len(allTLS1_3)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "TLS1_3 versions support", "TLS1_3support.png")
+    for i, v in enumerate(allTLS1_3):
+        per_site[i]["TLS1_3"] = v
 
-        # HSTS  
-        print("Testing HSTS support...")
-        HSTS = [r.headers.get('strict-transport-security') != None for r in rs] # if they implement, true/false
-        implemented = len([v for v in HSTS if v == True])
-        notImplemented = len([v for v in HSTS if v == False])
-        HSTSValues = [val for val in [r.get('strict-transport-security') for r in headersLowerCase if r.get('strict-transport-security') != None]]
-        includeSubDomains = [val for val in HSTSValues if('includesubdomains' in val)] # websites that have includeSubDomains
-        maxAge = [v for v in [re.findall(r'\d+', v) for v in HSTSValues] if(int(v[0]) >= 31536000)] # websites that have atleast 31536000 max-age
+    # TLS 1.2
+    allTLS1_2 = [TLS1_2(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    TLS1_2support = [implements for implements in allTLS1_2 if implements == True]
+    TLS1_2notSupport = [implements for implements in allTLS1_2 if implements == False]
+    TLS1_2error = [implements for implements in allTLS1_2 if implements == -1]
+    xAxis = [(len(TLS1_2support) / len(allTLS1_2)) * 100, (len(TLS1_2notSupport) / len(allTLS1_2)) * 100, (len(TLS1_2error) / len(allTLS1_2)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "TLS1_2 versions support", "TLS1_2support.png")
+    for i, v in enumerate(allTLS1_2):
+        per_site[i]["TLS1_2"] = v
 
-        # Graph for HSTS implementation
-        xAxisDenote = ['Yes', 'No']
-        xAxis = []
-        if len(HSTS) > 0:
-            xAxis = [(len([v for v in HSTS if v == True]) / len(HSTS)) * 100, (len([v for v in HSTS if v == False]) / len(HSTS)) * 100]
-        else:
-            xAxis = [0, 100]
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "Implements Strict-Transport-Security?", "HSTS_implements.png")
+    # TLS 1.1
+    allTLS1_1 = [TLS1_1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    TLS1_1support = [implements for implements in allTLS1_1 if implements == True]
+    TLS1_1notSupport = [implements for implements in allTLS1_1 if implements == False]
+    TLS1_1error = [implements for implements in allTLS1_1 if implements == -1]
+    xAxis = [(len(TLS1_1support) / len(allTLS1_1)) * 100, (len(TLS1_1notSupport) / len(allTLS1_1)) * 100, (len(TLS1_1error) / len(allTLS1_1)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "TLS1_1 versions support", "TLS1_1support.png")
+    for i, v in enumerate(allTLS1_1):
+        per_site[i]["TLS1_1"] = v
 
-        # Graph for HSTS correctness
-        if implemented > 0:
-            xAxis = [(len(includeSubDomains) / implemented) * 100, (len(maxAge) / implemented) * 100]
-            xAxisDenote = ['includeSubDomains', 'max-age is atleast 31536000']
-            makePlot(xAxis, xAxisDenote, ['lightblue'], "Strict-Transport-Security correctness", "HSTS_correctness.png")
+    # TLS 1
+    allTLS1 = [TLS1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
+    TLS1support = [implements for implements in allTLS1 if implements == True]
+    TLS1notSupport = [implements for implements in allTLS1 if implements == False]
+    TLS1error = [implements for implements in allTLS1 if implements == -1]
+    xAxis = [(len(TLS1support) / len(allTLS1)) * 100, (len(TLS1notSupport) / len(allTLS1)) * 100, (len(TLS1error) / len(allTLS1)) * 100]
+    xAxisDenote = ["Yes", "No", "Could not connect"]
+    makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "TLS1 versions support", "TLS1support.png")
+    for i, v in enumerate(allTLS1):
+        per_site[i]["TLS1_0"] = v
 
-        # Checking the website for HTTP header revealing information
-        print("Testing revealing headers...")
-        result = checkRevealingHeaders(rs) # number of websites that have revealing information
-        xAxis = [(result / totalWebsites) * 100, ((totalWebsites - result) / totalWebsites) * 100]
-        xAxisDenote = ['Yes', 'No']
-        makePlot(xAxis, xAxisDenote, ['red', 'green'], "Revealing unecessary information in header?", "RevealingHeaders.png")
+    # write per-site CSV to OUTPUT_DIR
+    csv_path = OUTPUT_DIR / (csv_out_name or CSV_OUT_NAME)
+    with open(csv_path, "w", newline="", encoding="utf-8") as cf:
+        w = csv.writer(cf)
+        w.writerow([
+            "host","https_ok",
+            "referrer_policy_present","referrer_policy_correct",
+            "x_content_type_options_present","x_content_type_options_correct",
+            "x_frame_options_present","x_frame_options_correct",
+            "csp_present","csp_reasonable",
+            "hsts_present","hsts_includeSubDomains","hsts_max_age_ge_31536000","hsts_preload",
+            "revealing_headers",
+            "securitytxt_present","securitytxt_correctness",
+            "normal_cipher_security",
+            "redirection_http_to_https",
+            "TLS1_3","TLS1_2","TLS1_1","TLS1_0","CBC","SHA1"
+        ])
+        for row in per_site:
+            w.writerow([
+                row["host"], row["https_ok"],
+                row["referrer_policy_present"], row["referrer_policy_correct"],
+                row["x_content_type_options_present"], row["x_content_type_options_correct"],
+                row["x_frame_options_present"], row["x_frame_options_correct"],
+                row["csp_present"], row["csp_reasonable"],
+                row["hsts_present"], row["hsts_includeSubDomains"], row["hsts_max_age_ge_31536000"], row["hsts_preload"],
+                row["revealing_headers"],
+                row["securitytxt_present"], row["securitytxt_correctness"],
+                row["normal_cipher_security"],
+                row["redirection_http_to_https"],
+                row["TLS1_3"], row["TLS1_2"], row["TLS1_1"], row["TLS1_0"], row["CBC"], row["SHA1"]
+            ])
 
-        # Checking security.txt implementation
-        print("Testing security.txt support...")
-        securitytxtRes = [securitytxt(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]  # Storing result in a list
-        yesProcent = (len([sec for sec in securitytxtRes if sec[0] == True]) / len(securitytxtRes)) * 100
-        noProcent = (len([sec for sec in securitytxtRes if sec[0] == False]) / len(securitytxtRes)) * 100
-        xAxis = [yesProcent, noProcent]
-        xAxisDenote = ['Implements', 'Does not implement']
-        makePlot(xAxis, xAxisDenote, ['green', 'red'], "security.txt implementations.", "securitytxt_exists.png")
-
-        # Checking the correctness of the security.txt implementation; i.e., if "Contact" and "Expires" fields exist.
-        if yesProcent > 0:
-            print("Testing security.txt correctness...")
-            securitytxtCorrectnessRes = [securitytxtCorrectness(sec[1]) for sec in securitytxtRes if sec[0] == True]
-            bothProcent = 0
-            contactProcent = 0
-            expiresProcent = 0
-            noneProcent = 0
-            if len(securitytxtCorrectnessRes) > 0:
-                bothProcent = (len([f for f in securitytxtCorrectnessRes if f == 'both']) / len(securitytxtCorrectnessRes   )) * 100
-                contactProcent = (len([f for f in securitytxtCorrectnessRes if f == 'contact']) / len(securitytxtCorrectnessRes)) * 100
-                expiresProcent = (len([f for f in securitytxtCorrectnessRes if f == 'expires']) / len(securitytxtCorrectnessRes)) * 100
-                noneProcent = (len([f for f in securitytxtCorrectnessRes if f == 'none']) / len(securitytxtCorrectnessRes)) * 100
-            xAxis = [bothProcent, contactProcent, expiresProcent, noneProcent]
-            xAxisDenote = ['Both', 'Only "Contact"', 'Only "Expires"', 'None']
-            makePlot(xAxis, xAxisDenote, ['lightblue'], "Out of the websites implemented security.txt, do they include the\nmandatory fields 'Contact' and 'Expires'?", "securitytxt_correctness.png")
-
-        # Doing normal handshake and noting cipher suite selection from server
-        print("Testing normal HTTPS handshake cipher suite strength...")
-        normalRes = [normal(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]  # Storing result in a list
-        successCountNormal = len(normalRes)
-        # Dictionary to store number of recommended, securre, weak, and insecure server cipher picks
-        counts = {item: normalRes.count(item) for item in set(normalRes)}
-        # Calculating percentages
-        weakProcent = counts.get('weak', 0) / successCountNormal * 100
-        insecureProcent = counts.get('insecure', 0) / successCountNormal * 100
-        secureProcent = counts.get('secure', 0) / successCountNormal * 100
-        recommendedProcent = counts.get('recommended', 0) / successCountNormal * 100
-        errorProcent = counts.get('error', 0) / successCountNormal * 100
-
-        # Plotting and exporting the graph of the results
-        xAxis = [recommendedProcent, secureProcent, weakProcent, insecureProcent, errorProcent]
-        xAxisDenote = ['Recommended', 'Secure', 'Weak', 'Insecure', 'Could not connect']
-        makePlot(xAxis, xAxisDenote, ['green', 'green', 'yellow', 'red', 'gray'], "Normal handshake, security level of server selected cipher suite.", "normal_handshake_cipher_security.png")
-
-        # Checking redirection from HTTP to HTTPS
-        print("Testing redirection from HTTP to HTTPS support...")
-        reDir = [redirection(website.replace(' ', '').replace(
-            '\n', '').replace('\r', '')) for website in websites]  # Storing results in a list
-        reDirImplements = [implements for implements in reDir if implements == True]  # Storing all websites that have redirection in a list
-        reDirNotImplements = [implements for implements in reDir if implements == False]  # Storing all websites that does not have redirection in a list
-        reDirError = [implements for implements in reDir if implements == -1]  # Returned error
-        # Calculating percentages
-        yesProcent = (len(reDirImplements) / len(reDir)) *  100
-        noProcent = (len(reDirNotImplements) / len(reDir)) * 100
-        errorProcent = (len(reDirError) / len(reDir)) * 100
-        xAxis = [yesProcent, noProcent, errorProcent]
-        xAxisDenote = ['Yes', 'No', 'Could not connect']
-        makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "Do the given websites redirect from HTTP to HTTPS?", "redirection.png")
-
-        print("Testing SHA1 support...")
-        sha1 = [SHA_1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        SHA1_support = [implements for implements in sha1 if implements == True]
-        SHA1_notSupport = [implements for implements in sha1 if implements == False]
-        SHA1_error = [implements for implements in sha1 if implements == -1]
-        xAxis = [(len(SHA1_support) / len(sha1)) * 100, (len(SHA1_notSupport) / len(sha1)) * 100, (len(SHA1_error) / len(sha1)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['red', 'green',  'lightblue'], "SHA1 cipher suite support", "SHA1support.png")
-
-        print("Testing CBC support...")
-        cbc = [CBC(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        CBC_support = [implements for implements in cbc if implements == True]
-        CBC_notSupport = [implements for implements in cbc if implements == False]
-        CBC_error = [implements for implements in cbc if implements == -1]
-        xAxis = [(len(CBC_support) / len(cbc)) * 100, (len(CBC_notSupport) / len(cbc)) * 100, (len(CBC_error) / len(cbc)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "CBC cipher suite support", "CBCsupport.png")
-
-        # TLS 1.3
-        allTLS1_3 = [TLS1_3(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        TLS1_3support = [implements for implements in allTLS1_3 if implements == True]
-        TLS1_3notSupport = [implements for implements in allTLS1_3 if implements == False]
-        TLS1_3error = [implements for implements in allTLS1_3 if implements == -1]
-        xAxis = [(len(TLS1_3support) / len(allTLS1_3)) * 100, (len(TLS1_3notSupport) / len(allTLS1_3)) * 100, (len(TLS1_3error) / len(allTLS1_3)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "TLS1_3 versions support", "TLS1_3support.png")
-
-        # TLS 1.2
-        allTLS1_2 = [TLS1_2(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        TLS1_2support = [implements for implements in allTLS1_2 if implements == True]
-        TLS1_2notSupport = [implements for implements in allTLS1_2 if implements == False]
-        TLS1_2error = [implements for implements in allTLS1_2 if implements == -1]
-        xAxis = [(len(TLS1_2support) / len(allTLS1_2)) * 100, (len(TLS1_2notSupport) / len(allTLS1_2)) * 100, (len(TLS1_2error) / len(allTLS1_2)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['green', 'red', 'lightblue'], "TLS1_2 versions support", "TLS1_2support.png")
-
-        # TLS 1.1
-        allTLS1_1 = [TLS1_1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        TLS1_1support = [implements for implements in allTLS1_1 if implements == True]
-        TLS1_1notSupport = [implements for implements in allTLS1_1 if implements == False]
-        TLS1_1error = [implements for implements in allTLS1_1 if implements == -1]
-        xAxis = [(len(TLS1_1support) / len(allTLS1_1)) * 100, (len(TLS1_1notSupport) / len(allTLS1_1)) * 100, (len(TLS1_1error) / len(allTLS1_1)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "TLS1_1 versions support", "TLS1_1support.png")
-
-        # TLS 1
-        allTLS1 = [TLS1(website.replace(' ', '').replace('\n', '').replace('\r', '')) for website in websites]
-        TLS1support = [implements for implements in allTLS1 if implements == True]
-        TLS1notSupport = [implements for implements in allTLS1 if implements == False]
-        TLS1error = [implements for implements in allTLS1 if implements == -1]
-        xAxis = [(len(TLS1support) / len(allTLS1)) * 100, (len(TLS1notSupport) / len(allTLS1)) * 100, (len(TLS1error) / len(allTLS1)) * 100]
-        xAxisDenote = ["Yes", "No", "Could not connect"]
-        makePlot(xAxis, xAxisDenote, ['red', 'green', 'lightblue'], "TLS1 versions support", "TLS1support.png")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("ERROR: Wrong number of arguments. See README for usage.")
-        exit()
-    run(sys.argv[1])
+    ap = argparse.ArgumentParser(description="Website security scanner (original logic, enhanced CLI)")
+    ap.add_argument("input", nargs="?", help="Input file with one domain per line (back-compat)")
+    ap.add_argument("-d","--domains", nargs="+", help="Scan these domain names instead of a file")
+    ap.add_argument("-o","--output-dir", default=".", help="Directory for PNGs and CSV")
+    ap.add_argument("--csv-out", default="results.csv", help="CSV filename (written to output dir)")
+    args = ap.parse_args()
+
+    if not args.input and not args.domains:
+        print("ERROR: provide an input file or --domains ...")
+        sys.exit(1)
+
+    if args.domains:
+        run(givenFile=None, domains=args.domains, csv_out_name=args.csv_out, output_dir=args.output_dir)
+    else:
+        run(givenFile=args.input, domains=None, csv_out_name=args.csv_out, output_dir=args.output_dir)
