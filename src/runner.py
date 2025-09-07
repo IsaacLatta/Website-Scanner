@@ -233,7 +233,7 @@ class SecurityScanner:
                 row = {}
                 for key in fieldnames:
                     value = site.get(key, '')
-                    if isinstance(value, bool): # convert boolean to string for CSV 
+                    if isinstance(value, bool):
                         row[key] = str(value)
                     elif value is None:
                         row[key] = ''
