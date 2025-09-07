@@ -2,3 +2,7 @@ websocket-client>=1.2.3
 pyOpenSSL>=23.3.0
 requests>=2.31.0
 matplotlib>=3.8.2
+aiohttp>=3.8.0
+asyncio
+tqdm>=4.64.0
+colorama>=0.4.4
