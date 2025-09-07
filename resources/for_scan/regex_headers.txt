@@ -1,0 +1,23 @@
+# Check Server header doesn't reveal version info
+Server:^(?!.*\d+\.\d+).*$
+
+# Check X-Powered-By doesn't reveal technology details
+X-Powered-By:^(?!.*(PHP|ASP\.NET|Express)).*$
+
+# Verify custom header format
+X-Request-Id:^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$
+
+# Check API version header format
+X-API-Version:^v\d+\.\d+$
+
+# Ensure cache control has specific directives
+Cache-Control:.*no-store.*
+
+# Check Content-Type includes charset
+Content-Type:.*charset=.*
+
+# Verify custom security token format
+X-Security-Token:^[A-Za-z0-9+/]{40,}={0,2}$
+
+# Check for specific CSP directives
+Content-Security-Policy:.*script-src\s+['"]self['"].*

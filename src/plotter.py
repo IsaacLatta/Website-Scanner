@@ -8,7 +8,6 @@ class PlotGenerator:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Set consistent style
         plt.style.use('default')
         self.colors = {
             'good': 'green',
@@ -51,118 +50,163 @@ class PlotGenerator:
     def plot_header_implementation(self, stats: Dict):
         if not stats or stats.get('total', 0) == 0:
             return
-        
+
         total = stats['total']
-   
-        fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-        axes = axes.flatten()
-        
-        ax = axes[0]
-        present = (stats['referrer_policy']['present'] / total) * 100
-        absent = 100 - present
-        ax.bar(['Present', 'Absent'], [present, absent], 
-               color=[self.colors['good'], self.colors['bad']])
-        ax.set_title('Referrer-Policy Header')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [present, absent])
-        
-        ax = axes[1]
-        present = (stats['x_content_type_options']['present'] / total) * 100
-        absent = 100 - present
-        ax.bar(['Present', 'Absent'], [present, absent],
-               color=[self.colors['good'], self.colors['bad']])
-        ax.set_title('X-Content-Type-Options Header')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [present, absent])
-        
-        ax = axes[2]
-        present = (stats['x_frame_options']['present'] / total) * 100
-        absent = 100 - present
-        ax.bar(['Present', 'Absent'], [present, absent],
-               color=[self.colors['good'], self.colors['bad']])
-        ax.set_title('X-Frame-Options Header')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [present, absent])
-        
-        ax = axes[3]
-        present = (stats['csp']['present'] / total) * 100
-        absent = 100 - present
-        ax.bar(['Present', 'Absent'], [present, absent],
-               color=[self.colors['good'], self.colors['bad']])
-        ax.set_title('Content-Security-Policy Header')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [present, absent])
-        
-        ax = axes[4]
-        present = (stats['hsts']['present'] / total) * 100
-        absent = 100 - present
-        ax.bar(['Present', 'Absent'], [present, absent],
-               color=[self.colors['good'], self.colors['bad']])
-        ax.set_title('Strict-Transport-Security Header')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [present, absent])
-        
-        ax = axes[5]
-        revealing = (stats['revealing_headers']['count'] / total) * 100
-        not_revealing = 100 - revealing
-        ax.bar(['Has Revealing', 'No Revealing'], [revealing, not_revealing],
-               color=[self.colors['bad'], self.colors['good']])
-        ax.set_title('Information Revealing Headers')
-        ax.set_ylabel('Percentage (%)')
-        self._add_percentages(ax, [revealing, not_revealing])
-        
+        headers_data = stats.get('headers', {})
+        if not headers_data:
+            return
+
+        num_headers = len(headers_data)
+        cols = 3
+        rows = (num_headers + cols - 1) // cols
+
+        fig, axes = plt.subplots(rows, cols, figsize=(15, rows * 3.5))
+        if rows == 1:
+            axes = [axes] if cols == 1 else axes
+        else:
+            axes = axes.flatten()
+
+        for idx, (header_key, header_stats) in enumerate(headers_data.items()):
+            if idx >= len(axes):
+                break
+            ax = axes[idx]
+            present = (header_stats['present'] / total) * 100 if total > 0 else 0
+            absent = 100 - present
+
+            ax.bar(['Present', 'Absent'], [present, absent],
+                color=[self.colors['good'], self.colors['bad']])
+            ax.set_title(header_stats.get('display_name', header_key))
+            ax.set_ylabel('Percentage (%)')
+            self._add_percentages(ax, [present, absent])
+            ax.set_ylim(0, 105)
+
+        for idx in range(len(headers_data), len(axes)):
+            axes[idx].set_visible(False)
+
         plt.suptitle(f'Security Headers Implementation (n={total})', fontsize=16)
         self._save_plot('security_headers.png')
-        
+
         self._plot_header_correctness(stats)
-    
-    def _plot_header_correctness(self, stats: Dict):
-        """Plot correctness of implemented headers"""
-        fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-        axes = axes.flatten()
-        
-        ax = axes[0]
-        if stats['referrer_policy']['present'] > 0:
-            correct = (stats['referrer_policy']['correct'] / stats['referrer_policy']['present']) * 100
-            incorrect = 100 - correct
-            ax.bar(['Correct', 'Incorrect'], [correct, incorrect],
-                   color=[self.colors['good'], self.colors['bad']])
-            ax.set_title('Referrer-Policy Correctness (when present)')
-            self._add_percentages(ax, [correct, incorrect])
-        
-        ax = axes[1]
-        if stats['x_content_type_options']['present'] > 0:
-            correct = (stats['x_content_type_options']['correct'] / stats['x_content_type_options']['present']) * 100
-            incorrect = 100 - correct
-            ax.bar(['Correct', 'Incorrect'], [correct, incorrect],
-                   color=[self.colors['good'], self.colors['bad']])
-            ax.set_title('X-Content-Type-Options Correctness (when present)')
-            self._add_percentages(ax, [correct, incorrect])
-        
-        ax = axes[2]
-        if stats['x_frame_options']['present'] > 0:
-            correct = (stats['x_frame_options']['correct'] / stats['x_frame_options']['present']) * 100
-            incorrect = 100 - correct
-            ax.bar(['Correct', 'Incorrect'], [correct, incorrect],
-                   color=[self.colors['good'], self.colors['bad']])
-            ax.set_title('X-Frame-Options Correctness (when present)')
-            self._add_percentages(ax, [correct, incorrect])
-        
-        ax = axes[3]
-        if stats['csp']['present'] > 0:
-            reasonable = (stats['csp']['reasonable'] / stats['csp']['present']) * 100
-            unreasonable = 100 - reasonable
-            ax.bar(['Reasonable', 'Unreasonable'], [reasonable, unreasonable],
-                   color=[self.colors['good'], self.colors['bad']])
-            ax.set_title('CSP Configuration (when present)')
-            self._add_percentages(ax, [reasonable, unreasonable])
-        
-        for ax in axes:
+
+        rev = stats.get('revealing_headers', {})
+        if rev and total > 0:
+            fig, ax = plt.subplots(figsize=(7, 5))
+            revealing = (rev.get('count', 0) / total) * 100
+            not_revealing = 100 - revealing
+            ax.bar(['Has Revealing', 'No Revealing'],
+                [revealing, not_revealing],
+                color=[self.colors['bad'], self.colors['good']])
+            self._add_percentages(ax, [revealing, not_revealing])
             ax.set_ylabel('Percentage (%)')
+            ax.set_title('Information Revealing Headers')
             ax.set_ylim(0, 105)
-        
-        plt.suptitle('Security Header Correctness Analysis', fontsize=16)
+            self._save_plot('revealing_headers.png')
+
+        if stats.get('custom_missing') or stats.get('custom_regex'):
+            self._plot_custom_headers(stats)
+
+
+    def _plot_header_correctness(self, stats: Dict):
+        """Plot correctness of implemented headers (values under stats['headers'])."""
+        if not stats or stats.get('total', 0) == 0:
+            return
+
+        headers_data = stats.get('headers', {})
+        if not headers_data:
+            return
+
+        headers_with_validation = [(k, v) for k, v in headers_data.items()
+                                if v['present'] > 0 and 'correct' in v]
+
+        if not headers_with_validation:
+            return
+
+        num_headers = len(headers_with_validation)
+        cols = 3
+        rows = (num_headers + cols - 1) // cols
+
+        fig, axes = plt.subplots(rows, cols, figsize=(15, rows * 3.5))
+        if rows == 1:
+            axes = [axes] if cols == 1 else axes
+        else:
+            axes = axes.flatten()
+
+        for idx, (header_key, header_stats) in enumerate(headers_with_validation):
+            if idx >= len(axes):
+                break
+            ax = axes[idx]
+            correct_pct = (header_stats['correct'] / header_stats['present']) * 100
+            incorrect_pct = 100 - correct_pct
+            ax.bar(['Correct', 'Incorrect'], [correct_pct, incorrect_pct],
+                color=[self.colors['good'], self.colors['bad']])
+            ax.set_title(f"{header_stats.get('display_name', header_key)} Correctness")
+            ax.set_ylabel('Percentage (%)')
+            self._add_percentages(ax, [correct_pct, incorrect_pct])
+            ax.set_ylim(0, 105)
+
+        for idx in range(len(headers_with_validation), len(axes)):
+            axes[idx].set_visible(False)
+
+        plt.suptitle('Security Header Correctness (when present)', fontsize=16)
         self._save_plot('header_correctness.png')
+
+    
+    def _plot_custom_headers(self, stats: Dict):
+        custom_missing = stats.get('custom_missing', {})
+        custom_regex = stats.get('custom_regex', {})
+        total = stats.get('total', 0)
+        
+        if not custom_missing and not custom_regex:
+            return
+        
+        plots_needed = 0
+        if custom_missing:
+            plots_needed += 1
+        if custom_regex:
+            plots_needed += 1
+        
+        fig, axes = plt.subplots(1, plots_needed, figsize=(8 * plots_needed, 6))
+        if plots_needed == 1:
+            axes = [axes]
+        
+        plot_idx = 0
+        
+        if custom_missing and total > 0:
+            ax = axes[plot_idx]
+            headers = list(custom_missing.keys())
+            present_counts = [custom_missing[h]['present'] for h in headers]
+            present_pcts = [(c / total) * 100 for c in present_counts]
+            
+            bars = ax.bar(headers, present_pcts, color=self.colors['info'])
+            self._add_percentages(ax, present_pcts)
+            
+            ax.set_title('Custom Required Headers')
+            ax.set_ylabel('Presence (%)')
+            ax.set_ylim(0, 105)
+            ax.tick_params(axis='x', rotation=45)
+            
+            ax.axhline(y=100, color='green', linestyle='--', alpha=0.5, label='Target')
+            
+            plot_idx += 1
+        
+        if custom_regex and total > 0:
+            ax = axes[plot_idx]
+            headers = list(custom_regex.keys())
+            match_counts = [custom_regex[h]['matches'] for h in headers]
+            match_pcts = [(c / total) * 100 for c in match_counts]
+            
+            bars = ax.bar(headers, match_pcts, color=self.colors['info'])
+            self._add_percentages(ax, match_pcts)
+            
+            ax.set_title('Custom Header Pattern Matches')
+            ax.set_ylabel('Match Rate (%)')
+            ax.set_ylim(0, 105)
+            ax.tick_params(axis='x', rotation=45)
+            
+            ax.axhline(y=100, color='green', linestyle='--', alpha=0.5, label='Target')
+        
+        plt.suptitle(f'Custom Header Analysis (n={total})', fontsize=16)
+        self._save_plot('custom_headers.png')
     
     def plot_tls_support(self, stats: Dict):
         if not stats or stats.get('total', 0) == 0:

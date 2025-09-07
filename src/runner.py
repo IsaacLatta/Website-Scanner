@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
 import aiohttp
+import requests
 import time
 import csv
 from pathlib import Path
@@ -23,7 +24,8 @@ from config import Config
 
 class SecurityScanner:
     def __init__(self, output_dir=".", csv_filename="results.csv", 
-                 max_workers=10, timeout=10, verify_certificates=False):
+                 max_workers=10, timeout=10, verify_certificates=False,
+                 missing_headers_file=None, regex_headers_file=None):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.csv_filename = csv_filename
@@ -37,11 +39,12 @@ class SecurityScanner:
         
         self._load_global_data()
         
+        if missing_headers_file or regex_headers_file:
+            headers.configure_analyzer(missing_headers_file, regex_headers_file)
+        
         self.plotter = PlotGenerator(self.output_dir)
         
     def _load_global_data(self):
-        import requests
-        
         try:
             r = requests.get("https://ciphersuite.info/api/cs", timeout=self.timeout).json()
             Config.CIPHERSUITES = r['ciphersuites']
@@ -53,21 +56,20 @@ class SecurityScanner:
             r = requests.get("https://owasp.org/www-project-secure-headers/ci/headers_remove.json", 
                            timeout=self.timeout).json()
             Config.REVEALING_HEADERS = r['headers']
+            Config.REVEALING_HEADERS_LOWER = [h.lower() for h in r['headers']]
         except Exception as e:
             print(f"WARNING: Could not load revealing headers data: {e}")
             Config.REVEALING_HEADERS = []
+            Config.REVEALING_HEADERS_LOWER = []
     
     def scan_domains(self, domains: List[str]):
         print(f"Starting scan of {len(domains)} domains...")
         start_time = time.time()
-        
         domains_clean = [d.strip().replace(' ', '').replace('\n', '').replace('\r', '') 
                         for d in domains]
-        
+    
         results = asyncio.run(self._run_async_scan(domains_clean))
-        
         self._generate_reports(results, len(domains))
-        
         print(f"Scan completed in {time.time() - start_time:.2f} seconds")
     
     async def _run_async_scan(self, domains: List[str]) -> Dict:
@@ -78,15 +80,15 @@ class SecurityScanner:
             'aggregated': {}
         }
         
-        print("\n[Phase 1/6] Testing HTTPS connectivity...")
+        print("\nTesting HTTPS connectivity...")
         https_results = await connectivity.test_https_batch(domains, self.timeout)
         
         https_capable = [d for d in domains if https_results.get(d, {}).get('success', False)]
         failed_domains = [d for d in domains if d not in https_capable]
         
-        print(f"  + {len(https_capable)}/{len(domains)} sites support HTTPS")
+        print(f"\t+ {len(https_capable)}/{len(domains)} sites support HTTPS")
         if failed_domains:
-            print(f"  - Failed: {', '.join(failed_domains[:5])}{'...' if len(failed_domains) > 5 else ''}")
+            print(f"\t- Failed: {', '.join(failed_domains[:5])}{'...' if len(failed_domains) > 5 else ''}")
         
         results['https_results'] = https_results
         results['https_capable'] = https_capable
@@ -103,7 +105,7 @@ class SecurityScanner:
             }
             results['per_site'].append(site_result)
         
-        print("\n[Phase 2/6] Analyzing security headers...")
+        print("\nAnalyzing security headers...")
         header_results = headers.analyze_headers_batch(
             {d: https_results[d] for d in https_capable}
         )
@@ -113,7 +115,7 @@ class SecurityScanner:
         
         results['aggregated']['headers'] = headers.aggregate_header_stats(header_results)
         
-        print("\n[Phase 3/6] Testing TLS version support...")
+        print("\nTesting TLS version support...")
         tls_results = await self._run_sync_tests_async(https_capable, tls)
         
         for site in results['per_site']:
@@ -129,7 +131,7 @@ class SecurityScanner:
         
         results['aggregated']['cipher'] = cipher.aggregate_cipher_stats(cipher_results)
         
-        print("\n[Phase 5/6] Checking security.txt implementation...")
+        print("\nChecking security.txt implementation...")
         sectxt_results = await securitytxt.test_securitytxt_batch(https_capable, self.timeout)
         
         for site in results['per_site']:
@@ -137,7 +139,7 @@ class SecurityScanner:
         
         results['aggregated']['securitytxt'] = securitytxt.aggregate_securitytxt_stats(sectxt_results)
         
-        print("\n[Phase 6/6] Testing HTTP to HTTPS redirection...")
+        print("\nTesting HTTP to HTTPS redirection...")
         redir_results = await redirection.test_redirection_batch(https_capable, self.timeout)
         
         for site in results['per_site']:

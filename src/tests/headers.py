@@ -1,221 +1,357 @@
 #!/usr/bin/env python3
 import re
-from typing import Dict, List, Tuple, Any
-
+from typing import Dict, List, Callable, Optional, Any
+from dataclasses import dataclass
 from config import Config
 
-def _lower_headers(h: Dict[str, str]) -> Dict[str, str]:
-    return {k.lower(): (v.lower() if isinstance(v, str) else v) for k, v in h.items()}
+@dataclass
+class HeaderRule:
+    name: str
+    display_name: str  
+    validator: Optional[Callable[[str], bool]] = None
+    required: bool = False
+    description: str = ""
 
+def validate_referrer_policy(value: str) -> bool:
+    v = value.lower()
+    return any(x in v for x in ["same-origin", "strict-origin", "strict-origin-when-cross-origin", "no-referrer"])
 
-def analyze_headers_single(headers: Dict[str, str]) -> Dict:
-    h = _lower_headers(headers or {})
+def validate_x_content_type_options(value: str) -> bool:
+    return "nosniff" in value.lower()
 
-    rp_present = "referrer-policy" in h
-    rp_correct = False
-    if rp_present:
-        v = h.get("referrer-policy", "")
-        rp_correct = any(x in v for x in ("same-origin", "strict-origin", "strict-origin-when-cross-origin", "no-referrer"))
+def validate_x_frame_options(value: str) -> bool:
+    v = value.lower()
+    return "deny" in v or "sameorigin" in v
 
-    xcto_present = "x-content-type-options" in h
-    xcto_correct = False
-    if xcto_present:
-        xcto_correct = "nosniff" in h.get("x-content-type-options", "")
+def validate_csp(value: str) -> bool:
+    v = value.lower()
+    has_default_or_script = "default-src" in v or ("script-src" in v and "object-src" in v)
+    no_unsafe = "data:" not in v and "unsafe-inline" not in v
+    return has_default_or_script and no_unsafe
 
-    xfo_present = "x-frame-options" in h
-    xfo_correct = False
-    if xfo_present:
-        v = h.get("x-frame-options", "")
-        xfo_correct = ("deny" in v) or ("sameorigin" in v)
+def validate_hsts(value: str) -> Dict[str, bool]:
+    v = value.lower()
+    result = {
+        'includeSubDomains': 'includesubdomains' in v,
+        'preload': 'preload' in v,
+        'max_age_ok': False
+    }
+    
+    try:
+        max_age = int(re.findall(r'\d+', v)[0])
+        result['max_age_ok'] = max_age >= 31536000
+    except:
+        pass
+    
+    return result
 
-    csp_present = "content-security-policy" in h
-    csp_reasonable = False
-    if csp_present:
-        v = h.get("content-security-policy", "")
-        csp_reasonable = (
-            (("default-src" in v) or ("script-src" in v and "object-src" in v))
-            and ("data:" not in v)
-            and ("unsafe-inline" not in v)
-        )
+def validate_permissions_policy(value: str) -> bool:
+    return "=*" not in value and len(value.strip()) > 0
 
-    hsts_present = "strict-transport-security" in h
-    hsts_incsub = False
-    hsts_maxage_ok = False
-    hsts_preload = False
-    if hsts_present:
-        hv = h.get("strict-transport-security", "")
-        hsts_incsub = "includesubdomains" in hv
-        # first integer occurrence = max-age
-        try:
-            maxage = int(re.findall(r"\d+", hv)[0])
-        except Exception:
-            maxage = 0
-        hsts_maxage_ok = maxage >= 31536000
-        hsts_preload = "preload" in hv
+def validate_coop(value: str) -> bool:
+    return value.strip().lower() == "same-origin"
 
-    pp_present = "permissions-policy" in h
-    pp_reasonable = False
-    if pp_present:
-        v = h.get("permissions-policy", "")
-        pp_reasonable = ("=*") not in v and len(v.strip()) > 0
+def validate_coep(value: str) -> bool:
+    return "require-corp" in value.lower()
 
-    coop_present = "cross-origin-opener-policy" in h
-    coop_safe = False
-    if coop_present:
-        v = h.get("cross-origin-opener-policy", "").strip()
-        coop_safe = v == "same-origin"
+def validate_corp(value: str) -> bool:
+    v = value.lower()
+    return "same-origin" in v or "same-site" in v
 
-    coep_present = "cross-origin-embedder-policy" in h
-    coep_safe = False
-    if coep_present:
-        v = h.get("cross-origin-embedder-policy", "")
-        coep_safe = "require-corp" in v
+def validate_clear_site_data(value: str) -> bool:
+    return any(tok in value for tok in ['"cache"', '"cookies"', '"storage"', "cache", "cookies", "storage"])
 
-    corp_present = "cross-origin-resource-policy" in h
-    corp_safe = False
-    if corp_present:
-        v = h.get("cross-origin-resource-policy", "")
-        corp_safe = ("same-origin" in v) or ("same-site" in v)
+def validate_x_permitted_cross_domain(value: str) -> bool:
+    return value.strip().lower() == "none"
 
-    csd_present = "clear-site-data" in h
-    csd_has_any = False
-    if csd_present:
-        v = h.get("clear-site-data", "")
-        csd_has_any = any(tok in v for tok in ('"cache"', '"cookies"', '"storage"', "cache", "cookies", "storage"))
-
-    xpcdp_present = "x-permitted-cross-domain-policies" in h
-    xpcdp_safe = False
-    if xpcdp_present:
-        v = h.get("x-permitted-cross-domain-policies", "").strip()
-        xpcdp_safe = v == "none"
-
-    csp_ro_present = "content-security-policy-report-only" in h
-
-    # 8) Cookie flags (only evaluate if cookies are actually being set)
-    cookies_present = "set-cookie" in h
-    cookies_missing_secure = False
-    cookies_missing_httponly = False
-    cookies_samesite_none_without_secure = False
-    if cookies_present:
-        # NOTE: with some HTTP clients, multiple Set-Cookie lines may be collapsed.
-        # We conservatively scan the combined string for flags.
-        cv = h.get("set-cookie", "")
-        vlow = cv.lower()
-        cookies_missing_secure = "secure" not in vlow
-        cookies_missing_httponly = "httponly" not in vlow
-        # SameSite=None must be paired with Secure
-        cookies_samesite_none_without_secure = ("samesite=none" in vlow) and ("secure" not in vlow)
-
-    # Revealing headers (from Config.REVEALING_HEADERS)
-    revealing = any(k.lower() in Config.REVEALING_HEADERS_LOWER for k in h.keys())
-
+def validate_cookies(headers: Dict[str, str]) -> Dict[str, bool]:
+    if 'set-cookie' not in headers:
+        return {'present': False}
+    
+    cv = headers['set-cookie'].lower()
     return {
-        # existing fields
-        "referrer_policy_present": rp_present,
-        "referrer_policy_correct": rp_correct,
-        "x_content_type_options_present": xcto_present,
-        "x_content_type_options_correct": xcto_correct,
-        "x_frame_options_present": xfo_present,
-        "x_frame_options_correct": xfo_correct,
-        "csp_present": csp_present,
-        "csp_reasonable": csp_reasonable,
-        "hsts_present": hsts_present,
-        "hsts_include_subdomains": hsts_incsub,
-        "hsts_max_age_ok": hsts_maxage_ok,
-        "hsts_preload": hsts_preload,
-        "revealing_headers": revealing,
-
-        # new fields
-        "permissions_policy_present": pp_present,
-        "permissions_policy_reasonable": pp_reasonable,
-
-        "coop_present": coop_present,
-        "coop_safe": coop_safe,
-
-        "coep_present": coep_present,
-        "coep_safe": coep_safe,
-
-        "corp_present": corp_present,
-        "corp_safe": corp_safe,
-
-        "clear_site_data_present": csd_present,
-        "clear_site_data_has_any": csd_has_any,
-
-        "x_permitted_cross_domain_policies_present": xpcdp_present,
-        "x_permitted_cross_domain_policies_safe": xpcdp_safe,
-
-        "csp_report_only_present": csp_ro_present,
-
-        "cookies_present": cookies_present,
-        "cookies_missing_secure": cookies_missing_secure,
-        "cookies_missing_httponly": cookies_missing_httponly,
-        "cookies_samesite_none_without_secure": cookies_samesite_none_without_secure,
+        'present': True,
+        'missing_secure': 'secure' not in cv,
+        'missing_httponly': 'httponly' not in cv,
+        'samesite_none_without_secure': ('samesite=none' in cv) and ('secure' not in cv)
     }
 
+DEFAULT_HEADER_RULES = [
+    HeaderRule(
+        name="referrer-policy",
+        display_name="Referrer-Policy",
+        validator=validate_referrer_policy,
+        description="Should be same-origin, strict-origin, strict-origin-when-cross-origin, or no-referrer"
+    ),
+    HeaderRule(
+        name="x-content-type-options",
+        display_name="X-Content-Type-Options",
+        validator=validate_x_content_type_options,
+        description="Should be 'nosniff'"
+    ),
+    HeaderRule(
+        name="x-frame-options",
+        display_name="X-Frame-Options",
+        validator=validate_x_frame_options,
+        description="Should be 'DENY' or 'SAMEORIGIN'"
+    ),
+    HeaderRule(
+        name="content-security-policy",
+        display_name="Content-Security-Policy",
+        validator=validate_csp,
+        description="Should have default-src or script-src+object-src, without unsafe-inline or data:"
+    ),
+    HeaderRule(
+        name="strict-transport-security",
+        display_name="Strict-Transport-Security",
+        validator=None, 
+        description="Should have max-age >= 31536000, includeSubDomains, and preload"
+    ),
+    HeaderRule(
+        name="permissions-policy",
+        display_name="Permissions-Policy",
+        validator=validate_permissions_policy,
+        description="Should not allow all origins (=*)"
+    ),
+    HeaderRule(
+        name="cross-origin-opener-policy",
+        display_name="Cross-Origin-Opener-Policy",
+        validator=validate_coop,
+        description="Should be 'same-origin'"
+    ),
+    HeaderRule(
+        name="cross-origin-embedder-policy",
+        display_name="Cross-Origin-Embedder-Policy",
+        validator=validate_coep,
+        description="Should contain 'require-corp'"
+    ),
+    HeaderRule(
+        name="cross-origin-resource-policy",
+        display_name="Cross-Origin-Resource-Policy",
+        validator=validate_corp,
+        description="Should be 'same-origin' or 'same-site'"
+    ),
+    HeaderRule(
+        name="clear-site-data",
+        display_name="Clear-Site-Data",
+        validator=validate_clear_site_data,
+        description="Should specify cache, cookies, or storage to clear"
+    ),
+    HeaderRule(
+        name="x-permitted-cross-domain-policies",
+        display_name="X-Permitted-Cross-Domain-Policies",
+        validator=validate_x_permitted_cross_domain,
+        description="Should be 'none'"
+    ),
+    HeaderRule(
+        name="content-security-policy-report-only",
+        display_name="Content-Security-Policy-Report-Only",
+        validator=None,  # Presence check only
+        description="Used for CSP testing/monitoring"
+    )
+]
 
-def analyze_headers_batch(headers_by_domain: Dict[str, Dict[str, str]]) -> Dict[str, Dict]:
-    """
-    headers_by_domain: { domain -> {header: value, ...} }
-    Returns: { domain -> analysis dict }
-    """
-    results: Dict[str, Dict] = {}
-    for domain, hdrs in headers_by_domain.items():
+class HeaderAnalyzer:
+    def __init__(self):
+        self.rules = DEFAULT_HEADER_RULES.copy()
+        self.custom_missing_headers = []
+        self.custom_regex_rules = []
+        
+    def add_missing_header_check(self, header_name: str):
+        rule = HeaderRule(
+            name=header_name.lower(),
+            display_name=header_name,
+            validator=None, 
+            required=True,
+            description=f"Custom required header: {header_name}"
+        )
+        self.custom_missing_headers.append(rule)
+        
+    def add_regex_rule(self, header_name: str, pattern: str):
+        compiled_pattern = re.compile(pattern, re.IGNORECASE)
+        
+        def regex_validator(value: str) -> bool:
+            return bool(compiled_pattern.search(value))
+        
+        rule = HeaderRule(
+            name=header_name.lower(),
+            display_name=header_name,
+            validator=regex_validator,
+            description=f"Must match pattern: {pattern}"
+        )
+        self.custom_regex_rules.append(rule)
+    
+    def analyze_headers(self, headers: Dict[str, str]) -> Dict[str, Any]:
+        h = self._lower_headers(headers or {})
+        result = {}
+        
+        for rule in self.rules:
+            header_key = rule.name
+            present_key = f"{header_key.replace('-', '_')}_present"
+            correct_key = f"{header_key.replace('-', '_')}_correct"
+            
+            is_present = header_key in h
+            result[present_key] = is_present
+            
+            if header_key == "strict-transport-security" and is_present:
+                hsts_checks = validate_hsts(h[header_key])
+                result['hsts_include_subdomains'] = hsts_checks['includeSubDomains']
+                result['hsts_max_age_ok'] = hsts_checks['max_age_ok']
+                result['hsts_preload'] = hsts_checks['preload']
+                result[correct_key] = all(hsts_checks.values())
+            
+            elif header_key == "set-cookie":
+                cookie_checks = validate_cookies(h)
+                result['cookies_present'] = cookie_checks.get('present', False)
+                if cookie_checks.get('present'):
+                    result['cookies_missing_secure'] = cookie_checks['missing_secure']
+                    result['cookies_missing_httponly'] = cookie_checks['missing_httponly']
+                    result['cookies_samesite_none_without_secure'] = cookie_checks['samesite_none_without_secure']
+            
+            elif is_present and rule.validator:
+                try:
+                    result[correct_key] = rule.validator(h[header_key])
+                except Exception as e:
+                    result[correct_key] = False
+                    result[f"{header_key.replace('-', '_')}_error"] = str(e)
+            else:
+                result[correct_key] = False
+        
+        for rule in self.custom_missing_headers:
+            header_key = rule.name
+            present_key = f"custom_{header_key.replace('-', '_')}_present"
+            result[present_key] = header_key in h
+        
+        for rule in self.custom_regex_rules:
+            header_key = rule.name
+            present_key = f"custom_{header_key.replace('-', '_')}_present"
+            match_key = f"custom_{header_key.replace('-', '_')}_matches"
+            
+            is_present = header_key in h
+            result[present_key] = is_present
+            
+            if is_present and rule.validator:
+                try:
+                    result[match_key] = rule.validator(h[header_key])
+                except Exception:
+                    result[match_key] = False
+            else:
+                result[match_key] = False
+        
+        if Config.REVEALING_HEADERS:
+            revealing_lower = [h.lower() for h in Config.REVEALING_HEADERS]
+            result['revealing_headers'] = any(k in revealing_lower for k in h.keys())
+            result['revealing_headers_list'] = [k for k in h.keys() if k in revealing_lower]
+        
+        return result
+    
+    def _lower_headers(self, headers: Dict[str, str]) -> Dict[str, str]:
+        return {k.lower(): v for k, v in headers.items()}
+    
+    def load_missing_headers_file(self, filepath: str):
         try:
-            results[domain] = analyze_headers_single(hdrs or {})
+            with open(filepath, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        self.add_missing_header_check(line)
         except Exception as e:
-            results[domain] = {"error": str(e)}
+            print(f"Error loading missing headers file: {e}")
+    
+    def load_regex_rules_file(self, filepath: str):
+        """Load regex rules from file (format: header_name:pattern)"""
+        try:
+            with open(filepath, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and ':' in line:
+                        header_name, pattern = line.split(':', 1)
+                        self.add_regex_rule(header_name.strip(), pattern.strip())
+        except Exception as e:
+            print(f"Error loading regex rules file: {e}")
+
+_analyzer = HeaderAnalyzer()
+
+def configure_analyzer(missing_file: Optional[str] = None, regex_file: Optional[str] = None):
+    global _analyzer
+    if missing_file:
+        _analyzer.load_missing_headers_file(missing_file)
+    if regex_file:
+        _analyzer.load_regex_rules_file(regex_file)
+
+def analyze_headers_single(headers: Dict[str, str]) -> Dict:
+    return _analyzer.analyze_headers(headers)
+
+def analyze_headers_batch(https_results: Dict) -> Dict:
+    results = {}
+    
+    for domain, data in https_results.items():
+        if data.get('success') and data.get('headers'):
+            results[domain] = analyze_headers_single(data['headers'])
+        else:
+            results[domain] = _empty_header_result()
+    
     return results
 
-from typing import Dict
+def _empty_header_result() -> Dict:
+    result = {}
+    
+    for rule in _analyzer.rules:
+        header_key = rule.name.replace('-', '_')
+        result[f"{header_key}_present"] = False
+        result[f"{header_key}_correct"] = False
+    
+    result['hsts_include_subdomains'] = False
+    result['hsts_max_age_ok'] = False
+    result['hsts_preload'] = False
+    result['cookies_present'] = False
+    result['revealing_headers'] = False
+    result['revealing_headers_list'] = []
+    
+    return result
 
 def aggregate_header_stats(results: Dict) -> Dict:
     stats = {
-        'referrer_policy': {'present': 0, 'correct': 0},
-        'x_content_type_options': {'present': 0, 'correct': 0},
-        'x_frame_options': {'present': 0, 'correct': 0},
-        'csp': {'present': 0, 'reasonable': 0},
-        'hsts': {
-            'present': 0,
-            'includeSubDomains': 0,
-            'max_age_ok': 0,
-            'preload': 0
-        },
+        'headers': {},
+        'custom_missing': {},
+        'custom_regex': {},
         'revealing_headers': {'count': 0, 'domains': []},
         'total': len(results)
     }
-
+    
+    for rule in _analyzer.rules:
+        header_key = rule.name.replace('-', '_')
+        stats['headers'][header_key] = {
+            'present': 0,
+            'correct': 0,
+            'display_name': rule.display_name
+        }
+    
     for domain, data in results.items():
-        if data.get('referrer_policy_present'):
-            stats['referrer_policy']['present'] += 1
-            if data.get('referrer_policy_correct'):
-                stats['referrer_policy']['correct'] += 1
-
-        if data.get('x_content_type_options_present'):
-            stats['x_content_type_options']['present'] += 1
-            if data.get('x_content_type_options_correct'):
-                stats['x_content_type_options']['correct'] += 1
-
-        if data.get('x_frame_options_present'):
-            stats['x_frame_options']['present'] += 1
-            if data.get('x_frame_options_correct'):
-                stats['x_frame_options']['correct'] += 1
-
-        if data.get('csp_present'):
-            stats['csp']['present'] += 1
-            if data.get('csp_reasonable'):
-                stats['csp']['reasonable'] += 1
-
-        if data.get('hsts_present'):
-            stats['hsts']['present'] += 1
-            if data.get('hsts_includeSubDomains'):
-                stats['hsts']['includeSubDomains'] += 1
-            if data.get('hsts_max_age_ge_31536000'):
-                stats['hsts']['max_age_ok'] += 1
-            if data.get('hsts_preload'):
-                stats['hsts']['preload'] += 1
- 
+        for rule in _analyzer.rules:
+            header_key = rule.name.replace('-', '_')
+            if data.get(f"{header_key}_present"):
+                stats['headers'][header_key]['present'] += 1
+                if data.get(f"{header_key}_correct"):
+                    stats['headers'][header_key]['correct'] += 1
+        
+        for key in data:
+            if key.startswith('custom_') and key.endswith('_present'):
+                header_name = key.replace('custom_', '').replace('_present', '')
+                if header_name not in stats['custom_missing']:
+                    stats['custom_missing'][header_name] = {'present': 0}
+                if data[key]:
+                    stats['custom_missing'][header_name]['present'] += 1
+            
+            elif key.startswith('custom_') and key.endswith('_matches'):
+                header_name = key.replace('custom_', '').replace('_matches', '')
+                if header_name not in stats['custom_regex']:
+                    stats['custom_regex'][header_name] = {'matches': 0}
+                if data[key]:
+                    stats['custom_regex'][header_name]['matches'] += 1
+        
         if data.get('revealing_headers'):
             stats['revealing_headers']['count'] += 1
             stats['revealing_headers']['domains'].append(domain)
-
+    
     return stats

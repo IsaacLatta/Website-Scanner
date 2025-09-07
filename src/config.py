@@ -7,5 +7,6 @@ class Config:
     VERIFY_CERTIFICATE = False
     CIPHERSUITES = []
     REVEALING_HEADERS = []
+    REVEALING_HEADERS_LOWER = []
     
-    USER_AGENT = "Mozilla/5.0 (Security Scanner 1.0)"
+    USER_AGENT = "Mozilla/5.0"
