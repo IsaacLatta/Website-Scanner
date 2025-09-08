@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""
-Web Security Scanner - Main Entry Point
-"""
 import sys
 import argparse
 from pathlib import Path
 from runner import SecurityScanner
+
+#TODO: Add Rate limting evasion
 
 def main():
     ap = argparse.ArgumentParser(description="Website security scanner with concurrent testing")
@@ -25,7 +24,6 @@ def main():
         print("ERROR: provide an input file or --domains ...")
         sys.exit(1)
 
-    # Get list of domains
     if args.domains:
         domains = args.domains
     else:
@@ -36,7 +34,6 @@ def main():
         print("ERROR: No domains to scan")
         sys.exit(1)
     
-    # Create scanner instance
     scanner = SecurityScanner(
         output_dir=args.output_dir,
         csv_filename=args.csv_out,
@@ -47,7 +44,6 @@ def main():
         regex_headers_file=args.regex_headers
     )
     
-    # Run the scan
     try:
         scanner.scan_domains(domains)
         print(f"\nScan complete! Results saved to {args.output_dir}")

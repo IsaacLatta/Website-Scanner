@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 import importlib
 import inspect
 
+# Test modules
 from tests import (
     connectivity,
     headers,
@@ -153,22 +154,25 @@ class SecurityScanner:
         loop = asyncio.get_event_loop()
         results = {}
         
+        # Discover the test funcs in a given module
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             test_funcs = []
             for name in dir(module):
-                if name.startswith('test_') and name != 'test_all':
+                if name.startswith('test_'):
                     func = getattr(module, name)
                     if callable(func) and not asyncio.iscoroutinefunction(func):
                         test_funcs.append((name, func))
             
             futures = []
             for domain in domains:
-                domain_result = {'host': domain}
                 for test_name, test_func in test_funcs:
+
+                    # The encryption related tests have blocking io, 
+                    # so I have enqueued them on the thread pool
                     future = loop.run_in_executor(executor, test_func, domain)
                     futures.append((domain, test_name, future))
             
-            for domain, test_name, future in futures:
+            for domain, test_name, future in futures: # Should maybe use as_completed here
                 if domain not in results:
                     results[domain] = {}
                 try:
