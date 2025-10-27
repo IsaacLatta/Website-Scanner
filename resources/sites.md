@@ -42,7 +42,17 @@
 
 * Each province has their own privancy commisioner. I did this manually as well.
 
-# Courts
+## Courts
 
 * The canadian gov has a site that hyperlinks each province's courts (prov, supreme, etc) site.
   * Found [here](https://laws-lois.justice.gc.ca/eng/Court/)
+  
+## Auditor General
+
+* PEI lists other provinces auditor general sites.
+  * Found [here](https://www.assembly.pe.ca/other-canadian-auditor-general-offices)
+
+## Emergency Management
+
+* List found [here](https://www.canada.ca/en/services/policing/emergencies/preparedness/get-prepared/emergency-planning-resources/emergency-management-organizations.html)
+
