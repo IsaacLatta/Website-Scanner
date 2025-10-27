@@ -124,7 +124,7 @@ class SecurityScanner:
         
         results['aggregated']['tls'] = tls.aggregate_tls_stats(tls_results)
         
-        print("\n[Phase 4/6] Testing cipher suite security...")
+        print("\nTesting cipher suite security...")
         cipher_results = await self._run_sync_tests_async(https_capable, cipher)
         
         for site in results['per_site']:
