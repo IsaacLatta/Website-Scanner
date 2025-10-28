@@ -592,172 +592,269 @@ Nova Scotia Auditor General,https://oag-ns.ca/,,gov:auditor-nova-scotia,
 Ontario Auditor General,http://www.auditor.on.ca/,,gov:auditor-ontario,
 Quebec Vérificateur général,https://www.vgq.qc.ca,,gov:auditor-quebec,
 Saskatchewan Auditor General,https://auditor.sk.ca/,,gov:auditor-saskatchewan,
-Alberta Emergency Management Agency,https://www.alberta.ca/emergency-preparedness.aspx?utm_source=redirect&utm_medium=poster&utm_campaign=GoA&utm_term=BePrepared,,gov:emergency-alberta
-British Columbia Emergency Management and Climate Readiness,http://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/preparedbc,,gov:emergency-british-columbia
-Manitoba Emergency Management Organization,https://www.gov.mb.ca/emo/index.html,,gov:emergency-manitoba
-New Brunswick Emergency Measures Organization,https://www2.gnb.ca/content/gnb/en/departments/emo.html,,gov:emergency-new-brunswick
-Emergency Services Division Department of Justice & Public Safety Government of Newfoundland & Labrador,https://www.gov.nl.ca/jps,,gov:emergency-newfoundland-and-labrador
-Northwest Territories Emergency Management Organization,http://www.maca.gov.nt.ca/en/services/emergency-preparedness,,gov:emergency-northwest-territories
-Nova Scotia Emergency Management Office,https://beta.novascotia.ca/government/emergency-management-office,,gov:emergency-nova-scotia
-Nunavut Emergency Management,https://www.gov.nu.ca/community-and-government-services/information/nunavut-emergency-management-0,,gov:emergency-nunavut
-Emergency Management Ontario,http://www.ontario.ca/EMO,,gov:emergency-ontario
-Prince Edward Island Emergency Measures Organization,http://www.peipublicsafety.ca/,,gov:emergency-prince-edward-island
-Quebec Ministry of Public Security,https://www.quebec.ca/en/public-safety-emergencies/preparing-for-emergency/how-prepare-at-home,,gov:emergency-quebec
-Saskatchewan Public Safety Agency,https://www.saskatchewan.ca/residents/environment-public-health-and-safety/disaster-prevention,,gov:emergency-saskatchewan
-Yukon Emergency Measures Organization,https://yukon.ca/en/emergencies-and-safety,,gov:emergency-yukon
-B2B Bank,https://b2bbank.com/,,"fin:ca-sch1,"
-Bank of Montreal,https://www.bmo.com/en-ca/main/personal/,,"fin:ca-sch1,"
-Bank of Nova Scotia (The),https://www.scotiabank.com/ca/en/personal.html,,"fin:ca-sch1,"
-Bridgewater Bank,https://bridgewaterbank.ca/,,"fin:ca-sch1,"
-Caisse populaire acadienne ltée (UNI),https://www.uni.ca/en//,,"fin:ca-sch1,"
-Canadian Imperial Bank of Commerce,https://www.cibc.com/en/personal-banking.html,,"fin:ca-sch1,"
-Canadian Tire Bank,https://www.ctfs.com/content/ctfs/en.html,,"fin:ca-sch1,"
-Coast Capital Savings Federal Credit Union,https://www.coastcapitalsavings.com/,,"fin:ca-sch1,"
-Concentra Bank,https://www.concentra.ca/,,"fin:ca-sch1,"
-CS Alterna Bank,https://www.alternabank.ca/en/personal/,,"fin:ca-sch1,"
-Equitable Bank,https://www.equitablebank.ca/?lang=en,,"fin:ca-sch1,"
-Exchange Bank of Canada,https://www.ebcfx.com/en/,,"fin:ca-sch1,"
-Fairstone Bank of Canada,https://www.fairstonebank.ca/,,"fin:ca-sch1,"
-General Bank of Canada,https://www.generalbank.ca/,,"fin:ca-sch1,"
-Haventree Bank,https://www.haventreebank.com/en/,,"fin:ca-sch1,"
-Home Bank,https://www.homebank.ca/,,"fin:ca-sch1,"
-HomeEquity Bank,https://www.homeequitybank.ca/,,"fin:ca-sch1,"
-Innovation Federal Credit Union,https://www.innovationcu.ca/personal.html,,"fin:ca-sch1,"
-Laurentian Bank of Canada,https://www.laurentianbank.ca/en,,"fin:ca-sch1,"
-Manulife Bank of Canada,https://www.manulifebank.ca/personal-banking.html,,"fin:ca-sch1,"
-Motus Bank,https://www.motusbank.ca/,,"fin:ca-sch1,"
-National Bank of Canada,https://www.nbc.ca/,,"fin:ca-sch1,"
-Peoples Bank of Canada,https://www.peoplesbank.ca/en/,,"fin:ca-sch1,"
-President's Choice Bank,https://www.pcfinancial.ca/en/,,"fin:ca-sch1,"
-RFA Bank of Canada,https://www.rfa.ca/index.php/news,,"fin:ca-sch1,"
-Rogers Bank,https://www.rogersbank.com/en/,,"fin:ca-sch1,"
-Royal Bank of Canada,https://www.rbc.com/canada.html,,"fin:ca-sch1,"
-Tangerine Bank,https://www.tangerine.ca/en,,"fin:ca-sch1,"
-Toronto-Dominion Bank (The),https://www.td.com/ca/en/personal-banking/,,"fin:ca-sch1,"
-Vancity Community Investment Bank,https://www.vancitycommunityinvestmentbank.ca/,,"fin:ca-sch1,"
-VersaBank,https://www.versabank.com/,,"fin:ca-sch1,"
-Wealth One Bank of Canada,https://www.wealthonebankofcanada.com/Personal/,,"fin:ca-sch1,"
-Amex Bank of Canada,https://www.americanexpress.com/canada/,,"fin:ca-sch1,"
-Bank Of China (Canada),http://www.bankofchina.com/ca/en/,,"fin:ca-sch1,"
-Citibank Canada,https://www.citigroup.com/canada/en/,,"fin:ca-sch1,"
-Habib Canadian Bank,https://www.habibcanadian.com/,,"fin:ca-sch1,"
-ICICI Bank Canada,https://www.icicibank.ca/,,"fin:ca-sch1,"
-Industrial and Commercial Bank of China (Canada),https://www.icbk.ca/EN_new/default.htm,,"fin:ca-sch1,"
-J.P. Morgan Bank Canada,https://www.jpmorgan.com/CA/en/about-us,,"fin:ca-sch1,"
-KEB Hana Bank Canada,https://hanabank.ca/,,"fin:ca-sch1,"
-SBI Canada Bank,https://ca.statebank/home,,"fin:ca-sch1,"
-Shinhan Bank Canada,https://www.shinhan.ca/,,"fin:ca-sch1,"
-UBS Bank (Canada),https://www.ubs.com/ca/en.html,,"fin:ca-sch1,"
-Beem Credit Union,https://www.gulfandfraser.com/,,"fin:ca-cu-bc,"
-Bulkley Valley Credit Union,https://www.bvcu.com/,,"fin:ca-cu-bc,"
-Cascadia Credit Union,https://www.cascadiacu.com/,,"fin:ca-cu-bc,"
-Central 1 Credit Union,http://www.central1.com/,,"fin:ca-cu-bc,"
-Coastal Community Credit Union,https://www.cccu.ca/,,"fin:ca-cu-bc,"
-Columbia Valley Credit Union,https://www.cvcu.bc.ca/,,"fin:ca-cu-bc,"
-Community Savings Credit Union,https://www.comsavings.com/,,"fin:ca-cu-bc,"
-Creston & District Credit Union,https://www.cdcu.com/,,"fin:ca-cu-bc,"
-First Credit Union,https://www.firstcu.ca/,,"fin:ca-cu-bc,"
-First West Credit Union,https://www.firstwestcu.ca/,,"fin:ca-cu-bc,"
-Greater Vancouver Community Credit Union,https://www.gvccu.com/,,"fin:ca-cu-bc,"
-Integris Credit Union,https://www.integriscu.ca/,,"fin:ca-cu-bc,"
-Khalsa Credit Union,https://www.khalsacreditunion.ca/,,"fin:ca-cu-bc,"
-Kootenay Savings Credit Union,https://www.kscu.com/,,"fin:ca-cu-bc,"
-Ladysmith & District Credit Union,https://www.ldcu.ca/,,"fin:ca-cu-bc,"
-Lake View Credit Union,https://lakeviewcreditunion.com/,,"fin:ca-cu-bc,"
-Nelson & District Credit Union,https://www.nelsoncu.com/,,"fin:ca-cu-bc,"
-Northern Savings Credit Union,https://www.northsave.com/,,"fin:ca-cu-bc,"
-Prospera Credit Union,https://www.prospera.ca/,,"fin:ca-cu-bc,"
-Salmon Arm Savings and Credit Union,https://www.sascu.com/,,"fin:ca-cu-bc,"
-Sharons Credit Union,http://sharons.ca/eng,,"fin:ca-cu-bc,"
-Stabilization Central Credit Union of British Columbia,https://www.stabil.com/,,"fin:ca-cu-bc,"
-StellerVista Credit Union,https://www.ekccu.com/,,"fin:ca-cu-bc,"
-Sunshine Coast Credit Union,https://www.sunshineccu.com/,,"fin:ca-cu-bc,"
-Vancouver City Savings Credit Union,https://www.vancity.com/,,"fin:ca-cu-bc,"
-Vancouver Firefighters' Credit Union,https://vanfirecu.com/,,"fin:ca-cu-bc,"
-VantageOne Credit Union,https://www.vantageone.net/,,"fin:ca-cu-bc,"
-Williams Lake and District Credit Union,https://www.wldcu.com/,,"fin:ca-cu-bc,"
-Accent Credit Union,http://www.accentcu.ca/,,"fin:ca-cu-sk,"
-Affinity Credit Union,http://www.affinitycu.ca/,,"fin:ca-cu-sk,"
-Bengough Credit Union,https://www.bengoughcu.ca/,,"fin:ca-cu-sk,"
-Biggar & District Credit Union,http://www.biggarcu.com/,,"fin:ca-cu-sk,"
-Bruno Savings & Credit Union,http://www.brunocu.com/,,"fin:ca-cu-sk,"
-Churchbridge Credit Union,http://www.churchbridgecu.ca/,,"fin:ca-cu-sk,"
-Conexus Credit Union,http://www.conexus.ca/,,"fin:ca-cu-sk,"
-Cornerstone Credit Union,https://www.cornerstonecu.com/,,"fin:ca-cu-sk,"
-Crossroads Credit Union,http://www.crossroadscu.ca/,,"fin:ca-cu-sk,"
-Dodsland and District Credit Union,http://www.dodslandcreditunion.com/,,"fin:ca-cu-sk,"
-Edam Credit Union,https://www.edamcu.ca/,,"fin:ca-cu-sk,"
-Foam Lake Credit Union,http://www.foamlakecu.com/,,"fin:ca-cu-sk,"
-Innovation Federal Credit Union,http://www.innovationcu.ca/,,"fin:ca-cu-sk,"
-Kerrobert Credit Union,http://www.kerrobertcreditunion.ca/,,"fin:ca-cu-sk,"
-Lafleche Credit Union,http://www.laflechecu.com/,,"fin:ca-cu-sk,"
-Luseland Credit Union,http://www.luselandcu.ca/,,"fin:ca-cu-sk,"
-North Valley Credit Union,https://northvalleycu.com/,,"fin:ca-cu-sk,"
-Prairie Pride Credit Union,http://www.prairiepridecu.com/,,"fin:ca-cu-sk,"
-Prosperity Credit Union,https://drivingruralprosperity.ca/,,"fin:ca-cu-sk,"
-Radius Credit Union,http://www.radiuscu.com/,,"fin:ca-cu-sk,"
-Raymore Credit Union,http://www.raymorecu.com/,,"fin:ca-cu-sk,"
-Rockglen-Killdeer Credit Union,http://www.rockglenkilldeercu.ca/,,"fin:ca-cu-sk,"
-Sandhills Credit Union,http://www.sandhillscu.com/,,"fin:ca-cu-sk,"
-Saskatoon City Employees Credit Union,http://www.scecu.com/,,"fin:ca-cu-sk,"
-St. Gregor Credit Union,http://www.stgregorcu.com/,,"fin:ca-cu-sk,"
-Stoughton Credit Union,http://www.stoughtoncu.com/,,"fin:ca-cu-sk,"
-Synergy Credit Union,https://www.synergycu.ca/en,,"fin:ca-cu-sk,"
-TCU Financial Group,http://www.tcufinancialgroup.com/,,"fin:ca-cu-sk,"
-Turtleford Credit Union,https://www.turtlefordcu.ca/,,"fin:ca-cu-sk,"
-Unity Credit Union,http://www.unitycu.ca/,,"fin:ca-cu-sk,"
-Weyburn Credit Union,http://www.weyburncu.ca/,,"fin:ca-cu-sk,"
-Adjala Credit Union,http://www.adjalacu.com/,,"fin:ca-cu-on,"
-Alterna Savings,https://www.alterna.ca/,,"fin:ca-cu-on,"
-Bay Credit Union,http://baycreditunion.com/,,"fin:ca-cu-on,"
-BCU Financial,https://bcufinancial.com/,,"fin:ca-cu-on,"
-Caisse Alliance,https://www.caissealliance.com/en/,,"fin:ca-cu-on,"
-Caisse Desjardins Ontario Credit Union,https://coop.desjardins.com/ca/your-credit-union/ontario/index.jsp,,"fin:ca-cu-on,"
-Comtech Fire Credit Union,https://www.comtechcu.com/Personal/,,"fin:ca-cu-on,"
-DUCA Financial Services Credit Union Ltd.,https://www.duca.com/,,"fin:ca-cu-on,"
-Dundalk District Credit Union,https://www.dundalkcu.ca/,,"fin:ca-cu-on,"
-Equity Credit Union,https://equitycu.com/,,"fin:ca-cu-on,"
-Finnish Credit Union,http://www.finnishcu.com/,,"fin:ca-cu-on,"
-FirstOntario Credit Union,https://www.firstontario.com/,,"fin:ca-cu-on,"
-Fort York Community Credit Union,https://fortyork.com/,,"fin:ca-cu-on,"
-Frontline Credit Union,https://www.frontlinecu.com/Personal/,,"fin:ca-cu-on,"
-Ganaraska Credit Union,https://www.ganaraskacu.com/Personal/,,"fin:ca-cu-on,"
-Golden Horseshoe Credit Union,https://ghcu.ca/,,"fin:ca-cu-on,"
-Healthcare and Municipal Employees Credit Union (HMECU),https://www.hmecu.com/,,"fin:ca-cu-on,"
-IC Savings,https://www.icsavings.ca/,,"fin:ca-cu-on,"
-Kawartha Credit Union,https://www.kawarthacu.com/,,"fin:ca-cu-on,"
-Kindred Credit Union,https://www.kindredcu.com/,,"fin:ca-cu-on,"
-Kingston Community Credit Union,http://www.kccu.ca/,,"fin:ca-cu-on,"
-Korean (Toronto) Credit Union,http://www.koreancu.com/,,"fin:ca-cu-on,"
-Korean Catholic Church Credit Union,http://kcccu.ca/index.php,,"fin:ca-cu-on,"
-L.I.U.N.A. Local 183 Credit Union,https://local183cu.ca/,,"fin:ca-cu-on,"
-Libro Credit Union,https://www.libro.ca/,,"fin:ca-cu-on,"
-Lighthouse Credit Union,https://lighthousecu.ca/,,"fin:ca-cu-on,"
-Luminus Financial Services and Credit Union,https://www.luminusfinancial.com/Personal/,,"fin:ca-cu-on,"
-Mainstreet Credit Union,https://www.mainstreetcu.ca/,,"fin:ca-cu-on,"
-Meridian,https://www.meridiancu.ca/,,"fin:ca-cu-on,"
-Motor City Community Credit Union,https://www.mcccu.com/,,"fin:ca-cu-on,"
-Moya Financial Credit Union Limited,https://www.moyafinancial.ca/,,"fin:ca-cu-on,"
-Northern Credit Union,https://www.northerncu.com/personal/,,"fin:ca-cu-on,"
-Northern Birch Credit Union,https://www.northernbirchcu.com/,,"fin:ca-cu-on,"
-Ontario Educational Credit Union,https://www.oecu.on.ca/,,"fin:ca-cu-on,"
-Ontario Provincial Police Association Credit Union,https://www.oppacu.com/Personal/,,"fin:ca-cu-on,"
-Oshawa Community Credit Union,https://www.oshawacu.com/,,"fin:ca-cu-on,"
-Parama Credit Union,https://parama.ca/,,"fin:ca-cu-on,"
-Pathwise Credit Union,https://www.pathwise.ca/,,"fin:ca-cu-on,"
-PenFinancial Credit Union,https://www.penfinancial.com/Personal/,,"fin:ca-cu-on,"
-"Rapport Credit Union, a Division of WFCU",https://www.rapportcu.ca/Personal/,,"fin:ca-cu-on,"
-Resurrection Credit Union,https://www.rpcul.com/,,"fin:ca-cu-on,"
-Southwest Regional Credit Union,https://www.southwestcu.com/Personal/,,"fin:ca-cu-on,"
-St. Stanislaus-St. Casimir’s Polish Parishes Credit Union,https://www.polcu.com/Personal/,,"fin:ca-cu-on,"
-Sudbury Credit Union,https://www.sudburycu.com/,,"fin:ca-cu-on,"
-Taiwanese-Canadian Toronto Credit Union,http://www.tctcu.com/,,"fin:ca-cu-on,"
-Talka Credit Union Limited,https://talka.ca/,,"fin:ca-cu-on,"
-Tandia Financial Credit Union,https://www.tandia.com/,,"fin:ca-cu-on,"
-The Energy Credit Union,http://www.theenergycu.com/,,"fin:ca-cu-on,"
-The Police Credit Union,https://www.tpcu.on.ca/Personal/,,"fin:ca-cu-on,"
-Thorold Community Credit Union,http://www.thoroldcu.com/,,"fin:ca-cu-on,"
-Ukrainian Credit Union,https://www.ukrainiancu.com/,,"fin:ca-cu-on,"
-WFCU Credit Union,https://mywfcu.ca/,,"fin:ca-cu-on,"
-Your Credit Union,https://www.yourcu.com/,,"fin:ca-cu-on,"
-Your Neighbourhood Credit Union,https://www.yncu.com/,,"fin:ca-cu-on,"
+Alberta Emergency Management Agency,https://www.alberta.ca/emergency-preparedness.aspx?utm_source=redirect&utm_medium=poster&utm_campaign=GoA&utm_term=BePrepared,,gov:emergency-alberta,
+British Columbia Emergency Management and Climate Readiness,http://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/preparedbc,,gov:emergency-british-columbia,
+Manitoba Emergency Management Organization,https://www.gov.mb.ca/emo/index.html,,gov:emergency-manitoba,
+New Brunswick Emergency Measures Organization,https://www2.gnb.ca/content/gnb/en/departments/emo.html,,gov:emergency-new-brunswick,
+Emergency Services Division Department of Justice & Public Safety Government of Newfoundland & Labrador,https://www.gov.nl.ca/jps,,gov:emergency-newfoundland-and-labrador,
+Northwest Territories Emergency Management Organization,http://www.maca.gov.nt.ca/en/services/emergency-preparedness,,gov:emergency-northwest-territories,
+Nova Scotia Emergency Management Office,https://beta.novascotia.ca/government/emergency-management-office,,gov:emergency-nova-scotia,
+Nunavut Emergency Management,https://www.gov.nu.ca/community-and-government-services/information/nunavut-emergency-management-0,,gov:emergency-nunavut,
+Emergency Management Ontario,http://www.ontario.ca/EMO,,gov:emergency-ontario,
+Prince Edward Island Emergency Measures Organization,http://www.peipublicsafety.ca/,,gov:emergency-prince-edward-island,
+Quebec Ministry of Public Security,https://www.quebec.ca/en/public-safety-emergencies/preparing-for-emergency/how-prepare-at-home,,gov:emergency-quebec,
+Saskatchewan Public Safety Agency,https://www.saskatchewan.ca/residents/environment-public-health-and-safety/disaster-prevention,,gov:emergency-saskatchewan,
+Yukon Emergency Measures Organization,https://yukon.ca/en/emergencies-and-safety,,gov:emergency-yukon,
+B2B Bank,https://b2bbank.com/,,"fin:ca-sch1,",
+Bank of Montreal,https://www.bmo.com/en-ca/main/personal/,,"fin:ca-sch1,",
+Bank of Nova Scotia (The),https://www.scotiabank.com/ca/en/personal.html,,"fin:ca-sch1,",
+Bridgewater Bank,https://bridgewaterbank.ca/,,"fin:ca-sch1,",
+Caisse populaire acadienne ltée (UNI),https://www.uni.ca/en//,,"fin:ca-sch1,",
+Canadian Imperial Bank of Commerce,https://www.cibc.com/en/personal-banking.html,,"fin:ca-sch1,",
+Canadian Tire Bank,https://www.ctfs.com/content/ctfs/en.html,,"fin:ca-sch1,",
+Coast Capital Savings Federal Credit Union,https://www.coastcapitalsavings.com/,,"fin:ca-sch1,",
+Concentra Bank,https://www.concentra.ca/,,"fin:ca-sch1,",
+CS Alterna Bank,https://www.alternabank.ca/en/personal/,,"fin:ca-sch1,",
+Equitable Bank,https://www.equitablebank.ca/?lang=en,,"fin:ca-sch1,",
+Exchange Bank of Canada,https://www.ebcfx.com/en/,,"fin:ca-sch1,",
+Fairstone Bank of Canada,https://www.fairstonebank.ca/,,"fin:ca-sch1,",
+General Bank of Canada,https://www.generalbank.ca/,,"fin:ca-sch1,",
+Haventree Bank,https://www.haventreebank.com/en/,,"fin:ca-sch1,",
+Home Bank,https://www.homebank.ca/,,"fin:ca-sch1,",
+HomeEquity Bank,https://www.homeequitybank.ca/,,"fin:ca-sch1,",
+Innovation Federal Credit Union,https://www.innovationcu.ca/personal.html,,"fin:ca-sch1,",
+Laurentian Bank of Canada,https://www.laurentianbank.ca/en,,"fin:ca-sch1,",
+Manulife Bank of Canada,https://www.manulifebank.ca/personal-banking.html,,"fin:ca-sch1,",
+Motus Bank,https://www.motusbank.ca/,,"fin:ca-sch1,",
+National Bank of Canada,https://www.nbc.ca/,,"fin:ca-sch1,",
+Peoples Bank of Canada,https://www.peoplesbank.ca/en/,,"fin:ca-sch1,",
+President's Choice Bank,https://www.pcfinancial.ca/en/,,"fin:ca-sch1,",
+RFA Bank of Canada,https://www.rfa.ca/index.php/news,,"fin:ca-sch1,",
+Rogers Bank,https://www.rogersbank.com/en/,,"fin:ca-sch1,",
+Royal Bank of Canada,https://www.rbc.com/canada.html,,"fin:ca-sch1,",
+Tangerine Bank,https://www.tangerine.ca/en,,"fin:ca-sch1,",
+Toronto-Dominion Bank (The),https://www.td.com/ca/en/personal-banking/,,"fin:ca-sch1,",
+Vancity Community Investment Bank,https://www.vancitycommunityinvestmentbank.ca/,,"fin:ca-sch1,",
+VersaBank,https://www.versabank.com/,,"fin:ca-sch1,",
+Wealth One Bank of Canada,https://www.wealthonebankofcanada.com/Personal/,,"fin:ca-sch1,",
+Amex Bank of Canada,https://www.americanexpress.com/canada/,,"fin:ca-sch1,",
+Bank Of China (Canada),http://www.bankofchina.com/ca/en/,,"fin:ca-sch1,",
+Citibank Canada,https://www.citigroup.com/canada/en/,,"fin:ca-sch1,",
+Habib Canadian Bank,https://www.habibcanadian.com/,,"fin:ca-sch1,",
+ICICI Bank Canada,https://www.icicibank.ca/,,"fin:ca-sch1,",
+Industrial and Commercial Bank of China (Canada),https://www.icbk.ca/EN_new/default.htm,,"fin:ca-sch1,",
+J.P. Morgan Bank Canada,https://www.jpmorgan.com/CA/en/about-us,,"fin:ca-sch1,",
+KEB Hana Bank Canada,https://hanabank.ca/,,"fin:ca-sch1,",
+SBI Canada Bank,https://ca.statebank/home,,"fin:ca-sch1,",
+Shinhan Bank Canada,https://www.shinhan.ca/,,"fin:ca-sch1,",
+UBS Bank (Canada),https://www.ubs.com/ca/en.html,,"fin:ca-sch1,",
+Beem Credit Union,https://www.gulfandfraser.com/,,"fin:ca-cu-bc,",
+Bulkley Valley Credit Union,https://www.bvcu.com/,,"fin:ca-cu-bc,",
+Cascadia Credit Union,https://www.cascadiacu.com/,,"fin:ca-cu-bc,",
+Central 1 Credit Union,http://www.central1.com/,,"fin:ca-cu-bc,",
+Coastal Community Credit Union,https://www.cccu.ca/,,"fin:ca-cu-bc,",
+Columbia Valley Credit Union,https://www.cvcu.bc.ca/,,"fin:ca-cu-bc,",
+Community Savings Credit Union,https://www.comsavings.com/,,"fin:ca-cu-bc,",
+Creston & District Credit Union,https://www.cdcu.com/,,"fin:ca-cu-bc,",
+First Credit Union,https://www.firstcu.ca/,,"fin:ca-cu-bc,",
+First West Credit Union,https://www.firstwestcu.ca/,,"fin:ca-cu-bc,",
+Greater Vancouver Community Credit Union,https://www.gvccu.com/,,"fin:ca-cu-bc,",
+Integris Credit Union,https://www.integriscu.ca/,,"fin:ca-cu-bc,",
+Khalsa Credit Union,https://www.khalsacreditunion.ca/,,"fin:ca-cu-bc,",
+Kootenay Savings Credit Union,https://www.kscu.com/,,"fin:ca-cu-bc,",
+Ladysmith & District Credit Union,https://www.ldcu.ca/,,"fin:ca-cu-bc,",
+Lake View Credit Union,https://lakeviewcreditunion.com/,,"fin:ca-cu-bc,",
+Nelson & District Credit Union,https://www.nelsoncu.com/,,"fin:ca-cu-bc,",
+Northern Savings Credit Union,https://www.northsave.com/,,"fin:ca-cu-bc,",
+Prospera Credit Union,https://www.prospera.ca/,,"fin:ca-cu-bc,",
+Salmon Arm Savings and Credit Union,https://www.sascu.com/,,"fin:ca-cu-bc,",
+Sharons Credit Union,http://sharons.ca/eng,,"fin:ca-cu-bc,",
+Stabilization Central Credit Union of British Columbia,https://www.stabil.com/,,"fin:ca-cu-bc,",
+StellerVista Credit Union,https://www.ekccu.com/,,"fin:ca-cu-bc,",
+Sunshine Coast Credit Union,https://www.sunshineccu.com/,,"fin:ca-cu-bc,",
+Vancouver City Savings Credit Union,https://www.vancity.com/,,"fin:ca-cu-bc,",
+Vancouver Firefighters' Credit Union,https://vanfirecu.com/,,"fin:ca-cu-bc,",
+VantageOne Credit Union,https://www.vantageone.net/,,"fin:ca-cu-bc,",
+Williams Lake and District Credit Union,https://www.wldcu.com/,,"fin:ca-cu-bc,",
+Accent Credit Union,http://www.accentcu.ca/,,"fin:ca-cu-sk,",
+Affinity Credit Union,http://www.affinitycu.ca/,,"fin:ca-cu-sk,",
+Bengough Credit Union,https://www.bengoughcu.ca/,,"fin:ca-cu-sk,",
+Biggar & District Credit Union,http://www.biggarcu.com/,,"fin:ca-cu-sk,",
+Bruno Savings & Credit Union,http://www.brunocu.com/,,"fin:ca-cu-sk,",
+Churchbridge Credit Union,http://www.churchbridgecu.ca/,,"fin:ca-cu-sk,",
+Conexus Credit Union,http://www.conexus.ca/,,"fin:ca-cu-sk,",
+Cornerstone Credit Union,https://www.cornerstonecu.com/,,"fin:ca-cu-sk,",
+Crossroads Credit Union,http://www.crossroadscu.ca/,,"fin:ca-cu-sk,",
+Dodsland and District Credit Union,http://www.dodslandcreditunion.com/,,"fin:ca-cu-sk,",
+Edam Credit Union,https://www.edamcu.ca/,,"fin:ca-cu-sk,",
+Foam Lake Credit Union,http://www.foamlakecu.com/,,"fin:ca-cu-sk,",
+Innovation Federal Credit Union,http://www.innovationcu.ca/,,"fin:ca-cu-sk,",
+Kerrobert Credit Union,http://www.kerrobertcreditunion.ca/,,"fin:ca-cu-sk,",
+Lafleche Credit Union,http://www.laflechecu.com/,,"fin:ca-cu-sk,",
+Luseland Credit Union,http://www.luselandcu.ca/,,"fin:ca-cu-sk,",
+North Valley Credit Union,https://northvalleycu.com/,,"fin:ca-cu-sk,",
+Prairie Pride Credit Union,http://www.prairiepridecu.com/,,"fin:ca-cu-sk,",
+Prosperity Credit Union,https://drivingruralprosperity.ca/,,"fin:ca-cu-sk,",
+Radius Credit Union,http://www.radiuscu.com/,,"fin:ca-cu-sk,",
+Raymore Credit Union,http://www.raymorecu.com/,,"fin:ca-cu-sk,",
+Rockglen-Killdeer Credit Union,http://www.rockglenkilldeercu.ca/,,"fin:ca-cu-sk,",
+Sandhills Credit Union,http://www.sandhillscu.com/,,"fin:ca-cu-sk,",
+Saskatoon City Employees Credit Union,http://www.scecu.com/,,"fin:ca-cu-sk,",
+St. Gregor Credit Union,http://www.stgregorcu.com/,,"fin:ca-cu-sk,",
+Stoughton Credit Union,http://www.stoughtoncu.com/,,"fin:ca-cu-sk,",
+Synergy Credit Union,https://www.synergycu.ca/en,,"fin:ca-cu-sk,",
+TCU Financial Group,http://www.tcufinancialgroup.com/,,"fin:ca-cu-sk,",
+Turtleford Credit Union,https://www.turtlefordcu.ca/,,"fin:ca-cu-sk,",
+Unity Credit Union,http://www.unitycu.ca/,,"fin:ca-cu-sk,",
+Weyburn Credit Union,http://www.weyburncu.ca/,,"fin:ca-cu-sk,",
+Adjala Credit Union,http://www.adjalacu.com/,,"fin:ca-cu-on,",
+Alterna Savings,https://www.alterna.ca/,,"fin:ca-cu-on,",
+Bay Credit Union,http://baycreditunion.com/,,"fin:ca-cu-on,",
+BCU Financial,https://bcufinancial.com/,,"fin:ca-cu-on,",
+Caisse Alliance,https://www.caissealliance.com/en/,,"fin:ca-cu-on,",
+Caisse Desjardins Ontario Credit Union,https://coop.desjardins.com/ca/your-credit-union/ontario/index.jsp,,"fin:ca-cu-on,",
+Comtech Fire Credit Union,https://www.comtechcu.com/Personal/,,"fin:ca-cu-on,",
+DUCA Financial Services Credit Union Ltd.,https://www.duca.com/,,"fin:ca-cu-on,",
+Dundalk District Credit Union,https://www.dundalkcu.ca/,,"fin:ca-cu-on,",
+Equity Credit Union,https://equitycu.com/,,"fin:ca-cu-on,",
+Finnish Credit Union,http://www.finnishcu.com/,,"fin:ca-cu-on,",
+FirstOntario Credit Union,https://www.firstontario.com/,,"fin:ca-cu-on,",
+Fort York Community Credit Union,https://fortyork.com/,,"fin:ca-cu-on,",
+Frontline Credit Union,https://www.frontlinecu.com/Personal/,,"fin:ca-cu-on,",
+Ganaraska Credit Union,https://www.ganaraskacu.com/Personal/,,"fin:ca-cu-on,",
+Golden Horseshoe Credit Union,https://ghcu.ca/,,"fin:ca-cu-on,",
+Healthcare and Municipal Employees Credit Union (HMECU),https://www.hmecu.com/,,"fin:ca-cu-on,",
+IC Savings,https://www.icsavings.ca/,,"fin:ca-cu-on,",
+Kawartha Credit Union,https://www.kawarthacu.com/,,"fin:ca-cu-on,",
+Kindred Credit Union,https://www.kindredcu.com/,,"fin:ca-cu-on,",
+Kingston Community Credit Union,http://www.kccu.ca/,,"fin:ca-cu-on,",
+Korean (Toronto) Credit Union,http://www.koreancu.com/,,"fin:ca-cu-on,",
+Korean Catholic Church Credit Union,http://kcccu.ca/index.php,,"fin:ca-cu-on,",
+L.I.U.N.A. Local 183 Credit Union,https://local183cu.ca/,,"fin:ca-cu-on,",
+Libro Credit Union,https://www.libro.ca/,,"fin:ca-cu-on,",
+Lighthouse Credit Union,https://lighthousecu.ca/,,"fin:ca-cu-on,",
+Luminus Financial Services and Credit Union,https://www.luminusfinancial.com/Personal/,,"fin:ca-cu-on,",
+Mainstreet Credit Union,https://www.mainstreetcu.ca/,,"fin:ca-cu-on,",
+Meridian,https://www.meridiancu.ca/,,"fin:ca-cu-on,",
+Motor City Community Credit Union,https://www.mcccu.com/,,"fin:ca-cu-on,",
+Moya Financial Credit Union Limited,https://www.moyafinancial.ca/,,"fin:ca-cu-on,",
+Northern Credit Union,https://www.northerncu.com/personal/,,"fin:ca-cu-on,",
+Northern Birch Credit Union,https://www.northernbirchcu.com/,,"fin:ca-cu-on,",
+Ontario Educational Credit Union,https://www.oecu.on.ca/,,"fin:ca-cu-on,",
+Ontario Provincial Police Association Credit Union,https://www.oppacu.com/Personal/,,"fin:ca-cu-on,",
+Oshawa Community Credit Union,https://www.oshawacu.com/,,"fin:ca-cu-on,",
+Parama Credit Union,https://parama.ca/,,"fin:ca-cu-on,",
+Pathwise Credit Union,https://www.pathwise.ca/,,"fin:ca-cu-on,",
+PenFinancial Credit Union,https://www.penfinancial.com/Personal/,,"fin:ca-cu-on,",
+"Rapport Credit Union, a Division of WFCU",https://www.rapportcu.ca/Personal/,,"fin:ca-cu-on,",
+Resurrection Credit Union,https://www.rpcul.com/,,"fin:ca-cu-on,",
+Southwest Regional Credit Union,https://www.southwestcu.com/Personal/,,"fin:ca-cu-on,",
+St. Stanislaus-St. Casimir’s Polish Parishes Credit Union,https://www.polcu.com/Personal/,,"fin:ca-cu-on,",
+Sudbury Credit Union,https://www.sudburycu.com/,,"fin:ca-cu-on,",
+Taiwanese-Canadian Toronto Credit Union,http://www.tctcu.com/,,"fin:ca-cu-on,",
+Talka Credit Union Limited,https://talka.ca/,,"fin:ca-cu-on,",
+Tandia Financial Credit Union,https://www.tandia.com/,,"fin:ca-cu-on,",
+The Energy Credit Union,http://www.theenergycu.com/,,"fin:ca-cu-on,",
+The Police Credit Union,https://www.tpcu.on.ca/Personal/,,"fin:ca-cu-on,",
+Thorold Community Credit Union,http://www.thoroldcu.com/,,"fin:ca-cu-on,",
+Ukrainian Credit Union,https://www.ukrainiancu.com/,,"fin:ca-cu-on,",
+WFCU Credit Union,https://mywfcu.ca/,,"fin:ca-cu-on,",
+Your Credit Union,https://www.yourcu.com/,,"fin:ca-cu-on,",
+Your Neighbourhood Credit Union,https://www.yncu.com/,,"fin:ca-cu-on,",
+Athabasca University,https://www.athabascau.ca/,,"edu:ca-universities,"
+Concordia University of Edmonton,https://concordia.ab.ca/,,"edu:ca-universities,"
+King’s University (The),https://www.kingsu.ca/,,"edu:ca-universities,"
+MacEwan University,https://www.macewan.ca/,,"edu:ca-universities,"
+Mount Royal University,https://www.mtroyal.ca/,,"edu:ca-universities,"
+St. Mary’s University,https://www.stmu.ca/,,"edu:ca-universities,"
+University of Alberta,https://www.ualberta.ca/,,"edu:ca-universities,"
+University of Calgary,https://www.ucalgary.ca/,,"edu:ca-universities,"
+University of Lethbridge,https://www.uleth.ca/,,"edu:ca-universities,"
+Capilano University,https://www.capilanou.ca/,,"edu:ca-universities,"
+Emily Carr University of Art + Design,https://www.ecuad.ca/,,"edu:ca-universities,"
+Kwantlen Polytechnic University,https://www.kpu.ca/,,"edu:ca-universities,"
+Royal Roads University,https://www.royalroads.ca/,,"edu:ca-universities,"
+Simon Fraser University,https://www.sfu.ca/,,"edu:ca-universities,"
+Thompson Rivers University,https://www.tru.ca/,,"edu:ca-universities,"
+Trinity Western University,https://www.twu.ca/,,"edu:ca-universities,"
+University of British Columbia (The),https://www.ubc.ca/,,"edu:ca-universities,"
+University of Northern British Columbia,https://www.unbc.ca/,,"edu:ca-universities,"
+University of the Fraser Valley,https://www.ufv.ca/,,"edu:ca-universities,"
+University of Victoria,https://www.uvic.ca/,,"edu:ca-universities,"
+Vancouver Island University,https://www.viu.ca/,,"edu:ca-universities,"
+Brandon University,https://www.brandonu.ca/,,"edu:ca-universities,"
+Canadian Mennonite University,https://www.cmu.ca/,,"edu:ca-universities,"
+St. Paul’s College,https://umanitoba.ca/st-pauls-college/,,"edu:ca-universities,"
+Université de Saint-Boniface,https://ustboniface.ca/,,"edu:ca-universities,"
+University of Manitoba,https://umanitoba.ca/,,"edu:ca-universities,"
+University of Winnipeg (The),https://www.uwinnipeg.ca/,,"edu:ca-universities,"
+Mount Allison University,https://www.mta.ca/,,"edu:ca-universities,"
+St. Thomas University,https://www.stu.ca/,,"edu:ca-universities,"
+Université de Moncton,https://www.umoncton.ca/,,"edu:ca-universities,"
+University of New Brunswick,https://www.unb.ca/,,"edu:ca-universities,"
+Memorial University of Newfoundland and Labrador,https://www.mun.ca/,,"edu:ca-universities,"
+Acadia University,https://www2.acadiau.ca/,,"edu:ca-universities,"
+Cape Breton University,https://www.cbu.ca/,,"edu:ca-universities,"
+Dalhousie University,https://www.dal.ca/,,"edu:ca-universities,"
+Mount Saint Vincent University,https://www.msvu.ca/,,"edu:ca-universities,"
+NSCAD University,https://nscad.ca/,,"edu:ca-universities,"
+Saint Mary’s University,https://www.smu.ca/,,"edu:ca-universities,"
+St. Francis Xavier University,https://www.stfx.ca/,,"edu:ca-universities,"
+Université Sainte-Anne,https://www.usainteanne.ca/,,"edu:ca-universities,"
+University of King’s College,https://ukings.ca/,,"edu:ca-universities,"
+Algoma University,https://algomau.ca/,,"edu:ca-universities,"
+Brock University,https://brocku.ca/,,"edu:ca-universities,"
+Carleton University,https://carleton.ca/,,"edu:ca-universities,"
+Huron University College,https://huronu.ca/,,"edu:ca-universities,"
+King’s University College at Western University,https://www.kings.uwo.ca/,,"edu:ca-universities,"
+Lakehead University,https://www.lakeheadu.ca/,,"edu:ca-universities,"
+Laurentian University,https://laurentian.ca/,,"edu:ca-universities,"
+McMaster University,https://www.mcmaster.ca/,,"edu:ca-universities,"
+Nipissing University,https://www.nipissingu.ca/,,"edu:ca-universities,"
+OCAD University,https://www.ocadu.ca/,,"edu:ca-universities,"
+Ontario Tech University,https://ontariotechu.ca/,,"edu:ca-universities,"
+Queen’s University,https://www.queensu.ca/,,"edu:ca-universities,"
+Redeemer University,https://www.redeemer.ca/,,"edu:ca-universities,"
+Royal Military College of Canada,https://www.rmc-cmr.ca/,,"edu:ca-universities,"
+St. Jerome’s University,https://www.sju.ca/,,"edu:ca-universities,"
+Toronto Metropolitan University,https://www.torontomu.ca/,,"edu:ca-universities,"
+Trent University,https://www.trentu.ca/,,"edu:ca-universities,"
+University of Guelph,https://www.uoguelph.ca/,,"edu:ca-universities,"
+University of Ottawa,https://www.uottawa.ca/,,"edu:ca-universities,"
+University of St. Michael’s College,https://stmikes.utoronto.ca/,,"edu:ca-universities,"
+University of Sudbury,https://www.usudbury.ca/,,"edu:ca-universities,"
+University of Toronto,https://www.utoronto.ca/,,"edu:ca-universities,"
+University of Trinity College,https://www.trinity.utoronto.ca/,,"edu:ca-universities,"
+University of Waterloo,https://uwaterloo.ca/,,"edu:ca-universities,"
+University of Windsor,https://www.uwindsor.ca/,,"edu:ca-universities,"
+Victoria University,https://www.vicu.utoronto.ca/,,"edu:ca-universities,"
+Western University,https://www.uwo.ca/,,"edu:ca-universities,"
+Wilfrid Laurier University,https://www.wlu.ca/,,"edu:ca-universities,"
+York University,https://www.yorku.ca/,,"edu:ca-universities,"
+University of Prince Edward Island,https://www.upei.ca/,,"edu:ca-universities,"
+Bishop’s University,https://www.ubishops.ca/,,"edu:ca-universities,"
+Concordia University,https://www.concordia.ca/,,"edu:ca-universities,"
+École de technologie supérieure,https://www.etsmtl.ca/,,"edu:ca-universities,"
+École nationale d’administration publique,https://www.enap.ca/,,"edu:ca-universities,"
+HEC Montréal,https://www.hec.ca/,,"edu:ca-universities,"
+Institut national de la recherche scientifique,https://www.inrs.ca/,,"edu:ca-universities,"
+McGill University,https://www.mcgill.ca/,,"edu:ca-universities,"
+Polytechnique Montréal,https://www.polymtl.ca/,,"edu:ca-universities,"
+Université de Montréal,https://www.umontreal.ca/,,"edu:ca-universities,"
+Université de Sherbrooke,https://www.usherbrooke.ca/,,"edu:ca-universities,"
+Université du Québec,https://www.uquebec.ca/,,"edu:ca-universities,"
+Université du Québec à Chicoutimi (UQAC),https://www.uqac.ca/,,"edu:ca-universities,"
+Université du Québec à Montréal (UQAM),https://www.uqam.ca/,,"edu:ca-universities,"
+Université du Québec à Rimouski (UQAR),https://www.uqar.ca/,,"edu:ca-universities,"
+Université du Québec à Trois-Rivières (UQTR),https://www.uqtr.ca/,,"edu:ca-universities,"
+Université du Québec en Abitibi-Témiscamingue (UQAT),https://www.uqat.ca/,,"edu:ca-universities,"
+Université du Québec en Outaouais,https://www.uqo.ca/,,"edu:ca-universities,"
+Université Laval,https://www.ulaval.ca/,,"edu:ca-universities,"
+Université TÉLUQ,https://www.teluq.ca/,,"edu:ca-universities,"
+Campion College,https://campioncollege.ca/,,"edu:ca-universities,"
+First Nations University of Canada,https://www.fnuniv.ca/,,"edu:ca-universities,"
+Luther College,https://www.luthercollege.edu/,,"edu:ca-universities,"
+St. Thomas More College,https://stmcollege.ca/,,"edu:ca-universities,"
+University of Regina,https://www.uregina.ca/,,"edu:ca-universities,"
+University of Saskatchewan,https://www.usask.ca/,,"edu:ca-universities,"
+Yukon University,https://www.yukonu.ca/,,"edu:ca-universities,"

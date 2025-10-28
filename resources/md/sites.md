@@ -1,6 +1,8 @@
 
 # Canadian Authorities
 
+> **NOTE**: The below authoritative sources work out to around ~615 sites (before deduplication and following 3xx codes). This ~615 includes healthcare authorities (e.g. Interior Health), which could potentially be extracted into another dedicated sector (similar to finance and education). After deduplication and removal of health authorities I would estimate there is around 400-450 unique canadian authority sites here (not including the other sections). One idea which could be great but I haven't done (just tedious and laborious) is grabbing the top N (100?) populated candadian city's municipality websites—could help tell a story.
+
 ## Departments
 
 * List of canadian dept [here](https://www.canada.ca/en/government/dept.html)
@@ -57,15 +59,18 @@
 * List found [here](https://www.canada.ca/en/services/policing/emergencies/preparedness/get-prepared/emergency-planning-resources/emergency-management-organizations.html)
 
 
-> **NOTE**: The above sources work out to around ~615 sites (before deduplication).
-
 # Financial Institutions
+
+> **NOTE**: I have ~160 financial institutions for canada (most are unique).
 
 ## Banks
 
 * Canadian Banks Association (CBA) list found [here](https://cba.ca/article/member-banks)
-  * Schedule I is domestic.
-  * Schedule II is foreign domestic hosts.
+  * Schedule I is domestic (parsed).
+  * Schedule II is foreign domestic hosts (parsed).
+  * Schedule III contains international banks, many of whom are not in north america (did not parse).
+
+* ~43 here, great authoritative list.
 
 ## Credit Unions
 
@@ -76,7 +81,34 @@
 * Saskatchewan [here](https://saskcentral.com/listing_credit_unions.html)
 
 * Ontario [here](https://www.central1.com/list-on/)
-    * Can crossreference [here](https://www.fsrao.ca/consumers/credit-unions-and-deposit-insurance/find-credit-union-or-caisses-populaires-ontario) if needed (More official source).
+    * Can cross-reference [here](https://www.fsrao.ca/consumers/credit-unions-and-deposit-insurance/find-credit-union-or-caisses-populaires-ontario) if needed (more official source).
+
+The 4 above cover ~115 credit unions.
 
 # Education Institutions
 
+I have 97 canadian university websites from Universities Canada.
+
+* Found [here](https://univcan.ca/about-universities-canada/our-members/)
+
+# Critical Infrastructure (Energy)
+
+## Electricity
+
+* Electricity Canada maintains a list per province.
+  * Found [here](https://www.electricity.ca/membership/list-of-members/).
+
+## Natural Gas
+
+* Canadian Gas Association maintains a list.
+  * Found [here](https://www.cga.ca/resources/industry-links/)
+  
+## Pipelines
+
+* The Canadian Energy regulator maintains a list of pipelines whom they regulate.
+  * Found [here](https://www.cer-rec.gc.ca/en/about/who-we-are-what-we-do/pipeline-companies-regulated-cer.html)
+
+## Nuclear Powerplants
+
+* The Canadian Nuclear Infrastructure maintains a list as well.
+  * Found [here](https://www.cnsc-ccsn.gc.ca/eng/resources/nuclear-facilities/)
