@@ -57,3 +57,6 @@ curl -sG 'https://api.data.gov/ed/collegescorecard/v1/schools' \
 * I took the top 10 states by population and grabbed the top 5 schools by population.
 
 # US Critical Infrastructure
+
+* The Edison Institute does have a list, not sure who they are though.
+  * found [here](https://www.eei.org/-/media/Project/EEI/Documents/About/member-company-web-sites.pdf)
