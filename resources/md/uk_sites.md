@@ -23,4 +23,14 @@
 * The Financial Conduct Authority (FCA) (UK Gov) has a publicly available API [here](https://register.fca.org.uk/Developer/s/).
 * I signed up, pulled the list of banks FRN's(linked above), then cross referenced these with the FCA API to obtain the websites. 
 
-* I did not do this for the credit unions (although I could same process), but since this yielded ~150 sites, leading to ~850 UK sites, and ~2800 total, I figured this was enough. I also didnt do credit unions for the US either (only did it for Canada), so I figure this also keeps things consistent.
+* I did not do this for the credit unions (although I could—same process), but since this yielded ~150 sites, leading to ~850 UK sites, and ~2800 total, I figured this was enough. Note that I didnt do credit unions for the US either (only did it for Canada), meaning _"only banks"_ is consistent.
+
+
+# UK Electricity
+
+> **NOTE**: None of the sources I found for UK energy included links. And those that did were not as official as the sources I used previously. Meaning there are no energy companies for the UK.
+
+* Link to Company House API [here](https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference)
+  * Getting started [docs](https://developer.company-information.service.gov.uk/get-started)
+* [Bad source](https://www.businessenergyuk.com/electricity-companies/)
+* [Good source](https://www.ofgem.gov.uk/sites/default/files/2024-06/electricity_licencees.pdf) no links  :(
