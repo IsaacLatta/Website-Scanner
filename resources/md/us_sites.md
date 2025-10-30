@@ -58,5 +58,5 @@ curl -sG 'https://api.data.gov/ed/collegescorecard/v1/schools' \
 
 # US Critical Infrastructure
 
-* The Edison Institute does have a list, not sure who they are though.
+* The Edison Institute does have a list.
   * found [here](https://www.eei.org/-/media/Project/EEI/Documents/About/member-company-web-sites.pdf)
