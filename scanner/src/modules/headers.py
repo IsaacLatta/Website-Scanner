@@ -2,7 +2,7 @@
 import re
 from typing import Dict, List, Callable, Optional, Any
 from dataclasses import dataclass
-from config import Config
+from scanner.config import Config
 
 @dataclass
 class HeaderRule:

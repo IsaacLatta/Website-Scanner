@@ -2,12 +2,14 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, List, Optional
+import csv
 
 class PlotGenerator:
-    def __init__(self, output_dir: Path):
+    def __init__(self, output_dir: Path, output_filename: str):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+        self.output_filename = output_filename
+
         plt.style.use('default')
         self.colors = {
             'good': 'green',
@@ -16,7 +18,68 @@ class PlotGenerator:
             'info': 'lightblue',
             'neutral': 'gray'
         }
+
+    def generate_reports(self, results: Dict, total_domains: int):
+        self._write_csv(results)
+        
+        print("\nGenerating visualizations...")
+        
+        if 'https_results' in results:
+            https_capable = len(results.get('https_capable', []))
+            https_failed = total_domains - https_capable
+            self.plot_https_connectivity(https_capable, https_failed, total_domains)
+        
+        if 'headers' in results.get('aggregated', {}):
+            header_stats = results['aggregated']['headers']
+            self.plot_header_implementation(header_stats)
+        
+        if 'tls' in results.get('aggregated', {}):
+            tls_stats = results['aggregated']['tls']
+            self.plot_tls_support(tls_stats)
+        
+        if 'cipher' in results.get('aggregated', {}):
+            cipher_stats = results['aggregated']['cipher']
+            self.plot_cipher_security(cipher_stats)
+        
+        if 'securitytxt' in results.get('aggregated', {}):
+            sectxt_stats = results['aggregated']['securitytxt']
+            self.plot_securitytxt(sectxt_stats)
+        
+        if 'redirection' in results.get('aggregated', {}):
+            redir_stats = results['aggregated']['redirection']
+            self.plot_redirection(redir_stats)
     
+    def _write_csv(self, results: Dict):
+        csv_path = self.output_dir / self.csv_filename
+        
+        if not results.get('per_site'):
+            print("No results to write to CSV")
+            return
+        
+        all_keys = set()
+        for site in results['per_site']:
+            all_keys.update(site.keys())
+        
+        all_keys.discard('response_data')
+        
+        fieldnames = ['host', 'https_ok'] + sorted([k for k in all_keys if k not in ['host', 'https_ok']])
+        
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for site in results['per_site']:
+                row = {}
+                for key in fieldnames:
+                    value = site.get(key, '')
+                    if isinstance(value, bool):
+                        row[key] = str(value)
+                    elif value is None:
+                        row[key] = ''
+                    else:
+                        row[key] = value
+                writer.writerow(row)
+
     def _save_plot(self, filename: str):
         filepath = self.output_dir / filename
         plt.tight_layout()
@@ -104,7 +167,6 @@ class PlotGenerator:
 
         if stats.get('custom_missing') or stats.get('custom_regex'):
             self._plot_custom_headers(stats)
-
 
     def _plot_header_correctness(self, stats: Dict):
         """Plot correctness of implemented headers (values under stats['headers'])."""

@@ -2,7 +2,7 @@
 import socket
 from OpenSSL import SSL
 from typing import Dict, Optional
-from config import Config
+from scanner.config import Config
 
 def test_normal_handshake(domain: str) -> str:
     security = "error"

@@ -2,7 +2,7 @@
 import aiohttp
 import asyncio
 from typing import Dict, List, Optional
-from config import Config
+from scanner.config import Config
 
 async def test_https_batch(domains: List[str], timeout: int = None) -> Dict:
     if timeout is None:

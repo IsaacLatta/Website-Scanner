@@ -9,3 +9,5 @@ colorama>=0.4.4
 pypdf 
 pdfplumber
 bs4
+pytest
+pytest-asyncio

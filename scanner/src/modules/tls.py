@@ -3,7 +3,7 @@ import ssl
 import socket
 from OpenSSL import SSL
 from typing import Dict
-from config import Config
+from scanner.config import Config
 
 def test_tls1_3(domain: str) -> bool:
     try:
