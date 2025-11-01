@@ -13,10 +13,6 @@ class ModuleExport(ABC):
         ...
 
     @abstractmethod
-    def csv_columns(self) -> list[str]:
-        ...
-
-    @abstractmethod
     def scope(self) -> Scope:
         ...
 
