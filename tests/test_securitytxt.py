@@ -1,4 +1,3 @@
-# tests/test_securitytxt_presence.py
 import ssl, aiohttp, pytest, pytest_asyncio
 from aiohttp import web
 from datetime import datetime, timedelta, timezone
@@ -7,7 +6,7 @@ from scanner.modules.securitytxt import SecurityTxtExport
 pytestmark = pytest.mark.asyncio
 
 SEC_TXT_WK = b"Contact: mailto:sec@example.test\nExpires: 2099-12-31T23:59:59Z\n"
-SEC_TXT_CONTACT_ONLY = b"Contact: mailto:soc@example.test\n"  # fallback path case
+SEC_TXT_CONTACT_ONLY = b"Contact: mailto:soc@example.test\n" 
 
 def _future_iso(days=365):
     return (datetime.now(timezone.utc) + timedelta(days=days)).isoformat().replace("+00:00", "Z")

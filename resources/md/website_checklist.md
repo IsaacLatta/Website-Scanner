@@ -35,10 +35,10 @@
 
 * US HTTPS-Only & HSTS guidance (US CIO) — examples and preload policy
 
-  * Found [here](https://https.cio.gov/hsts/) and compliance guide [here](https://https.cio.gov/guide/). ([https.cio.gov][6])
+  * Found [here](https://https.cio.gov/hsts/) and compliance guide [here](https://https.cio.gov/guide/). 
 * US OMB M-15-13 HTTPS-Only Standard
 
-  * Found [here](https://obamawhitehouse.archives.gov/sites/default/files/omb/memoranda/2015/m-15-13.pdf). ([whitehouse.gov][7])
+  * Found [here](https://obamawhitehouse.archives.gov/sites/default/files/omb/memoranda/2015/m-15-13.pdf).
 * DHS/CISA BOD 18-01 (HTTPS-only with HSTS)
 
   * Found [here](https://cyber.dhs.gov/assets/report/bod-18-01.pdf). 
