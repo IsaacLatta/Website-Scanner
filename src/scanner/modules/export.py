@@ -9,10 +9,6 @@ class ModuleExport(ABC):
         ...
 
     @abstractmethod
-    def plot(self, results: dict):
-        ...
-
-    @abstractmethod
     def results(self) -> dict:
         ...
 

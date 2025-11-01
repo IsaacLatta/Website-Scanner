@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scanner"
+version = "0.1.0"
+description = "Website security scanner"
+requires-python = ">=3.10"
+
+dependencies = [
+  "aiohttp>=3.8.0",
+  "requests>=2.31.0",
+  "websocket-client>=1.2.3",
+  "pyOpenSSL>=23.3.0",
+  "tqdm>=4.64.0",
+  "colorama>=0.4.4",
+  "pypdf",
+  "pdfplumber",
+  "beautifulsoup4",
+  "matplotlib>=3.8.2",
+  "pytest",
+  "pytest-asyncio"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-q"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

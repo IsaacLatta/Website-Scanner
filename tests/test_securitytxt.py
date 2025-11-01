@@ -1,7 +1,7 @@
 # tests/test_securitytxt.py
-import ssl, asyncio, aiohttp, pytest
+import ssl, asyncio, aiohttp, pytest, pytest_asyncio
 from aiohttp import web
-# from scanner.srcc.modules.security.txt import SecurityTxtExport
+from scanner.modules.securitytxt import SecurityTxtExport
 
 pytestmark = pytest.mark.asyncio
 
@@ -21,17 +21,20 @@ async def start_site(app, port, ssl_ctx):
     site = web.TCPSite(runner, "127.0.0.1", port, ssl_context=ssl_ctx); await site.start()
     return runner
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def ssl_ctx():
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    ctx.load_cert_chain(certfile="dev-cert.pem", keyfile="dev-key.pem")
+    ctx.load_cert_chain(certfile="tests/res/dev-cert.pem", keyfile="tests/res/dev-key.pem")
     return ctx
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def session():
-    connector = aiohttp.TCPConnector(limit=20, limit_per_host=5, ssl=False)
+    client_ctx = ssl.create_default_context()
+    client_ctx.check_hostname = False
+    client_ctx.verify_mode = ssl.CERT_NONE
+    connector = aiohttp.TCPConnector(limit=20, limit_per_host=5, ssl=client_ctx)
     s = aiohttp.ClientSession(connector=connector, timeout=aiohttp.ClientTimeout(total=5))
     yield s
     await s.close()
@@ -43,9 +46,7 @@ async def test_securitytxt_variants(ssl_ctx, session):
     rb = await start_site(b, 9443, ssl_ctx)
 
     try:
-        mod = SecurityTxtExport(
-            verify_certificate=False, timeout_s=5, session=session
-        )
+        mod = SecurityTxtExport(verify_certificate=False, timeout_s=5, session=session)
         domains = ["127.0.0.1:8443", "127.0.0.1:9443", "127.0.0.1:10443"]
         await mod.run(domains)
         res = mod.results()
@@ -59,7 +60,6 @@ async def test_securitytxt_variants(ssl_ctx, session):
         assert res["127.0.0.1:9443"]["security.txt_location"] == "/security.txt"
 
         assert res["127.0.0.1:10443"]["security.txt_present"] is False
-
     finally:
         await ra.cleanup()
         await rb.cleanup()
