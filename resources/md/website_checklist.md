@@ -43,13 +43,12 @@
 
   * Found [here](https://cyber.dhs.gov/assets/report/bod-18-01.pdf). 
 * CCCS ITSP.40.062 (recommends modern TLS and secure configuration; references HSTS)
-
   * Found [here](https://www.cyber.gc.ca/en/guidance/guidance-securely-configuring-network-protocols-itsp40062).
+
 * OWASP HSTS Cheat Sheet
-
   * Found [here](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html).
-* MDN reference for header semantics
 
+* MDN reference for header semantics
   * Found [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security). 
 
 ### Why?
