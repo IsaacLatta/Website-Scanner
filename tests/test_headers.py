@@ -267,7 +267,7 @@ async def test_xfo_allow_from_obsolete(session, header_server, analyzer):
 
 async def test_xfo_missing_header(session, header_server, analyzer):
     base_url, scenarios = header_server
-    scenarios["xfo_missing"] = {}  # no XFO
+    scenarios["xfo_missing"] = {} 
 
     resp = await session.get(f"{base_url}/xfo_missing")
     results = analyzer.run(resp.headers)
@@ -276,3 +276,56 @@ async def test_xfo_missing_header(session, header_server, analyzer):
     assert xfo.present is False
     assert xfo.rating == "unknown"
     assert xfo.raw == ""
+
+
+async def test_x_content_type_nosniff_recommended(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["xcto_nosniff"] = {
+        "X-Content-Type-Options": "nosniff",
+    }
+
+    resp = await session.get(f"{base_url}/xcto_nosniff")
+    results = analyzer.run(resp.headers)
+
+    xcto = _get_result(results, "x_content_type_options")
+    assert xcto.present is True
+    assert xcto.raw.lower() == "nosniff"
+    assert xcto.rating == "recommended"
+
+
+async def test_x_content_type_nonsense_insecure(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["xcto_nonsense"] = {
+        "X-Content-Type-Options": "foobar",
+    }
+
+    resp = await session.get(f"{base_url}/xcto_nonsense")
+    results = analyzer.run(resp.headers)
+
+    xcto = _get_result(results, "x_content_type_options")
+    assert xcto.present is True
+    assert xcto.raw == "foobar"
+    assert xcto.rating == "insecure"
+
+
+async def test_x_content_type_empty_and_missing_insecure(session, header_server, analyzer):
+    base_url, scenarios = header_server
+
+    scenarios["xcto_empty"] = {
+        "X-Content-Type-Options": "",
+    }
+    resp1 = await session.get(f"{base_url}/xcto_empty")
+    results1 = analyzer.run(resp1.headers)
+    xcto1 = _get_result(results1, "x_content_type_options")
+    assert xcto1.present is True
+    assert xcto1.raw == ""
+    assert xcto1.rating == "insecure"
+
+    scenarios["xcto_missing"] = {}
+    resp2 = await session.get(f"{base_url}/xcto_missing")
+    results2 = analyzer.run(resp2.headers)
+    xcto2 = _get_result(results2, "x_content_type_options")
+    assert xcto2.present is False
+    assert xcto2.raw == ""
+    assert xcto2.rating == "insecure"
+

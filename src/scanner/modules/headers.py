@@ -120,6 +120,20 @@ def classify_csp(value: str) -> HeaderClass:
 
     return "unknown"
 
+def classify_x_content_type_options(value: str) -> HeaderClass:
+    """
+    X-Content-Type-Options:
+      - 'nosniff' -> recommended
+      - anything else (including empty) -> insecure
+    """
+    if not value:
+        return "insecure"
+
+    v = value.strip().lower()
+    if v == "nosniff":
+        return "recommended"
+    return "insecure"
+
 def classify_x_frame_options(value: str) -> HeaderClass:
     """
     X-Frame-Options is obsolete but still a useful legacy fallback.
@@ -159,6 +173,12 @@ def default_header_rules() -> List[HeaderRule]:
             display_name="x_frame_options",
             classifier=classify_x_frame_options,
             on_missing_class="unknown",
+        ),
+        HeaderRule(
+            name="x-content-type-options",
+            display_name="x_content_type_options",
+            classifier=classify_x_content_type_options,
+            on_missing_class="insecure",
         ),
     ]
 
