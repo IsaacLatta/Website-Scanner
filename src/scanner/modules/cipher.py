@@ -1,108 +1,337 @@
-#!/usr/bin/env python3
+# scanner/modules/cipher.py
+from __future__ import annotations
+
+import asyncio
+import functools
 import socket
-from OpenSSL import SSL
-from typing import Dict, Optional
-from scanner.config import Config
+import ssl
+from dataclasses import dataclass, asdict
+from typing import Dict, List, Optional, Tuple
+from concurrent.futures import ThreadPoolExecutor
+from OpenSSL import SSL  # pyOpenSSL
 
-def test_normal_handshake(domain: str) -> str:
-    security = "error"
+from scanner.modules.export import ModuleExport
+
+
+# From CCSA
+TLS13_RECOMMENDED = [
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_AES_128_GCM_SHA256",
+    "TLS_AES_128_CCM_SHA256",
+]
+TLS13_SUFFICIENT = [
+    "TLS_AES_128_CCM_8_SHA256",
+]
+
+# From CCSA
+TLS12_RECOMMENDED = [
+    "ECDHE-ECDSA-AES256-GCM-SHA384",
+    "ECDHE-ECDSA-AES256-CCM",
+    "ECDHE-ECDSA-AES128-GCM-SHA256",
+    "ECDHE-ECDSA-AES128-CCM",
+    "ECDHE-RSA-AES256-GCM-SHA384",
+    "ECDHE-RSA-AES128-GCM-SHA256",
+]
+TLS12_SUFFICIENT = [
+    "ECDHE-ECDSA-AES256-CCM8",
+    "ECDHE-ECDSA-AES128-CCM8",
+    "ECDHE-ECDSA-AES256-SHA384",
+    "ECDHE-ECDSA-AES128-SHA256",
+    "ECDHE-RSA-AES256-SHA384",
+    "ECDHE-RSA-AES128-SHA256",
+]
+
+# NSA "never use" families consolidated as one OpenSSL cipher string for TLS<=1.2
+INSECURE_CIPHER_STRING_TLS12 = "eNULL:aNULL:NULL:EXPORT:LOW:RC4:DES:IDEA:MD5:3DES:SHA1"
+
+def _join(names: List[str]) -> str:
+    return ":".join(names)
+
+@dataclass
+class CipherRow:
+    origin: str
+    port: int
+
+    negotiated_version: str
+    negotiated_cipher: str
+    negotiated_security: Optional[str]
+
+    # Category is in ["recommended", "sufficient", "unknown", None]
+
+    tls13_forced_cipher: Optional[str]
+    tls13_forced_category: Optional[str]  
+
+    tls12_forced_cipher: Optional[str]
+    tls12_forced_category: Optional[str]
+
+    accepts_recommended_tls12: Optional[bool]
+    accepts_sufficient_tls12: Optional[bool]
+    accepts_insecure_tls12: Optional[bool]
+
+    allows_sha1_tls12: Optional[bool]
+    allows_cbc_tls12: Optional[bool]
+
+    error: str = ""
+
+# “catalog” is the ciphersuite.info JSON, injected so tests can mock easily
+CipherCatalog = List[Dict[str, Dict[str, object]]]
+
+def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
+    if ":" in origin and not origin.endswith("]"):
+        host, maybe = origin.rsplit(":", 1)
+        try:
+            return host, int(maybe)
+        except ValueError:
+            return origin, default_port
+    return origin, default_port
+
+def _pyopenssl_handshake(
+    host: str,
+    port: int,
+    *,
+    min_ver: Optional[int] = None,
+    max_ver: Optional[int] = None,
+    tls13_ciphers: Optional[str] = None,
+    tls12_ciphers: Optional[str] = None,
+    timeout: float = 5.0,
+) -> Tuple[bool, str, str]:
+    sock = None
     try:
         ctx = SSL.Context(SSL.TLS_METHOD)
-        conn = SSL.Connection(ctx, socket.create_connection((domain, 443)))
+        if min_ver is not None:
+            ctx.set_min_proto_version(min_ver)
+        if max_ver is not None:
+            ctx.set_max_proto_version(max_ver)
+
+        if tls12_ciphers:
+            ctx.set_cipher_list(tls12_ciphers.encode("ascii"))
+
+        # Some machine's have older ssl builds installed, even if a 
+        # a modern PyOpenSSL (>= 3.1.1) package is present, seems 
+        # like the system install can override. Thus, preventing
+        # this scanner from forcing certain cipher suites at tls 1.3.
+        if tls13_ciphers and hasattr(ctx, "set_ciphersuites"):
+            try:
+                ctx.set_ciphersuites(tls13_ciphers.encode("ascii"))
+            except Exception:
+                pass
+
+        sock = socket.create_connection((host, port), timeout=timeout)
+        sock.settimeout(timeout)
+
+        conn = SSL.Connection(ctx, sock)
         conn.set_connect_state()
-        conn.set_tlsext_host_name(domain.encode('utf-8'))
+        try:
+            conn.set_tlsext_host_name(host.encode("utf-8"))
+        except Exception:
+            pass
+
+        conn.setblocking(True)
         conn.do_handshake()
-        
-        cipher_name = conn.get_cipher_name()
-        
-        if Config.CIPHERSUITES:
-            for suite_data in Config.CIPHERSUITES:
-                for key, value in suite_data.items():
-                    if value.get("openssl_name") == cipher_name or key == cipher_name:
-                        security = value.get('security', 'unknown')
-                        break
-        
-        conn.close()
-    except Exception as e:
-        print(f"  Error in normal handshake for {domain}: {e}")
-    
-    return security
 
-def test_sha1_support(domain: str) -> bool:
-    try:
-        ctx = SSL.Context(SSL.TLS_METHOD)
-        ctx.set_min_proto_version(SSL.TLS1_2_VERSION)
-        ctx.set_max_proto_version(SSL.TLS1_2_VERSION)
-        ctx.set_cipher_list(b"SHA1")
-        conn = SSL.Connection(ctx, socket.create_connection((domain, 443)))
-        conn.set_connect_state()
-        conn.set_tlsext_host_name(domain.encode('utf-8'))
-        
+        cipher = conn.get_cipher_name() or ""
         try:
-            conn.do_handshake()
-            conn.close()
-            return True
-        except:
-            conn.close()
-            return False
-    except:
-        return False
+            proto = conn.get_protocol_version_name() or ""
+        except Exception:
+            proto = ""
 
-def test_cbc_support(domain: str) -> bool:
-    try:
-        ctx = SSL.Context(SSL.TLS_METHOD)
-        ctx.set_min_proto_version(SSL.TLS1_2_VERSION)
-        ctx.set_max_proto_version(SSL.TLS1_2_VERSION)
-        ctx.set_cipher_list(b"CBC")
-        conn = SSL.Connection(ctx, socket.create_connection((domain, 443)))
-        conn.set_connect_state()
-        conn.set_tlsext_host_name(domain.encode('utf-8'))
-        
         try:
-            conn.do_handshake()
-            conn.close()
-            return True
-        except:
-            conn.close()
-            return False
-    except:
-        return False
+            conn.shutdown()
+        except Exception:
+            pass
+        return True, cipher, proto
+    except Exception:
+        return False, "", ""
+    finally:
+        try:
+            sock.close()
+        except Exception:
+            pass
 
-def aggregate_cipher_stats(results: Dict) -> Dict:
-    stats = {
-        'cipher_security': {
-            'recommended': 0,
-            'secure': 0,
-            'weak': 0,
-            'insecure': 0,
-            'error': 0
-        },
-        'sha1_support': {'yes': 0, 'no': 0},
-        'cbc_support': {'yes': 0, 'no': 0},
-        'total': len(results)
-    }
-    
-    for domain, data in results.items():
-        security = data.get('normal_handshake', 'error')
-        if security == 'recommended':
-            stats['cipher_security']['recommended'] += 1
-        elif security == 'secure':
-            stats['cipher_security']['secure'] += 1
-        elif security == 'weak':
-            stats['cipher_security']['weak'] += 1
-        elif security == 'insecure':
-            stats['cipher_security']['insecure'] += 1
-        else:
-            stats['cipher_security']['error'] += 1
-        
-        if data.get('sha1_support'):
-            stats['sha1_support']['yes'] += 1
-        else:
-            stats['sha1_support']['no'] += 1
-        
-        if data.get('cbc_support'):
-            stats['cbc_support']['yes'] += 1
-        else:
-            stats['cbc_support']['no'] += 1
-    
-    return stats
+def _make_catalog_lookup(catalog: Optional[CipherCatalog]) -> Dict[str, str]:
+    if not catalog:
+        return {}
+    out: Dict[str, str] = {}
+    for entry in catalog:
+        for iana, meta in entry.items():
+            sec = str(meta.get("security", "") or "")
+            ossl = str(meta.get("openssl_name", "") or "")
+            if iana:
+                out[iana] = sec
+            if ossl:
+                out[ossl] = sec
+    return out
+
+def _classify_tls13(cipher: str) -> str:
+    if cipher in TLS13_RECOMMENDED:
+        return "recommended"
+    if cipher in TLS13_SUFFICIENT:
+        return "sufficient"
+    return "unknown"
+
+def _classify_tls12(cipher: str) -> str:
+    if cipher in TLS12_RECOMMENDED:
+        return "recommended"
+    if cipher in TLS12_SUFFICIENT:
+        return "sufficient"
+    lower = cipher.lower()
+    if any(tok in lower for tok in ("rc4", "3des", "des", "md5")):
+        return "insecure"
+    if "sha1" in lower:
+        return "insecure"
+    if lower.endswith("-sha") or lower.endswith("_sha"):
+        return "insecure"
+    return "unknown"
+
+class CipherSuitesModule(ModuleExport):
+    def __init__(
+        self,
+        *,
+        executor: ThreadPoolExecutor,
+        timeout_s: float = 6.0,
+        concurrency: int = 200,
+        catalog: Optional[CipherCatalog] = None,
+    ):
+        self._exec = executor
+        self._timeout = float(timeout_s)
+        self._sem = asyncio.Semaphore(concurrency)
+        self._rows: Dict[str, CipherRow] = {}
+        self._catalog_lookup = _make_catalog_lookup(catalog or [])
+
+        self._can_tls13 = hasattr(ssl, "TLSVersion") and hasattr(ssl.TLSVersion, "TLSv1_3")
+        if not self._can_tls13:
+            print("[WARN] ssl missing TLSv1_3, omitting TLSv1_3 scans!")
+
+        self._can_tls12 = True
+
+    def name(self) -> str: return "ciphers"
+    def scope(self) -> str: return "origin"
+    def results(self) -> Dict[str, Dict]: return {k: asdict(v) for k, v in self._rows.items()}
+
+    async def run(self, origins: List[str]) -> None:
+        await asyncio.gather(*(self._scan_one(o) for o in origins))
+
+    async def _in_executor(self, func, *args, **kwargs):
+        loop = asyncio.get_running_loop()
+        bound = functools.partial(func, *args, **kwargs)
+        async with self._sem:
+            return await loop.run_in_executor(self._exec, bound)
+
+    async def _natural(self, host: str, port: int) -> Tuple[bool, str, str]:
+        return await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=None, max_ver=None, tls13_ciphers=None, tls12_ciphers=None,
+            timeout=self._timeout,
+        )
+
+    async def _force_tls13_observe(self, host: str, port: int) -> Tuple[Optional[str], Optional[str]]:
+        if not self._can_tls13:
+            return None, None
+        ok, cipher, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_3_VERSION, max_ver=SSL.TLS1_3_VERSION,
+            tls13_ciphers=None, tls12_ciphers=None,
+            timeout=self._timeout,
+        )
+        if not ok or not proto.startswith("TLSv1.3"):
+            return None, None
+        return cipher, _classify_tls13(cipher)
+
+    async def _force_tls12_observe(self, host: str, port: int) -> Tuple[Optional[str], Optional[str]]:
+        if not self._can_tls12:
+            return None, None
+        ok, cipher, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
+            tls13_ciphers=None, tls12_ciphers=None,
+            timeout=self._timeout,
+        )
+        if not ok or not proto.startswith("TLSv1.2"):
+            return None, None
+        return cipher, _classify_tls12(cipher)
+
+    async def _try_bucket_tls12(self, host: str, port: int, names12: List[str]) -> Optional[bool]:
+        if not self._can_tls12 or not names12:
+            return None
+        ok, cipher, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
+            tls13_ciphers=None, tls12_ciphers=_join(names12),
+            timeout=self._timeout,
+        )
+        return bool(ok and proto.startswith("TLSv1.2") and cipher in names12)
+
+    async def _try_insecure_tls12(self, host: str, port: int) -> Optional[bool]:
+        if not self._can_tls12:
+            return None
+        ok, _, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
+            tls13_ciphers=None, tls12_ciphers=INSECURE_CIPHER_STRING_TLS12,
+            timeout=self._timeout,
+        )
+        return bool(ok and proto.startswith("TLSv1.2"))
+
+    async def _probe_sha1_tls12(self, host: str, port: int) -> Optional[bool]:
+        if not self._can_tls12:
+            return None
+        ok, _, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
+            tls13_ciphers=None, tls12_ciphers="SHA1",
+            timeout=self._timeout,
+        )
+        return bool(ok and proto.startswith("TLSv1.2"))
+
+    async def _probe_cbc_tls12(self, host: str, port: int) -> Optional[bool]:
+        if not self._can_tls12:
+            return None
+        ok, _, proto = await self._in_executor(
+            _pyopenssl_handshake, host, port,
+            min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
+            tls13_ciphers=None, tls12_ciphers="CBC",
+            timeout=self._timeout,
+        )
+        return bool(ok and proto.startswith("TLSv1.2"))
+
+    async def _scan_one(self, origin: str) -> None:
+        host, port = _split_host_port(origin, 443)
+        row = CipherRow(
+            origin=origin, port=port,
+            negotiated_version="", negotiated_cipher="", negotiated_security=None,
+            tls13_forced_cipher=None, tls13_forced_category=None,
+            tls12_forced_cipher=None, tls12_forced_category=None,
+            accepts_recommended_tls12=None, accepts_sufficient_tls12=None, accepts_insecure_tls12=None,
+            allows_sha1_tls12=None, allows_cbc_tls12=None, error="",
+        )
+
+        ok, cipher, proto = await self._natural(host, port)
+        row.negotiated_cipher = cipher
+        row.negotiated_version = proto
+        if cipher and self._catalog_lookup:
+            row.negotiated_security = self._catalog_lookup.get(cipher) or \
+                                      self._catalog_lookup.get(cipher.replace("_", "-"))
+        if not ok and not cipher:
+            row.error = "natural_handshake_failed"
+
+        try:
+            c13, cat13 = await self._force_tls13_observe(host, port)
+            row.tls13_forced_cipher = c13
+            row.tls13_forced_category = cat13
+        except Exception as e:
+            row.error += f" | tls13_obs:{e}"
+
+        try:
+            c12, cat12 = await self._force_tls12_observe(host, port)
+            row.tls12_forced_cipher = c12
+            row.tls12_forced_category = cat12
+
+            row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
+            row.accepts_sufficient_tls12  = await self._try_bucket_tls12(host, port, TLS12_SUFFICIENT)
+            row.accepts_insecure_tls12    = await self._try_insecure_tls12(host, port)
+            row.allows_sha1_tls12         = await self._probe_sha1_tls12(host, port)
+            row.allows_cbc_tls12          = await self._probe_cbc_tls12(host, port)
+        except Exception as e:
+            row.error += f" | tls12:{e}"
+
+        self._rows[origin] = row
