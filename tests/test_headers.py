@@ -16,7 +16,6 @@ async def session():
     async with aiohttp.ClientSession() as s:
         yield s
 
-
 @pytest_asyncio.fixture
 async def header_server():
     """
@@ -51,11 +50,9 @@ async def header_server():
     finally:
         await runner.cleanup()
 
-
 @pytest.fixture
 def analyzer():
     return HeaderAnalyzer(default_header_rules())
-
 
 def _get_result(results, display_name: str):
     return next(r for r in results if r.name == display_name)
@@ -74,7 +71,6 @@ async def test_referrer_policy_recommended(session, header_server, analyzer):
     assert rp.raw == "strict-origin-when-cross-origin"
     assert rp.rating == "recommended"
 
-
 async def test_referrer_policy_insecure(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["referrer_insecure"] = {
@@ -88,7 +84,6 @@ async def test_referrer_policy_insecure(session, header_server, analyzer):
     assert rp.present is True
     assert rp.raw == "unsafe-url"
     assert rp.rating == "insecure"
-
 
 async def test_referrer_policy_unknown(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -104,7 +99,6 @@ async def test_referrer_policy_unknown(session, header_server, analyzer):
     assert rp.raw == "weird-new-policy"
     assert rp.rating == "unknown"
 
-
 async def test_referrer_policy_missing(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["referrer_missing"] = {}
@@ -117,7 +111,6 @@ async def test_referrer_policy_missing(session, header_server, analyzer):
     assert rp.raw == ""
     # default_header_rules() sets on_missing_class="recommended"
     assert rp.rating == "recommended"
-
 
 async def test_referrer_policy_header_name_case_insensitive(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -133,7 +126,6 @@ async def test_referrer_policy_header_name_case_insensitive(session, header_serv
     assert rp.rating == "recommended"
     assert rp.raw == "strict-origin-when-cross-origin"
 
-
 async def test_csp_frame_ancestors_recommended(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["csp_recommended"] = {
@@ -148,7 +140,6 @@ async def test_csp_frame_ancestors_recommended(session, header_server, analyzer)
     assert csp.rating == "recommended"
     assert "frame-ancestors 'none'" in csp.raw
 
-
 async def test_csp_frame_ancestors_sufficient_self_only(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["csp_self"] = {
@@ -162,7 +153,6 @@ async def test_csp_frame_ancestors_sufficient_self_only(session, header_server, 
     assert csp.present is True
     assert csp.rating == "sufficient"
     assert "frame-ancestors 'self'" in csp.raw
-
 
 async def test_csp_frame_ancestors_sufficient_self_with_allowlist(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -181,7 +171,6 @@ async def test_csp_frame_ancestors_sufficient_self_with_allowlist(session, heade
     assert csp.present is True
     assert csp.rating == "sufficient"
 
-
 async def test_csp_frame_ancestors_insecure_missing_directive(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["csp_no_frame_ancestors"] = {
@@ -195,7 +184,6 @@ async def test_csp_frame_ancestors_insecure_missing_directive(session, header_se
     assert csp.present is True
     assert csp.rating == "insecure"
 
-
 async def test_csp_frame_ancestors_insecure_star(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["csp_star"] = {
@@ -208,7 +196,6 @@ async def test_csp_frame_ancestors_insecure_star(session, header_server, analyze
     csp = _get_result(results, "csp_frame_ancestors")
     assert csp.present is True
     assert csp.rating == "insecure"
-
 
 async def test_csp_missing_header(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -236,7 +223,6 @@ async def test_xfo_deny_recommended(session, header_server, analyzer):
     assert xfo.rating == "recommended"
     assert xfo.raw.upper().startswith("DENY")
 
-
 async def test_xfo_sameorigin_sufficient(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["xfo_sameorigin"] = {
@@ -249,7 +235,6 @@ async def test_xfo_sameorigin_sufficient(session, header_server, analyzer):
     xfo = _get_result(results, "x_frame_options")
     assert xfo.present is True
     assert xfo.rating == "sufficient"
-
 
 async def test_xfo_allow_from_obsolete(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -264,7 +249,6 @@ async def test_xfo_allow_from_obsolete(session, header_server, analyzer):
     assert xfo.present is True
     assert xfo.rating == "obsolete"
 
-
 async def test_xfo_missing_header(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["xfo_missing"] = {} 
@@ -276,7 +260,6 @@ async def test_xfo_missing_header(session, header_server, analyzer):
     assert xfo.present is False
     assert xfo.rating == "unknown"
     assert xfo.raw == ""
-
 
 async def test_x_content_type_nosniff_recommended(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -292,7 +275,6 @@ async def test_x_content_type_nosniff_recommended(session, header_server, analyz
     assert xcto.raw.lower() == "nosniff"
     assert xcto.rating == "recommended"
 
-
 async def test_x_content_type_nonsense_insecure(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["xcto_nonsense"] = {
@@ -306,7 +288,6 @@ async def test_x_content_type_nonsense_insecure(session, header_server, analyzer
     assert xcto.present is True
     assert xcto.raw == "foobar"
     assert xcto.rating == "insecure"
-
 
 async def test_x_content_type_empty_and_missing_insecure(session, header_server, analyzer):
     base_url, scenarios = header_server
@@ -329,3 +310,53 @@ async def test_x_content_type_empty_and_missing_insecure(session, header_server,
     assert xcto2.raw == ""
     assert xcto2.rating == "insecure"
 
+async def test_permissions_policy_recommended_disables_feature(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["perm_recommended"] = {
+        "Permissions-Policy": 'geolocation=(), camera=(self "https://video.example")',
+    }
+
+    resp = await session.get(f"{base_url}/perm_recommended")
+    results = analyzer.run(resp.headers)
+
+    pp = _get_result(results, "permissions_policy")
+    assert pp.present is True
+    assert pp.rating == "recommended"
+
+async def test_permissions_policy_recommended_restrictive_only(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["perm_restrictive"] = {
+        "Permissions-Policy": 'camera=(self "https://video.example")',
+    }
+
+    resp = await session.get(f"{base_url}/perm_restrictive")
+    results = analyzer.run(resp.headers)
+
+    pp = _get_result(results, "permissions_policy")
+    assert pp.present is True
+    assert pp.rating == "recommended"
+
+async def test_permissions_policy_insecure_star(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["perm_insecure_star"] = {
+        "Permissions-Policy": "geolocation=*",
+    }
+
+    resp = await session.get(f"{base_url}/perm_insecure_star")
+    results = analyzer.run(resp.headers)
+
+    pp = _get_result(results, "permissions_policy")
+    assert pp.present is True
+    assert pp.rating == "insecure"
+
+async def test_permissions_policy_missing_header_is_insecure(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["perm_missing"] = {}
+
+    resp = await session.get(f"{base_url}/perm_missing")
+    results = analyzer.run(resp.headers)
+
+    pp = _get_result(results, "permissions_policy")
+    assert pp.present is False
+    assert pp.raw == ""
+    assert pp.rating == "insecure"

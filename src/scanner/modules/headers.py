@@ -154,6 +154,78 @@ def classify_x_frame_options(value: str) -> HeaderClass:
         return "obsolete"
     return "unknown"
 
+SENSITIVE_PERMISSIONS = {
+    "camera",
+    "microphone",
+    "geolocation",
+    "payment",
+    "usb",
+    "clipboard-read",
+    "clipboard-write",
+    "fullscreen",
+    "xr-spatial-tracking",
+}
+
+def _parse_permissions_policy(value: str) -> Dict[str, List[str]]:
+    """
+    Maps feature -> list of tokens.
+    Examples:
+        "camera=()" -> {"camera": []}
+        "camera=(self https://a)" -> {"camera": ["self", "https://a"]}
+        "geolocation=*" -> {"geolocation": ["*"]}
+    """
+    directives: Dict[str, List[str]] = {}
+
+    for part in value.split(","):
+        part = part.strip()
+        if not part or "=" not in part:
+            continue
+
+        name, rest = part.split("=", 1)
+        name = name.strip().lower()
+        rest = rest.strip()
+        lower_rest = rest.lower()
+
+        if lower_rest in ("none", "()"):
+            directives[name] = []
+            continue
+        if rest.startswith("(") and ")" in rest:
+            inner = rest[1 : rest.find(")")]
+            tokens = [t.strip(" '\"") for t in inner.split() if t.strip()]
+            directives[name] = tokens
+            continue
+        directives[name] = [rest.strip(" '\"")]
+    return directives
+
+def classify_permissions_policy(value: str) -> HeaderClass:
+    """
+    recommended:
+        Header present, we can parse at least one directive, and there is
+        no bare '*' origin anywhere. This means the site is explicitly
+        controlling which origins can use features (even if it allows some
+        cross-origin use).
+
+    insecure:
+        Header present but at least one directive uses a bare '*'
+        (e.g. geolocation=*), or the value is empty / unparseable
+        so the effective behaviour is the default "allow everything".
+    """
+
+    if not value or not value.strip():
+        return "insecure"
+
+    directives = _parse_permissions_policy(value)
+    if not directives:
+        return "insecure"
+
+    for tokens in directives.values():
+        if any(tok == "*" for tok in tokens):
+            return "insecure"
+
+    # Header is set, parsed, and avoids '*', meaning it is explicitly scoping usage.
+    return "recommended"
+
+
 def default_header_rules() -> List[HeaderRule]:
     return [
         HeaderRule(
@@ -179,6 +251,12 @@ def default_header_rules() -> List[HeaderRule]:
             display_name="x_content_type_options",
             classifier=classify_x_content_type_options,
             on_missing_class="insecure",
+        ),
+        HeaderRule(
+            name="permissions-policy",
+            display_name="permissions_policy",
+            classifier=classify_permissions_policy,
+            on_missing_class="insecure", # OWASP recommends it should be set
         ),
     ]
 
