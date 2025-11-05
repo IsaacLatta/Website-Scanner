@@ -4,8 +4,9 @@ from __future__ import annotations
 from typing import TypeAlias, Callable, Optional, Any, Literal, Mapping, Dict, List
 from dataclasses import dataclass
 
-HeaderClass: TypeAlias = Literal["recommended", "sufficient", "insecure", "obsolete", "unknown"]
+from scanner.modules.revealing_headers import REVEALING_HEADERS
 
+HeaderClass: TypeAlias = Literal["recommended", "sufficient", "insecure", "obsolete", "unknown"]
 
 @dataclass
 class HeaderRule:
@@ -13,13 +14,16 @@ class HeaderRule:
     display_name: str
     classifier: Optional[Callable[[str], HeaderClass]] = None
     on_missing_class: HeaderClass = "insecure"
+    has_additional_fields: bool = False
+    add_fields_parser: Optional[Callable[[str], dict[str, Any]]] = None
 
 @dataclass
 class HeaderResult:
     name: str
     present: bool
     rating: HeaderClass
-    raw: str 
+    raw: str
+    additional_fields: Optional[dict[str, any]]
 
 
 # OWASP only recommends sowco, MDN recommends all of these
@@ -210,7 +214,6 @@ def classify_permissions_policy(value: str) -> HeaderClass:
         (e.g. geolocation=*), or the value is empty / unparseable
         so the effective behaviour is the default "allow everything".
     """
-
     if not value or not value.strip():
         return "insecure"
 
@@ -225,6 +228,76 @@ def classify_permissions_policy(value: str) -> HeaderClass:
     # Header is set, parsed, and avoids '*', meaning it is explicitly scoping usage.
     return "recommended"
 
+def parse_set_cookie_attributes(value: str) -> Dict[str, Any]:
+    info: Dict[str, Any] = {
+        "has_secure": False,
+        "has_httponly": False,
+        "samesite": None,
+        "has_max_age": False,
+        "has_expires": False,
+        "max_age": None,
+        "expires": None,
+    }
+
+    parts = [p.strip() for p in value.split(";") if p.strip()]
+    if not parts:
+        return info
+
+    # parts[0] is name=value; attributes start at index 1
+    for part in parts[1:]:
+        if "=" in part:
+            k, v = part.split("=", 1)
+            k = k.strip().lower()
+            v = v.strip()
+            if k == "samesite":
+                info["samesite"] = v
+            elif k == "max-age":
+                info["has_max_age"] = True
+                info["max_age"] = v
+            elif k == "expires":
+                info["has_expires"] = True
+                info["expires"] = v
+        else:
+            token = part.lower()
+            if token == "secure":
+                info["has_secure"] = True
+            elif token == "httponly":
+                info["has_httponly"] = True
+
+    return info
+
+def classify_set_cookie(value: str) -> HeaderClass:
+    info = parse_set_cookie_attributes(value)
+
+    samesite = (info["samesite"] or "").strip().lower()
+
+    # Recommended: strict + Secure + HttpOnly (CCSA and MDN)
+    if info["has_secure"] and info["has_httponly"] and samesite == "strict":
+        return "recommended"
+
+    # Sufficient: lax + Secure + HttpOnly + explicit lifetime (MDN)
+    if info["has_secure"] and info["has_httponly"] and samesite == "lax":
+        return "sufficient"
+
+    return "insecure"
+
+def load_missing_header_rules() -> list[HeaderRule]:
+    def missing_header_classifier(value: str) -> HeaderClass:
+        return "insecure"
+
+    rules: list[HeaderRule] = []
+    for header in REVEALING_HEADERS:
+        name = header.lower()
+        display = name.replace("-", "_")
+        rules.append(
+            HeaderRule(
+                name=name,
+                display_name=display,
+                classifier=missing_header_classifier,
+                on_missing_class="recommended",
+            )
+        )
+    return rules
 
 def default_header_rules() -> List[HeaderRule]:
     return [
@@ -258,9 +331,17 @@ def default_header_rules() -> List[HeaderRule]:
             classifier=classify_permissions_policy,
             on_missing_class="insecure", # OWASP recommends it should be set
         ),
-    ]
+        HeaderRule(
+            name="set-cookie",
+            display_name="cookies",
+            classifier=classify_set_cookie,
+            on_missing_class="unknown",  # site might genuinely be sessionless
+            has_additional_fields=True,
+            add_fields_parser=parse_set_cookie_attributes
+        ),
+    ] + load_missing_header_rules()
 
-
+# TODO: Refactor parsing code to check multiple instances of each header
 class HeaderAnalyzer:
     def __init__(self, rules: List[HeaderRule]):
         self._rules = rules
@@ -280,9 +361,13 @@ class HeaderAnalyzer:
             raw = lowered.get(rule.name)
             present = raw is not None
 
+            additional_fields = None
             rating: HeaderClass = "unknown"
-            if present and rule.classifier is not None:
-                rating = rule.classifier(raw)
+            if present:
+                if rule.classifier is not None:
+                    rating = rule.classifier(raw)
+                if rule.has_additional_fields and rule.add_fields_parser is not None:
+                    additional_fields = rule.add_fields_parser(raw)
             else:
                 rating = rule.on_missing_class
                 if raw is None:
@@ -294,6 +379,7 @@ class HeaderAnalyzer:
                     present=present,
                     rating=rating,
                     raw=raw,
+                    additional_fields=additional_fields
                 )
             )
 

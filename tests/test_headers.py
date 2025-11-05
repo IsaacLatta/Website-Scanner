@@ -7,6 +7,9 @@ from aiohttp import web
 from scanner.modules.headers import (
     HeaderAnalyzer,
     default_header_rules,
+    classify_set_cookie,
+    parse_set_cookie_attributes,
+    load_missing_header_rules
 )
 
 pytestmark = pytest.mark.asyncio
@@ -360,3 +363,138 @@ async def test_permissions_policy_missing_header_is_insecure(session, header_ser
     assert pp.present is False
     assert pp.raw == ""
     assert pp.rating == "insecure"
+
+async def test_set_cookie_recommended_strict(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["cookie_recommended"] = {
+        "Set-Cookie": "sessionid=abc; Secure; HttpOnly; SameSite=Strict",
+    }
+
+    resp = await session.get(f"{base_url}/cookie_recommended")
+    results = analyzer.run(resp.headers)
+
+    ck = _get_result(results, "cookies")
+    assert ck.present is True
+    assert ck.raw.startswith("sessionid=abc")
+    assert ck.rating == "recommended"
+
+
+async def test_set_cookie_sufficient_lax(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["cookie_sufficient"] = {
+        "Set-Cookie": "sessionid=abc; Secure; HttpOnly; SameSite=Lax",
+    }
+
+    resp = await session.get(f"{base_url}/cookie_sufficient")
+    results = analyzer.run(resp.headers)
+
+    ck = _get_result(results, "cookies")
+    assert ck.present is True
+    assert ck.rating == "sufficient"
+
+
+async def test_set_cookie_insecure_missing_flags(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    # Missing Secure / HttpOnly should be treated as insecure even with SameSite
+    scenarios["cookie_insecure"] = {
+        "Set-Cookie": "sessionid=abc; SameSite=Lax",
+    }
+
+    resp = await session.get(f"{base_url}/cookie_insecure")
+    results = analyzer.run(resp.headers)
+
+    ck = _get_result(results, "cookies")
+    assert ck.present is True
+    assert ck.rating == "insecure"
+
+
+async def test_set_cookie_missing_header_is_unknown(session, header_server, analyzer):
+    base_url, scenarios = header_server
+    scenarios["cookie_missing"] = {}
+
+    resp = await session.get(f"{base_url}/cookie_missing")
+    results = analyzer.run(resp.headers)
+
+    ck = _get_result(results, "cookies")
+    assert ck.present is False
+    assert ck.raw == ""
+    # default_header_rules() sets on_missing_class="unknown"
+    assert ck.rating == "unknown"
+
+
+async def test_parse_set_cookie_attributes_flags_and_lifetime():
+    value = (
+        "sessionid=abc123; Secure; HttpOnly; SameSite=Strict; "
+        "Max-Age=3600; Expires=Wed, 21 Oct 2015 07:28:00 GMT"
+    )
+
+    info = parse_set_cookie_attributes(value)
+
+    assert info["has_secure"] is True
+    assert info["has_httponly"] is True
+    assert info["samesite"] == "SameSite=Strict".split("=", 1)[1] or "Strict"  # defensive
+    assert info["has_max_age"] is True
+    assert info["max_age"] == "3600"
+    assert info["has_expires"] is True
+    assert "2015" in info["expires"]
+
+    # sanity-check that the classifier agrees this is recommended
+    assert classify_set_cookie(value) == "recommended"
+
+
+async def test_revealing_headers_present_are_insecure(session, header_server):
+    base_url, scenarios = header_server
+    analyzer = HeaderAnalyzer(default_header_rules())
+
+    scenarios["revealing_present"] = {
+        "Server": "nginx/1.24.0",
+        "X-Powered-By": "PHP/8.1.12",
+    }
+
+    resp = await session.get(f"{base_url}/revealing_present")
+    results = analyzer.run(resp.headers)
+
+    server_hdr = _get_result(results, "server")
+    assert server_hdr.present is True
+    assert server_hdr.raw == "nginx/1.24.0"
+    assert server_hdr.rating == "insecure"
+
+    xpb_hdr = _get_result(results, "x_powered_by")
+    assert xpb_hdr.present is True
+    assert xpb_hdr.raw == "PHP/8.1.12"
+    assert xpb_hdr.rating == "insecure"
+
+
+async def test_revealing_headers_missing_are_recommended(session, header_server):
+    base_url, scenarios = header_server
+    analyzer = HeaderAnalyzer(default_header_rules())
+
+    # No revealing headers at all
+    scenarios["revealing_missing"] = {}
+
+    resp = await session.get(f"{base_url}/revealing_missing")
+    results = analyzer.run(resp.headers)
+
+    server_hdr = _get_result(results, "x_b3_sampled")
+    assert server_hdr.present is False
+    assert server_hdr.raw == ""
+    assert server_hdr.rating == "recommended"
+
+    xpb_hdr = _get_result(results, "x_powered_by")
+    assert xpb_hdr.present is False
+    assert xpb_hdr.raw == ""
+    assert xpb_hdr.rating == "recommended"
+
+
+def test_load_missing_header_rules_normalizes_names():
+    rules = load_missing_header_rules()
+
+    # We should have a rule for "server" in lowercase
+    server_rule = next(r for r in rules if r.name == "server")
+    assert server_rule.display_name == "server"
+    assert server_rule.on_missing_class == "recommended"
+
+    # And one for "x-powered-by" with the right display_name
+    xpb_rule = next(r for r in rules if r.name == "x-powered-by")
+    assert xpb_rule.display_name == "x_powered_by"
+    assert xpb_rule.on_missing_class == "recommended"

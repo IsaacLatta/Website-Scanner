@@ -214,6 +214,8 @@ A department hosts a “documents library.” An attacker uploads a `.txt` that 
 * **Canadian Centre for Cyber Security – ITSM.60.005** (and PDF). 
   * Found [here](https://www.cyber.gc.ca/en/guidance/security-considerations-your-website-itsm60005) and
   * Found [here](https://www.cyber.gc.ca/sites/default/files/cyber/2022-01/ITSM-60-005-Security-considerations-for-your-website_e.pdf). (PDF)
+* MDN
+  * Found [here](https://developer.mozilla.org/en-US/docs/Web/Security/Practical_implementation_guides/Cookies)
 
 ### Why?
 
