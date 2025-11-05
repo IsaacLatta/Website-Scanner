@@ -373,6 +373,12 @@ Error handlers often run on a different layer (proxy/app server) and drop securi
 
 ### What we will check?
 
+* First source top N programming languages:
+  * [Stack Overflow Dev Survey](https://survey.stackoverflow.co/2024/technology#1-programming-scripting-and-markup-languages)
+  * [Browser Stack](https://www.browserstack.com/guide/best-language-for-web-development)
+  * 
+
+<!-- 
 We send **one GET** to a clearly nonexistent path and compare with the normal 200 page. 500's are probably too invasive.
 
 1. **Header parity on 404/410**
@@ -387,7 +393,7 @@ We send **one GET** to a clearly nonexistent path and compare with the normal 20
    * 404 for missing, 410 when permanently removed. If body looks like "not found" but status is 2xx, well flag it as a soft-4xx. Some sources recommend this, Example: [here](https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks) and [here](https://owasp.org/www-community/Improper_Error_Handling).
   > "One simple yet surprisingly effective solution is to design your Website not to use predictable behavior for failed passwords. For example, most Web sites return an “HTTP 401 error” code with a password failure, although some web sites instead return an “HTTP 200 SUCCESS” code but direct the user to a page explaining the failed password attempt. This fools some automated systems, but it is also easy to circumvent."
 
-3. **Body leak detection (regex)**
+1. **Body leak detection (regex)**
 
    * **Stack traces / frameworks** (warn high if version seen) (regex):
    * **File paths & env** (warn) (regex):
@@ -396,8 +402,8 @@ We send **one GET** to a clearly nonexistent path and compare with the normal 20
       * (Reasoning: CWE-209 / OWASP WSTG show error messages can reveal DB/stack/paths.)* 
       * Source [here](https://cwe.mitre.org/data/definitions/209.html)
   
- 4. **Caching of error pages**
-  * Warn if a personalized/dynamic error appears cacheable (e.g., long `max-age` public). Prefer `no-store` for dynamic error pages. (OWASP)
+ 2. **Caching of error pages**
+  * Warn if a personalized/dynamic error appears cacheable (e.g., long `max-age` public). Prefer `no-store` for dynamic error pages. (OWASP) -->
 <!-- 
 ### Example Algorithm
 

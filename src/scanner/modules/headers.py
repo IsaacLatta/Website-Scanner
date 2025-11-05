@@ -201,6 +201,9 @@ def _parse_permissions_policy(value: str) -> Dict[str, List[str]]:
         directives[name] = [rest.strip(" '\"")]
     return directives
 
+# TODO: Should maybe remove the '*' from the insecure. 
+# If a permissions policy sets a '*', it may not be a 
+# guarantee the site is insecure
 def classify_permissions_policy(value: str) -> HeaderClass:
     """
     recommended:
