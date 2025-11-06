@@ -376,8 +376,18 @@ Error handlers often run on a different layer (proxy/app server) and drop securi
 * First source top N programming languages:
   * [Stack Overflow Dev Survey](https://survey.stackoverflow.co/2024/technology#1-programming-scripting-and-markup-languages)
   * [Browser Stack](https://www.browserstack.com/guide/best-language-for-web-development)
-  * 
+  * [Regex Patterns](https://regex101.com/r/uU1vQ6/1)
 
+Languages: 
+```
+JavaScript / TypeScript (Node.js)
+Python
+Java
+C#/.NET
+PHP
+Go
+Ruby
+```
 <!-- 
 We send **one GET** to a clearly nonexistent path and compare with the normal 200 page. 500's are probably too invasive.
 

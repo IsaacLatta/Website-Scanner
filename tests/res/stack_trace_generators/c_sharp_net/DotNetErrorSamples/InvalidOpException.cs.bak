@@ -1,0 +1,47 @@
+using System;
+
+namespace DotNetErrorSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Simulating misconfigured dependency...");
+            var config = new AppConfig(null);
+            var service = new EmailSender(config);
+
+            service.SendWelcomeEmail("user@example.com");
+        }
+    }
+
+    class AppConfig
+    {
+        public string? SmtpHost { get; }
+
+        public AppConfig(string? smtpHost)
+        {
+            SmtpHost = smtpHost;
+        }
+    }
+
+    class EmailSender
+    {
+        private readonly AppConfig _config;
+
+        public EmailSender(AppConfig config)
+        {
+            _config = config;
+        }
+
+        public void SendWelcomeEmail(string to)
+        {
+            if (string.IsNullOrWhiteSpace(_config.SmtpHost))
+            {
+                throw new InvalidOperationException("SMTP host is not configured.");
+            }
+
+            // pretend to send email...
+        }
+    }
+}
+

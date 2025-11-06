@@ -1,0 +1,30 @@
+using System;
+
+namespace DotNetErrorSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Simulating service-layer null reference...");
+            var service = new UserService();
+            service.GetDisplayName(42);
+        }
+    }
+
+    class UserService
+    {
+        public string GetDisplayName(int id)
+        {
+            // Pretend we looked up a user and got null (e.g. from a repository)
+            User? user = null;
+            return user.Name.ToUpperInvariant(); // NullReferenceException
+        }
+    }
+
+    class User
+    {
+        public string Name { get; set; } = "";
+    }
+}
+

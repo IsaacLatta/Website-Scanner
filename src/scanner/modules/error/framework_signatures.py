@@ -12,7 +12,7 @@ FrameworkCategory = Literal[
     "library",
 ]
 
-WEB_FRAMEWORK_SIGNATURES: List[Signature] = [
+FRAMEWORK_SIGNATURES: List[Signature] = [
     Signature(
         display_name="Node.js",
         category="runtime",
@@ -195,4 +195,4 @@ WEB_FRAMEWORK_SIGNATURES: List[Signature] = [
     ),
 ]
 
-WEB_FRAMEWORK_NAMES = [f.display_name for f in WEB_FRAMEWORK_SIGNATURES]
+FRAMEWORK_NAMES = [f.display_name for f in FRAMEWORK_SIGNATURES]

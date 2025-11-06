@@ -1,0 +1,21 @@
+using System;
+
+namespace DotNetErrorSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Simulating bad GUID in route or query string...");
+            HandleRequest("not-a-guid");
+        }
+
+        static void HandleRequest(string requestId)
+        {
+            // typical thing in APIs: parse correlation id / route param
+            var guid = Guid.Parse(requestId); // FormatException
+            Console.WriteLine("Parsed GUID: " + guid);
+        }
+    }
+}
+

@@ -1,0 +1,15 @@
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.GeneratedMSBuildEditorConfig.editorconfig
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.AssemblyInfoInputs.cache
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.AssemblyInfo.cs
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.csproj.CoreCompileInputs.cache
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.sourcelink.json
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/bin/Debug/net9.0/DotNetErrorSamples
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/bin/Debug/net9.0/DotNetErrorSamples.deps.json
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/bin/Debug/net9.0/DotNetErrorSamples.runtimeconfig.json
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/bin/Debug/net9.0/DotNetErrorSamples.dll
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/bin/Debug/net9.0/DotNetErrorSamples.pdb
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.dll
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/refint/DotNetErrorSamples.dll
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.pdb
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/DotNetErrorSamples.genruntimeconfig.cache
+/home/isaac/Projects/Website-Scanner/tests/res/stack_trace_generators/c_sharp_net/DotNetErrorSamples/obj/Debug/net9.0/ref/DotNetErrorSamples.dll

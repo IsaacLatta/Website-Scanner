@@ -1,0 +1,29 @@
+using System;
+
+namespace DotNetErrorSamples
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Simulating invalid query parameter...");
+            var repo = new OrderRepository();
+            repo.GetOrderById(""); // invalid id
+        }
+    }
+
+    class OrderRepository
+    {
+        public string GetOrderById(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException("Order id must be a non-empty string.", nameof(id));
+            }
+
+            // pretend database call
+            return "ORDER-123";
+        }
+    }
+}
+
