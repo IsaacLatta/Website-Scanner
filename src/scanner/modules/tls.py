@@ -8,6 +8,7 @@ import ssl
 from OpenSSL import SSL
 
 from scanner.modules.export import ModuleExport
+from scanner.definitions import get_limiter
 
 def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
     """Parse 'host[:port]' -> (host, port)."""
@@ -107,13 +108,13 @@ class TLSModule(ModuleExport):
         *,
         executor: ThreadPoolExecutor,
         timeout_s: float,
-        concurrency: int = 200,
+        limiter: Optional[asyncio.Semaphore] = None,
     ):
         self._executor = executor
         self._timeout = float(timeout_s)
-        self._sem = asyncio.Semaphore(concurrency)
         self._caps = _detect_caps()
         self._rows: Dict[str, TLSRow] = {}
+        self._limiter = limiter or get_limiter()
 
     def name(self) -> str:
         return "tls"
@@ -146,7 +147,7 @@ class TLSModule(ModuleExport):
         loop = asyncio.get_running_loop()
 
         async def _guarded(func, *args):
-            async with self._sem:
+            async with self._limiter:
                 return await loop.run_in_executor(self._executor, func, *args)
 
         if self._caps.can_tls13:

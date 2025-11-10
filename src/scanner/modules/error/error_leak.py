@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
+from scanner.definitions import get_limiter
 from scanner.modules.error.signature import Signature, StackTraceSignature
 from scanner.modules.export import ModuleExport
 from scanner.modules.error.framework_signatures import FRAMEWORK_SIGNATURES
@@ -196,11 +197,13 @@ class ErrorLeakExport(ModuleExport):
         signatures: Optional[List[Signature]] = None,
         stack_traces: Optional[List[StackTraceSignature]] = None,
         max_body_bytes: int = 64_000,
+        limiter: Optional[asyncio.Semaphore] = None
     ) -> None:
         self._session = session
         self._signatures = signatures or default_signatures()
         self._stack_traces = stack_traces or default_stack_traces()
         self._max_body_bytes = max_body_bytes
+        self._limiter = limiter or get_limiter()
 
         self._alias_patterns: Dict[str, re.Pattern[str]] = {}
         for sig in self._signatures:
@@ -252,18 +255,18 @@ class ErrorLeakExport(ModuleExport):
         url = f"https://{origin}{_random_probe_path()}"
 
         try:
-            async with self._session.get(url) as resp:
-                content_type = resp.headers.get("content-type", "")
-                if not _is_textual_content_type(content_type):
-                    return
+            async with self._limiter:
+                async with self._session.get(url) as resp:
+                    content_type = resp.headers.get("content-type", "")
+                    if not _is_textual_content_type(content_type):
+                        return
 
-                # Limit body size to avoid huge responses.
-                raw = await resp.content.read(self._max_body_bytes)
-                try:
-                    body = raw.decode("utf-8", errors="replace")
-                except Exception:
-                    return
-
+                    # Limit body size to avoid huge responses.
+                    raw = await resp.content.read(self._max_body_bytes)
+                    try:
+                        body = raw.decode("utf-8", errors="replace")
+                    except Exception:
+                        return
         except Exception:
             return
 

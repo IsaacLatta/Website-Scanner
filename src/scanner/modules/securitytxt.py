@@ -1,9 +1,11 @@
 from __future__ import annotations
 import asyncio, aiohttp, csv
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from aiohttp import ClientTimeout
+
+from scanner.definitions import get_limiter
 from scanner.modules.export import ModuleExport
 
 _MAX_BYTES = 32 * 1024
@@ -86,12 +88,14 @@ class SecurityTxtExport(ModuleExport):
         verify_certificate: bool,
         timeout_s: int,
         session: aiohttp.ClientSession,
-        locations: List[str] | None = None
+        locations: List[str] | None = None,
+        limiter: Optional[asyncio.Semaphore] = None
     ):
         self._timeout = ClientTimeout(total=timeout_s)
         self._session = session
         self._locations = locations or default_locations()
         self._results: Dict[str, SecurityTxtResult] = {}
+        self._limiter = limiter or get_limiter()
 
     def name(self) -> str: return "securitytxt"
     def scope(self) -> str: return "origin"

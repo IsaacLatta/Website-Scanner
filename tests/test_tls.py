@@ -1,4 +1,3 @@
-# tests/conftest_tls.py  (or paste at the top of tests/test_tls.py)
 import ssl
 import asyncio
 from aiohttp import web
@@ -48,7 +47,7 @@ async def test_tls_13_only_reports_correctly(tiny_pool):
     port = 9643
     runner = await _start_https_app(port, ssl.TLSVersion.TLSv1_3, ssl.TLSVersion.TLSv1_3)
     try:
-        mod = TLSModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = TLSModule(executor=tiny_pool, timeout_s=5.0)
         caps = mod.probe_caps()
 
         await mod.run([f"127.0.0.1:{port}"])
@@ -77,7 +76,7 @@ async def test_tls_12_only_reports_correctly(tiny_pool):
     port = 9644
     runner = await _start_https_app(port, ssl.TLSVersion.TLSv1_2, ssl.TLSVersion.TLSv1_2)
     try:
-        mod = TLSModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = TLSModule(executor=tiny_pool, timeout_s=5.0)
         caps = mod.probe_caps()
 
         await mod.run([f"127.0.0.1:{port}"])
@@ -110,7 +109,7 @@ async def test_tls_12_and_13_reports_correctly(tiny_pool):
     port = 9645
     runner = await _start_https_app(port, ssl.TLSVersion.TLSv1_2, ssl.TLSVersion.TLSv1_3)
     try:
-        mod = TLSModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = TLSModule(executor=tiny_pool, timeout_s=5.0)
         caps = mod.probe_caps()
 
         await mod.run([f"127.0.0.1:{port}"])

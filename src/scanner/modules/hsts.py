@@ -1,13 +1,14 @@
 from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, asdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 from urllib.parse import urljoin, urlparse
 
 import aiohttp
 from aiohttp import ClientTimeout
 
 from scanner.modules.export import ModuleExport
+from scanner.definitions import get_limiter
 
 _ONE_YEAR = 31536000
 
@@ -49,10 +50,11 @@ class HSTSRow:
 
 
 class HSTSModule(ModuleExport):
-    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int = 10):
+    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int = 10, limiter: Optional[asyncio.Semaphore] = None):
         self._session = session
         self._timeout = ClientTimeout(total=timeout_s)
         self._results: Dict[str, HSTSRow] = {}
+        self._limiter = limiter or get_limiter()
 
     def name(self) -> str: return "hsts"
     def scope(self) -> str: return "origin"
@@ -70,16 +72,17 @@ class HSTSModule(ModuleExport):
         https_target = f"https://{origin}/"
 
         try:
-            async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
-                row.redirect_status = r.status
-                loc = r.headers.get("Location", "")
-                row.redirect_location = loc
+            async with self._limiter:
+                async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
+                    row.redirect_status = r.status
+                    loc = r.headers.get("Location", "")
+                    row.redirect_location = loc
 
-                if 300 <= r.status < 400 and loc:
-                    target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
-                    if urlparse(target).scheme.lower() == "https":
-                        row.redirected_to_https = True
-                        https_target = target
+                    if 300 <= r.status < 400 and loc:
+                        target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
+                        if urlparse(target).scheme.lower() == "https":
+                            row.redirected_to_https = True
+                            https_target = target
         except Exception as e:
             row.error = f"http_probe: {e}"
 

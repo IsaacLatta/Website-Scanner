@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from OpenSSL import SSL  # pyOpenSSL
 
 from scanner.modules.export import ModuleExport
-
+from scanner.definitions import get_limiter
 
 # From CCSA
 TLS13_RECOMMENDED = [
@@ -189,14 +189,14 @@ class CipherSuitesModule(ModuleExport):
         *,
         executor: ThreadPoolExecutor,
         timeout_s: float = 6.0,
-        concurrency: int = 200,
         catalog: Optional[CipherCatalog] = None,
+        limiter: Optional[asyncio.Semaphore] = None,
     ):
         self._exec = executor
         self._timeout = float(timeout_s)
-        self._sem = asyncio.Semaphore(concurrency)
         self._rows: Dict[str, CipherRow] = {}
         self._catalog_lookup = _make_catalog_lookup(catalog or [])
+        self._limiter = limiter or get_limiter()
 
         self._can_tls13 = hasattr(ssl, "TLSVersion") and hasattr(ssl.TLSVersion, "TLSv1_3")
         if not self._can_tls13:
@@ -214,7 +214,7 @@ class CipherSuitesModule(ModuleExport):
     async def _in_executor(self, func, *args, **kwargs):
         loop = asyncio.get_running_loop()
         bound = functools.partial(func, *args, **kwargs)
-        async with self._sem:
+        async with self._limiter:
             return await loop.run_in_executor(self._exec, bound)
 
     async def _natural(self, host: str, port: int) -> Tuple[bool, str, str]:
