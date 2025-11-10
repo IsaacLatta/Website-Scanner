@@ -216,7 +216,7 @@ class ErrorLeakExport(ModuleExport):
         self._stack_rows: List[StackTraceRow] = []
 
     def name(self) -> str:
-        return "error_page_tech_leaks"
+        return "error_leak"
 
     def scope(self) -> str:
         return "origin"

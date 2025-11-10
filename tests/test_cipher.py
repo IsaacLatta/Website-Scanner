@@ -70,7 +70,7 @@ async def test_tls13_observational_classification(tiny_pool):
         max_ver=ssl.TLSVersion.TLSv1_3,
     )
     try:
-        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0, concurrency=16)
+        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0)
         await mod.run([f"127.0.0.1:{port}"])
         row = list(mod.results().values())[0]
 
@@ -109,7 +109,7 @@ async def test_tls12_recommended_bucket_and_forced(tiny_pool):
         ciphers12=":".join(tls12_subset),
     )
     try:
-        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0)
         await mod.run([f"127.0.0.1:{port}"])
         row = list(mod.results().values())[0]
 
@@ -149,7 +149,7 @@ async def test_tls12_sufficient_bucket_and_forced(tiny_pool):
         ciphers12=":".join(tls12_suf_subset),
     )
     try:
-        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0)
         await mod.run([f"127.0.0.1:{port}"])
         row = list(mod.results().values())[0]
 
@@ -181,7 +181,7 @@ async def test_tls12_insecure_bucket_and_forced(tiny_pool):
         ciphers12=weak,
     )
     try:
-        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
+        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0)
         await mod.run([f"127.0.0.1:{port}"])
         row = list(mod.results().values())[0]
 
@@ -210,7 +210,7 @@ async def test_ciphers_catalog_rating_is_recorded(tiny_pool):
                 "security": "recommended",
             }
         }
-    ]
+    ]   
     port = 9745
 
     runner = await _start_https(
@@ -223,7 +223,6 @@ async def test_ciphers_catalog_rating_is_recorded(tiny_pool):
         mod = CipherSuitesModule(
             executor=tiny_pool,
             timeout_s=5.0,
-            concurrency=32,
             catalog=catalog,
         )
         await mod.run([f"127.0.0.1:{port}"])

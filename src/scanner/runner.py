@@ -1,146 +1,153 @@
-#!/usr/bin/env python3
+# scanner/runner.py
+from __future__ import annotations
+
 import asyncio
-import time
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+from dataclasses import asdict
+from typing import Any, Dict, List, Sequence
 from concurrent.futures import ThreadPoolExecutor
 
+import aiohttp
+from aiohttp import ClientTimeout, TCPConnector
+import ssl
+
+from scanner.definitions import init_global_limiter, get_limiter
+from scanner.targets import build_scan_targets, ScanTargets
+from scanner.redirects import RedirectResolver, ResolutionResult
+from scanner.origins import build_origin_targets, OriginTargets
 from scanner.modules.export import ModuleExport
 
-from tests import (
-    connectivity,
-    headers,
-    tls,
-    cipher,
-    securitytxt,
-    redirection
-)
+from scanner.modules.error.error_leak import ErrorLeakExport
+from scanner.modules.tls import TLSModule
+from scanner.modules.hsts import HSTSModule
+from scanner.modules.securitytxt import SecurityTxtExport
+from scanner.modules.connectivity import HTTPSConnectivityExport
+from scanner.modules.cipher import CipherSuitesModule 
+from scanner.modules.headers import HeaderAnalyzer, default_header_rules
 
-from scanner.config import Config
 
-class SecurityScanner:
-    def __init__(self, config: Config, modules: list[ModuleExport], max_workers: int = 10):
-        self._config = config
-        self._max_workers = max_workers
-        self._modules = modules
+def _final_uris_from_resolutions(resolutions: Dict[str, ResolutionResult]) -> List[str]:
+    """
+    Collect unique final URLs from the redirect resolution pass.
+    Only non-empty final_url values are included.
+    """
+    uris: set[str] = set()
+    for res in resolutions.values():
+        if res.final_url:
+            uris.add(res.final_url)
+    return sorted(uris)
 
-    def scan_domains(self, domains: List[str]) -> dict:
-        self.start_time = time.time()
-        results = asyncio.run(self._run_async_scan(domains))
-        self.end_time = time.time()
-        return results
-    
-    def duration(self) -> float:
-        return self.end_time - self.start_time
-
-    async def _run_async_scan(self, domains: List[str]) -> Dict:
-        results = {
-            'domains': domains,
-            'total': len(domains),
-            'per_site': [],
-            'aggregated': {}
+async def run_scan(
+    domains: Sequence[str],
+    *,
+    max_concurrency: int = 20,
+    http_timeout_s: int = 10,
+    redirect_max_hops: int = 8,
+    verify_certificate: bool = True,
+) -> Dict[str, Any]:
+    """
+    1. Build ScanTargets from the input domains/URLs.
+    2. Initialize the global concurrency limiter.
+    3. Resolve all URIs to final URLs (capturing hops + final headers).
+    4. Build origin targets (entry + final origins).
+    5. Instantiate and run all modules over the appropriate targets.
+    6. Run header analysis on cached final_headers.
+    7. Return a dict structure suitable for later JSON export / analysis.
+    """
+    domains = list(domains)
+    if not domains:
+        return {
+            "scan_targets": {"origins": [], "uris": []},
+            "origin_targets": {"entry_origins": [], "final_origins": [], "all_origins": []},
+            "resolutions": {},
+            "modules": {},
         }
-        
-        print("\nTesting HTTPS connectivity...")
-        https_results = await connectivity.test_https_batch(domains, self._config.MAX_TIMEOUT)
-        
-        https_capable = [d for d in domains if https_results.get(d, {}).get('success', False)]
-        failed_domains = [d for d in domains if d not in https_capable]
-        
-        print(f"\t+ {len(https_capable)}/{len(domains)} sites support HTTPS")
-        if failed_domains:
-            print(f"\t- Failed: {', '.join(failed_domains[:5])}{'...' if len(failed_domains) > 5 else ''}")
-        
-        results['https_results'] = https_results
-        results['https_capable'] = https_capable
-        
-        if not https_capable:
-            print("No HTTPS-capable sites to test further.")
-            return results
-        
-        for domain in https_capable:
-            site_result = {
-                'host': domain,
-                'https_ok': True,
-                'response_data': https_results[domain]
-            }
-            results['per_site'].append(site_result)
-        
-        print("\nAnalyzing security headers...")
-        header_results = headers.analyze_headers_batch(
-            {d: https_results[d] for d in https_capable}
-        )
-        
-        for site in results['per_site']:
-            site.update(header_results.get(site['host'], {}))
-        
-        results['aggregated']['headers'] = headers.aggregate_header_stats(header_results)
-        
-        print("\nTesting TLS version support...")
-        tls_results = await self._run_sync_tests_async(https_capable, tls)
-        
-        for site in results['per_site']:
-            site.update(tls_results.get(site['host'], {}))
-        
-        results['aggregated']['tls'] = tls.aggregate_tls_stats(tls_results)
-        
-        print("\nTesting cipher suite security...")
-        cipher_results = await self._run_sync_tests_async(https_capable, cipher)
-        
-        for site in results['per_site']:
-            site.update(cipher_results.get(site['host'], {}))
-        
-        results['aggregated']['cipher'] = cipher.aggregate_cipher_stats(cipher_results)
-        
-        print("\nChecking security.txt implementation...")
-        sectxt_results = await securitytxt.test_securitytxt_batch(https_capable, self._config.MAX_TIMEOUT)
-        
-        for site in results['per_site']:
-            site.update(sectxt_results.get(site['host'], {}))
-        
-        # results['aggregated']['securitytxt'] = securitytxt.aggregate_securitytxt_stats(sectxt_results)
-        results["aggregated"][]
 
-        print("\nTesting HTTP to HTTPS redirection...")
-        redir_results = await redirection.test_redirection_batch(https_capable, self._config.MAX_TIMEOUT)
-        
-        for site in results['per_site']:
-            site.update(redir_results.get(site['host'], {}))
-        
-        results['aggregated']['redirection'] = redirection.aggregate_redirection_stats(redir_results)
-        
-        return results
-    
-    async def _run_sync_tests_async(self, domains: List[str], module) -> Dict:
-        loop = asyncio.get_event_loop()
-        results = {}
-        
-        with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
-            test_funcs = []
-            for name in dir(module):
-                if name.startswith('test_'):
-                    func = getattr(module, name)
-                    if callable(func) and not asyncio.iscoroutinefunction(func):
-                        test_funcs.append((name, func))
-            
-            futures = []
-            for domain in domains:
-                for test_name, test_func in test_funcs:
-                    future = loop.run_in_executor(executor, test_func, domain)
-                    futures.append((domain, test_name, future))
-            
-            for domain, test_name, future in futures:
-                if domain not in results:
-                    results[domain] = {}
-                try:
-                    result = await future
-                    key = test_name.replace('test_', '')
-                    results[domain][key] = result
-                except Exception as e:
-                    print(f"  Error testing {domain} with {test_name}: {e}")
-                    key = test_name.replace('test_', '')
-                    results[domain][key] = None
-        
-        return results
-    
-    
+    scan_targets: ScanTargets = build_scan_targets(domains)
+
+    init_global_limiter(max_concurrency)
+    limiter = get_limiter()
+
+    if verify_certificate:
+        connector = TCPConnector()
+    else:
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        connector = TCPConnector(ssl=ssl_ctx)
+
+
+    timeout = ClientTimeout(total=http_timeout_s)
+    async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
+        resolver = RedirectResolver(
+            session=session,
+            timeout=timeout,
+            max_hops=redirect_max_hops,
+            concurrency=max_concurrency,
+        )
+        resolutions: Dict[str, ResolutionResult] = await resolver.resolve_all(
+            scan_targets.uris
+        )
+
+        origin_targets: OriginTargets = build_origin_targets(scan_targets, resolutions)
+
+        with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
+            modules: List[ModuleExport] = [
+                TLSModule(executor=executor, timeout_s=http_timeout_s, limiter=limiter),
+                HTTPSConnectivityExport(session=session, timeout_s=http_timeout_s, limiter=limiter),
+                HSTSModule(session=session, timeout_s=http_timeout_s, limiter=limiter),
+                SecurityTxtExport(
+                    verify_certificate=True,
+                    timeout_s=http_timeout_s,
+                    session=session,
+                    limiter=limiter,
+                ),
+                CipherSuitesModule(executor=executor, timeout_s=http_timeout_s, limiter=limiter),
+                ErrorLeakExport(session=session),
+            ]
+
+            origin_modules: List[ModuleExport] = [m for m in modules if m.scope() == "origin"]
+            uri_modules: List[ModuleExport] = [m for m in modules if m.scope() == "uri"]
+
+            tasks: List[asyncio.Future] = []
+
+            if origin_modules:
+                origin_list = origin_targets.all_origins
+                tasks.extend(m.run(origin_list) for m in origin_modules)
+
+            if uri_modules:
+                final_uris = _final_uris_from_resolutions(resolutions)
+                tasks.extend(m.run(final_uris) for m in uri_modules)
+
+            if tasks:
+                await asyncio.gather(*tasks)
+
+            module_results: Dict[str, Dict] = {
+                m.name(): m.results() for m in modules
+            }
+
+            analyzer = HeaderAnalyzer(default_header_rules())
+            header_analysis: Dict[str, list[dict[str, Any]]] = {}
+
+            for input_url, res in resolutions.items():
+                if res.final_headers:
+                    header_results = analyzer.run(res.final_headers)
+                    header_analysis[input_url] = [asdict(hr) for hr in header_results]
+                else:
+                    header_analysis[input_url] = []
+
+            module_results["headers"] = header_analysis
+
+    resolutions_dict: Dict[str, Dict[str, Any]] = {
+        url: res.to_dict() for url, res in resolutions.items()
+    }
+
+    return {
+        "scan_targets": {
+            "origins": scan_targets.origins,
+            "uris": scan_targets.uris,
+        },
+        "origin_targets": asdict(origin_targets),
+        "resolutions": resolutions_dict,
+        "modules": module_results,
+    }
+
