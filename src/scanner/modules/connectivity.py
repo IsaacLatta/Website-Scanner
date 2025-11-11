@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 from aiohttp.client_exceptions import ClientError
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, log_rate_limit
 
 @dataclass
 class HTTPSConnectivityRow:
@@ -44,6 +44,7 @@ class HTTPSConnectivityExport(ModuleExport):
                 async with self._session.get(
                     url, timeout=self._timeout, allow_redirects=True
                 ) as resp:
+                    await log_rate_limit(url, resp, self.name())
                     row.status = resp.status
                     row.redirects = len(resp.history)
                     row.final_scheme = str(resp.real_url.scheme)

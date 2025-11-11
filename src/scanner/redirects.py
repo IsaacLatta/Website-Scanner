@@ -6,6 +6,7 @@ from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Set
 
 from urllib.parse import urlparse, urljoin
+from scanner.definitions import log_rate_limit
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
@@ -111,6 +112,7 @@ class RedirectResolver:
                     allow_redirects=False,
                     timeout=self._timeout,
                 ) as resp:
+                    await log_rate_limit(current, resp, "redirect resolution")
                     status = resp.status
                     headers_lower = {k.lower(): v for k, v in resp.headers.items()}
 

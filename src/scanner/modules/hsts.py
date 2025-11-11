@@ -8,7 +8,7 @@ import aiohttp
 from aiohttp import ClientTimeout
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, log_rate_limit
 
 _ONE_YEAR = 31536000
 
@@ -78,6 +78,8 @@ class HSTSModule(ModuleExport):
                     loc = r.headers.get("Location", "")
                     row.redirect_location = loc
 
+                    await log_rate_limit(http_url, r, f"{self.name()} http check")
+
                     if 300 <= r.status < 400 and loc:
                         target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
                         if urlparse(target).scheme.lower() == "https":
@@ -88,6 +90,7 @@ class HSTSModule(ModuleExport):
 
         try:
             async with self._session.get(https_target, timeout=self._timeout) as r:
+                await log_rate_limit(https_target, r, f"{self.name()} https check")
                 row.https_ok = (200 <= r.status < 600)
                 hsts_val = r.headers.get("Strict-Transport-Security", "")
                 if hsts_val:

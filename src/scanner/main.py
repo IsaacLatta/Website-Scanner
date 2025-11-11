@@ -8,6 +8,7 @@ from pathlib import Path
 import json
 import time
 
+from scanner.definitions import init_rate_limiter_logger
 from scanner.input_utils import load_domains_from_file, load_column_from_csv
 from scanner.runner import run_scan
 
@@ -83,6 +84,14 @@ def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     try:
         domains = _load_domains_from_args(args)
+
+        if args.output_json is not None:
+            log_dir = args.output_json.parent
+            init_rate_limiter_logger(log_dir)
+            print(f"Logging rate limits to dir: {log_dir}")
+        else:
+            print(f"Logging rate limits to console only.")
+            init_rate_limiter_logger(None)
 
         result = asyncio.run(
             run_scan(

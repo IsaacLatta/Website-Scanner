@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from aiohttp import ClientTimeout
 
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, log_rate_limit
 from scanner.modules.export import ModuleExport
 
 _MAX_BYTES = 32 * 1024
@@ -117,6 +117,8 @@ class SecurityTxtExport(ModuleExport):
             url = f"https://{origin}{loc}"
             try:
                 async with self._session.get(url, timeout=self._timeout) as resp:
+                    await log_rate_limit(url, resp, "securitytxt")
+                    
                     if resp.status != 200:
                         continue
                     
