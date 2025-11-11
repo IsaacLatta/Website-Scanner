@@ -107,7 +107,7 @@ class RedirectResolver:
 
         for _ in range(self._max_hops):
             try:
-                sample_noise()
+                await sample_noise()
                 async with self._session.get(
                     current,
                     allow_redirects=False,

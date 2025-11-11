@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, sample_noise
 from scanner.modules.error.signature import Signature, StackTraceSignature
 from scanner.modules.export import ModuleExport
 from scanner.modules.error.framework_signatures import FRAMEWORK_SIGNATURES
@@ -256,6 +256,7 @@ class ErrorLeakExport(ModuleExport):
 
         try:
             async with self._limiter:
+                await sample_noise()
                 async with self._session.get(url) as resp:
                     content_type = resp.headers.get("content-type", "")
                     if not _is_textual_content_type(content_type):

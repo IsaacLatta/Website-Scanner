@@ -73,7 +73,7 @@ class HSTSModule(ModuleExport):
 
         try:
             async with self._limiter:
-                sample_noise()
+                await sample_noise()
                 async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
                     row.redirect_status = r.status
                     loc = r.headers.get("Location", "")
@@ -90,7 +90,7 @@ class HSTSModule(ModuleExport):
             row.error = f"http_probe: {e}"
 
         try:
-            sample_noise()
+            await sample_noise()
             async with self._session.get(https_target, timeout=self._timeout) as r:
                 await log_rate_limit(https_target, r, f"{self.name()} https check")
                 row.https_ok = (200 <= r.status < 600)

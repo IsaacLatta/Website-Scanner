@@ -8,7 +8,7 @@ import ssl
 from OpenSSL import SSL
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, sample_noise
 
 def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
     """Parse 'host[:port]' -> (host, port)."""
@@ -148,6 +148,7 @@ class TLSModule(ModuleExport):
 
         async def _guarded(func, *args):
             async with self._limiter:
+                await sample_noise()
                 return await loop.run_in_executor(self._executor, func, *args)
 
         if self._caps.can_tls13:

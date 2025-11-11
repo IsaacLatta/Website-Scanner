@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from OpenSSL import SSL  # pyOpenSSL
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter
+from scanner.definitions import get_limiter, sample_noise
 
 # From CCSA
 TLS13_RECOMMENDED = [
@@ -333,6 +333,7 @@ class CipherSuitesModule(ModuleExport):
             row.error = "natural_handshake_failed"
 
         try:
+            await sample_noise()
             c13, cat13 = await self._force_tls13_observe(host, port)
             row.tls13_forced_cipher = c13
             row.tls13_forced_category = cat13
@@ -340,14 +341,20 @@ class CipherSuitesModule(ModuleExport):
             row.error += f" | tls13_obs:{e}"
 
         try:
+            await sample_noise()
             c12, cat12 = await self._force_tls12_observe(host, port)
             row.tls12_forced_cipher = c12
             row.tls12_forced_category = cat12
 
+            await sample_noise()
             row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
+            await sample_noise()
             row.accepts_sufficient_tls12  = await self._try_bucket_tls12(host, port, TLS12_SUFFICIENT)
+            await sample_noise()
             row.accepts_insecure_tls12    = await self._try_insecure_tls12(host, port)
+            await sample_noise()
             row.allows_sha1_tls12         = await self._probe_sha1_tls12(host, port)
+            await sample_noise()
             row.allows_cbc_tls12          = await self._probe_cbc_tls12(host, port)
         except Exception as e:
             row.error += f" | tls12:{e}"

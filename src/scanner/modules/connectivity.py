@@ -41,7 +41,7 @@ class HTTPSConnectivityExport(ModuleExport):
         url = f"https://{origin}"
         try:
             async with self._limiter:
-                sample_noise()
+                await sample_noise()
                 async with self._session.get(
                     url, timeout=self._timeout, allow_redirects=True
                 ) as resp:
