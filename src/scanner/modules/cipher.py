@@ -1,10 +1,11 @@
-# scanner/modules/cipher.py
 from __future__ import annotations
 
 import asyncio
 import functools
 import socket
 import ssl
+from OpenSSL import SSL 
+import requests
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
@@ -73,7 +74,7 @@ class CipherRow:
 
     error: str = ""
 
-# “catalog” is the ciphersuite.info JSON, injected so tests can mock easily
+# "catalog" is the ciphersuite.info JSON, injected so tests can mock easily
 CipherCatalog = List[Dict[str, Dict[str, object]]]
 
 def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
@@ -84,6 +85,19 @@ def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
         except ValueError:
             return origin, default_port
     return origin, default_port
+
+def build_catalog_from_api(timeout_s: float = 6.0) -> CipherCatalog:
+    url = "https://ciphersuite.info/api/cs/"
+    try:
+        resp = requests.get(url, timeout=timeout_s)
+        resp.raise_for_status()
+        data = resp.json()
+        ciphersuites = data.get("ciphersuites")
+        if isinstance(ciphersuites, list):
+            return ciphersuites
+    except Exception as e: 
+        print(f"WARNING: Could not load cipher suite data from {url}: {e}")
+    return []
 
 def _pyopenssl_handshake(
     host: str,
@@ -195,12 +209,16 @@ class CipherSuitesModule(ModuleExport):
         self._exec = executor
         self._timeout = float(timeout_s)
         self._rows: Dict[str, CipherRow] = {}
-        self._catalog_lookup = _make_catalog_lookup(catalog or [])
+        # self._catalog_lookup = _make_catalog_lookup(catalog or [])
         self._limiter = limiter or get_limiter()
+
+        if catalog is None:
+            catalog = build_catalog_from_api(timeout_s=self._timeout)
+        self._catalog_lookup = _make_catalog_lookup(catalog or [])
 
         self._can_tls13 = hasattr(ssl, "TLSVersion") and hasattr(ssl.TLSVersion, "TLSv1_3")
         if not self._can_tls13:
-            print("[WARN] ssl missing TLSv1_3, omitting TLSv1_3 scans!")
+            print("ssl missing TLSv1_3, omitting TLSv1_3 scans!")
 
         self._can_tls12 = True
 

@@ -234,3 +234,36 @@ async def test_ciphers_catalog_rating_is_recorded(tiny_pool):
         await runner.cleanup()
 
 
+async def test_cipher_catalog_loaded_from_remote_when_none(tiny_pool):
+    if not _has_tlsver("TLSv1_2"):
+        pytest.skip("TLS 1.2 required for this test")
+
+    port = 9746
+    chosen = "ECDHE-RSA-AES128-GCM-SHA256"
+
+    runner = await _start_https(
+        port=port,
+        min_ver=ssl.TLSVersion.TLSv1_2,
+        max_ver=ssl.TLSVersion.TLSv1_2,
+        ciphers12=chosen,
+        )
+
+    try:
+        mod = CipherSuitesModule(
+            executor=tiny_pool,
+            timeout_s=5.0,
+        )
+
+        await mod.run([f"127.0.0.1:{port}"])
+        results = mod.results()
+        assert results
+
+        (_origin, row), = results.items()
+        assert row["negotiated_cipher"] == chosen
+
+        # TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 is marked "secure"
+        # in the ciphersuite.info catalog, so the module should record
+        # that classification once it has fetched the catalog.
+        assert row["negotiated_security"] == "secure"
+    finally:
+        await runner.cleanup()
