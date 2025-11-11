@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from datetime import datetime, timezone
 from aiohttp import ClientTimeout
 
-from scanner.definitions import get_limiter, log_rate_limit
+from scanner.definitions import get_limiter, log_rate_limit, acquire_global_and_host
 from scanner.modules.export import ModuleExport
 
 _MAX_BYTES = 32 * 1024
@@ -115,42 +115,43 @@ class SecurityTxtExport(ModuleExport):
 
         for loc in self._locations:
             url = f"https://{origin}{loc}"
-            try:
-                async with self._session.get(url, timeout=self._timeout) as resp:
-                    await log_rate_limit(url, resp, "securitytxt")
-                    
-                    if resp.status != 200:
-                        continue
-                    
-                    
-                    content = await resp.content.read(_MAX_BYTES + 1)
-                    if len(content) > _MAX_BYTES:
-                        row.error = "file_too_large"
+            async with acquire_global_and_host(url):
+                try:
+                    async with self._session.get(url, timeout=self._timeout) as resp:
+                        await log_rate_limit(url, resp, "securitytxt")
+                        
+                        if resp.status != 200:
+                            continue
+                        
+                        
+                        content = await resp.content.read(_MAX_BYTES + 1)
+                        if len(content) > _MAX_BYTES:
+                            row.error = "file_too_large"
+                            break
+                        
+                        text = _safe_decode(content)
+                        lines = text.splitlines()
+                        if len(lines) > _MAX_LINES:
+                            row.error = "too_many_lines"
+                            break
+
+                        parsed = _parse_security_txt(lines)
+                        row.present = True
+                        row.has_contact = len(parsed["contact"]) > 0
+                        row.has_expires = parsed["expires"] is not None
+                        row.expires_value = parsed["expires_raw"]
+
+                        if parsed["expires"] is not None:
+                            row.expires_valid = parsed["expires"] > datetime.now(timezone.utc)
+
+                        row.contacts = ",".join(parsed["contact"])
+                        row.canonical = ",".join(parsed["canonical"])
+                        row.location = loc
                         break
-                    
-                    text = _safe_decode(content)
-                    lines = text.splitlines()
-                    if len(lines) > _MAX_LINES:
-                        row.error = "too_many_lines"
-                        break
+                except Exception as e:
+                    row.error = str(e)
+                    continue
 
-                    parsed = _parse_security_txt(lines)
-                    row.present = True
-                    row.has_contact = len(parsed["contact"]) > 0
-                    row.has_expires = parsed["expires"] is not None
-                    row.expires_value = parsed["expires_raw"]
-
-                    if parsed["expires"] is not None:
-                        row.expires_valid = parsed["expires"] > datetime.now(timezone.utc)
-
-                    row.contacts = ",".join(parsed["contact"])
-                    row.canonical = ",".join(parsed["canonical"])
-                    row.location = loc
-                    break
-            except Exception as e:
-                row.error = str(e)
-                continue
-
-        self._results[origin] = row
+            self._results[origin] = row
 
 

@@ -8,7 +8,7 @@ import ssl
 from OpenSSL import SSL
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, sample_noise
+from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
 
 def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
     """Parse 'host[:port]' -> (host, port)."""
@@ -146,10 +146,19 @@ class TLSModule(ModuleExport):
 
         loop = asyncio.get_running_loop()
 
+        # async def _guarded(func, *args):
+        #     async with self._limiter:
+        #         await sample_noise()
+        #         return await loop.run_in_executor(self._executor, func, *args)
+
         async def _guarded(func, *args):
-            async with self._limiter:
+            host = args[0]
+            port = args[1]
+            url_like = f"https://{host}:{port}"
+            async with acquire_global_and_host(url_like):
                 await sample_noise()
                 return await loop.run_in_executor(self._executor, func, *args)
+
 
         if self._caps.can_tls13:
             try:

@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from OpenSSL import SSL  # pyOpenSSL
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, sample_noise
+from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
 
 # From CCSA
 TLS13_RECOMMENDED = [
@@ -229,10 +229,20 @@ class CipherSuitesModule(ModuleExport):
     async def run(self, origins: List[str]) -> None:
         await asyncio.gather(*(self._scan_one(o) for o in origins))
 
+    # async def _in_executor(self, func, *args, **kwargs):
+    #     loop = asyncio.get_running_loop()
+    #     bound = functools.partial(func, *args, **kwargs)
+    #     async with self._limiter:
+    #         return await loop.run_in_executor(self._exec, bound)
+
     async def _in_executor(self, func, *args, **kwargs):
         loop = asyncio.get_running_loop()
         bound = functools.partial(func, *args, **kwargs)
-        async with self._limiter:
+        host = args[0]
+        port = args[1]
+        url_like = f"https://{host}:{port}"
+
+        async with acquire_global_and_host(url_like):
             return await loop.run_in_executor(self._exec, bound)
 
     async def _natural(self, host: str, port: int) -> Tuple[bool, str, str]:
@@ -345,7 +355,6 @@ class CipherSuitesModule(ModuleExport):
             c12, cat12 = await self._force_tls12_observe(host, port)
             row.tls12_forced_cipher = c12
             row.tls12_forced_category = cat12
-
             await sample_noise()
             row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
             await sample_noise()

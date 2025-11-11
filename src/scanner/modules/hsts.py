@@ -8,7 +8,7 @@ import aiohttp
 from aiohttp import ClientTimeout
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, log_rate_limit, sample_noise
+from scanner.definitions import get_limiter, log_rate_limit, sample_noise, acquire_global_and_host
 
 _ONE_YEAR = 31536000
 
@@ -71,39 +71,40 @@ class HSTSModule(ModuleExport):
         http_url = f"http://{origin}/"
         https_target = f"https://{origin}/"
 
-        try:
-            async with self._limiter:
+        async with acquire_global_and_host(http_url):
+            try:
+                async with self._limiter:
+                    await sample_noise()
+                    async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
+                        row.redirect_status = r.status
+                        loc = r.headers.get("Location", "")
+                        row.redirect_location = loc
+
+                        await log_rate_limit(http_url, r, f"{self.name()} http check")
+
+                        if 300 <= r.status < 400 and loc:
+                            target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
+                            if urlparse(target).scheme.lower() == "https":
+                                row.redirected_to_https = True
+                                https_target = target
+            except Exception as e:
+                row.error = f"http_probe: {e}"
+
+            try:
                 await sample_noise()
-                async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
-                    row.redirect_status = r.status
-                    loc = r.headers.get("Location", "")
-                    row.redirect_location = loc
+                async with self._session.get(https_target, timeout=self._timeout) as r:
+                    await log_rate_limit(https_target, r, f"{self.name()} https check")
+                    row.https_ok = (200 <= r.status < 600)
+                    hsts_val = r.headers.get("Strict-Transport-Security", "")
+                    if hsts_val:
+                        parsed = _parse_hsts(hsts_val)
+                        row.has_hsts = True
+                        row.max_age_ge_1yr = (
+                            parsed["max_age"] >= _ONE_YEAR if parsed["max_age"] >= 0 else False
+                        )
+                        row.include_subdomains = parsed["include_subdomains"]
+                        row.preload = parsed["preload"]
+            except Exception as e:
+                row.error = (row.error + " | " if row.error else "") + f"https_probe: {e}"
 
-                    await log_rate_limit(http_url, r, f"{self.name()} http check")
-
-                    if 300 <= r.status < 400 and loc:
-                        target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
-                        if urlparse(target).scheme.lower() == "https":
-                            row.redirected_to_https = True
-                            https_target = target
-        except Exception as e:
-            row.error = f"http_probe: {e}"
-
-        try:
-            await sample_noise()
-            async with self._session.get(https_target, timeout=self._timeout) as r:
-                await log_rate_limit(https_target, r, f"{self.name()} https check")
-                row.https_ok = (200 <= r.status < 600)
-                hsts_val = r.headers.get("Strict-Transport-Security", "")
-                if hsts_val:
-                    parsed = _parse_hsts(hsts_val)
-                    row.has_hsts = True
-                    row.max_age_ge_1yr = (
-                        parsed["max_age"] >= _ONE_YEAR if parsed["max_age"] >= 0 else False
-                    )
-                    row.include_subdomains = parsed["include_subdomains"]
-                    row.preload = parsed["preload"]
-        except Exception as e:
-            row.error = (row.error + " | " if row.error else "") + f"https_probe: {e}"
-
-        self._results[origin] = row
+            self._results[origin] = row

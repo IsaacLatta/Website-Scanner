@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
-from scanner.definitions import get_limiter, sample_noise
+from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
 from scanner.modules.error.signature import Signature, StackTraceSignature
 from scanner.modules.export import ModuleExport
 from scanner.modules.error.framework_signatures import FRAMEWORK_SIGNATURES
@@ -82,7 +82,6 @@ def _is_textual_content_type(content_type: str) -> bool:
 def _random_probe_path() -> str:
     token = "".join(random.choices(string.ascii_lowercase + string.digits, k=16))
     return f"/__scanner_404__{token}/"
-
 
 def _detect_tech_leaks_for_body(
     origin: str,
@@ -255,7 +254,7 @@ class ErrorLeakExport(ModuleExport):
         url = f"https://{origin}{_random_probe_path()}"
 
         try:
-            async with self._limiter:
+            async with acquire_global_and_host(url):
                 await sample_noise()
                 async with self._session.get(url) as resp:
                     content_type = resp.headers.get("content-type", "")

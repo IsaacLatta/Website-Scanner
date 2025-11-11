@@ -3,9 +3,12 @@ from __future__  import annotations
 import asyncio
 import datetime
 import random
+from urllib.parse import urlparse
 from typing import Optional
 from pathlib import Path
 from aiohttp import ClientResponse
+from contextlib import asynccontextmanager
+from collections import defaultdict
 
 # Unlimited for tests
 DEFAULT_MAX_CONCURRENCY = 10_000 
@@ -84,7 +87,7 @@ def always_include_headers() -> dict[str, str]:
         "Accept-Encoding": "gzip, deflate, br",
         "Connection": "close",
         "DNT": "1",
-        "Upgrade-Insecure-Requests": "1",
+        "Referer": "https://www.google.com/",
     }
 
 async def sample_noise(min_delay: float = 0.1, max_delay: float = 0.5) -> None:
@@ -93,3 +96,56 @@ async def sample_noise(min_delay: float = 0.1, max_delay: float = 0.5) -> None:
     Used to break deterministic request patterns that may trigger WAFs.
     """
     await asyncio.sleep(random.uniform(min_delay, max_delay))
+
+_per_host_locks: dict[str, asyncio.Semaphore] = {}
+_per_host_global_lock = asyncio.Lock()
+_HOST_SEM_LIMIT = None
+_DEFAULT_HOST_SEM_LIMIT = 5
+
+def init_host_semaphore(limit: int):
+    global _HOST_SEM_LIMIT
+    _HOST_SEM_LIMIT = limit
+
+async def _get_host_semaphore(host: str) -> asyncio.Semaphore:
+    async with _per_host_global_lock:
+        sem = _per_host_locks.get(host)
+        if sem is None:
+            sem = asyncio.Semaphore(_HOST_SEM_LIMIT or _DEFAULT_HOST_SEM_LIMIT)
+            _per_host_locks[host] = sem
+        return sem
+
+@asynccontextmanager
+async def host_semaphore(url: str):
+    parsed = urlparse(url)
+    host = parsed.hostname or parsed.netloc or url
+    sem = await _get_host_semaphore(host)
+    async with sem:
+        yield
+
+# @asynccontextmanager
+# async def acquire_global_and_host(url: str):
+#     global_sem = get_limiter()
+#     parsed = urlparse(url)
+#     host = parsed.hostname or parsed.netloc or url
+#     host_sem = await _get_host_semaphore(host)
+
+#     async with global_sem, host_sem:
+#         yield
+
+@asynccontextmanager
+async def acquire_global_and_host(url: str):
+    global _g_limiter
+    if _g_limiter is None:
+        _g_limiter = asyncio.Semaphore(DEFAULT_MAX_CONCURRENCY)
+
+    parsed = urlparse(url)
+    host = parsed.hostname or parsed.netloc or url
+    sem = await _get_host_semaphore(host)
+
+    await _g_limiter.acquire()
+    await sem.acquire()
+    try:
+        yield
+    finally:
+        sem.release()
+        _g_limiter.release()

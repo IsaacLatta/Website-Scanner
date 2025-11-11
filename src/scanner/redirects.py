@@ -12,7 +12,7 @@ import aiohttp
 from aiohttp.client_exceptions import ClientError
 
 from scanner.targets import ScanTargets, _normalize_origin
-from scanner.definitions import sample_noise
+from scanner.definitions import sample_noise, acquire_global_and_host
 
 @dataclass
 class RedirectHop:
@@ -78,7 +78,7 @@ class RedirectResolver:
         return self._results
 
     async def _resolve_with_limit(self, url: str) -> None:
-        async with self._semaphore:
+        async with acquire_global_and_host(url):
             self._results[url] = await self._resolve_one(url)
 
     async def _resolve_one(self, url: str) -> ResolutionResult:

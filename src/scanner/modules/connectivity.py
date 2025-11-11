@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 from aiohttp.client_exceptions import ClientError
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, log_rate_limit, sample_noise
+from scanner.definitions import get_limiter, log_rate_limit, sample_noise, acquire_global_and_host
 
 @dataclass
 class HTTPSConnectivityRow:
@@ -40,7 +40,7 @@ class HTTPSConnectivityExport(ModuleExport):
         )
         url = f"https://{origin}"
         try:
-            async with self._limiter:
+            async with acquire_global_and_host(url):
                 await sample_noise()
                 async with self._session.get(
                     url, timeout=self._timeout, allow_redirects=True

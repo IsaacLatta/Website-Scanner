@@ -8,7 +8,7 @@ from pathlib import Path
 import json
 import time
 
-from scanner.definitions import init_rate_limiter_logger
+from scanner.definitions import init_rate_limiter_logger, init_host_semaphore
 from scanner.input_utils import load_domains_from_file, load_column_from_csv
 from scanner.runner import run_scan
 
@@ -36,6 +36,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=int,
         default=20,
         help="Maximum number of in-flight network/TLS operations (default: 20).",
+    )
+    ap.add_argument(
+        "--max-per-site",
+        type=int,
+        default=3,
+        help="Maximum number of in-flight requests per origin (default: 3).",
     )
     ap.add_argument(
         "--max-hops",
@@ -93,12 +99,14 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Logging rate limits to console only.")
             init_rate_limiter_logger(None)
 
+        init_host_semaphore(args.max_per_site)
         result = asyncio.run(
             run_scan(
                 domains,
                 max_concurrency=args.max_concurrency,
                 http_timeout_s=args.timeout,
                 redirect_max_hops=args.max_hops,
+                show_progress=True
             )
         )
 

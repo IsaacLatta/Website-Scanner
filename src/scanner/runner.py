@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from tqdm.asyncio import tqdm_asyncio
 import asyncio
 from dataclasses import asdict
 from typing import Any, Dict, List, Sequence
@@ -42,6 +43,7 @@ async def run_scan(
     http_timeout_s: int = 10,
     redirect_max_hops: int = 8,
     verify_certificate: bool = True,
+    show_progress: bool = False,
 ) -> Dict[str, Any]:
     """
     1. Build ScanTargets from the input domains/URLs.
@@ -93,7 +95,7 @@ async def run_scan(
         resolutions: Dict[str, ResolutionResult] = await resolver.resolve_all(
             scan_targets.uris
         )
-        return
+        print("URIs resolved.")
         origin_targets: OriginTargets = build_origin_targets(scan_targets, resolutions)
 
         with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
@@ -137,8 +139,15 @@ async def run_scan(
             )
             print(f"unique_final_uris_after_redirects={len(final_uris)}")
 
+            # if tasks:
+            #     await asyncio.gather(*tasks)
+
             if tasks:
-                await asyncio.gather(*tasks)
+                if show_progress:
+                    print(f"\n[Progress] Running {len(tasks)} async module tasks...")
+                    await tqdm_asyncio.gather(*tasks, total=len(tasks))
+                else:
+                    await asyncio.gather(*tasks)
 
             module_results: Dict[str, Dict] = {
                 m.name(): m.results() for m in modules
