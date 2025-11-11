@@ -12,7 +12,7 @@ import aiohttp
 from aiohttp.client_exceptions import ClientError
 
 from scanner.targets import ScanTargets, _normalize_origin
-
+from scanner.definitions import sample_noise
 
 @dataclass
 class RedirectHop:
@@ -107,6 +107,7 @@ class RedirectResolver:
 
         for _ in range(self._max_hops):
             try:
+                sample_noise()
                 async with self._session.get(
                     current,
                     allow_redirects=False,

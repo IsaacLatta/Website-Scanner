@@ -8,7 +8,7 @@ import aiohttp
 from aiohttp import ClientTimeout
 
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, log_rate_limit
+from scanner.definitions import get_limiter, log_rate_limit, sample_noise
 
 _ONE_YEAR = 31536000
 
@@ -73,6 +73,7 @@ class HSTSModule(ModuleExport):
 
         try:
             async with self._limiter:
+                sample_noise()
                 async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
                     row.redirect_status = r.status
                     loc = r.headers.get("Location", "")
@@ -89,6 +90,7 @@ class HSTSModule(ModuleExport):
             row.error = f"http_probe: {e}"
 
         try:
+            sample_noise()
             async with self._session.get(https_target, timeout=self._timeout) as r:
                 await log_rate_limit(https_target, r, f"{self.name()} https check")
                 row.https_ok = (200 <= r.status < 600)

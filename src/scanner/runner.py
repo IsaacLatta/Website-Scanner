@@ -9,7 +9,7 @@ import aiohttp
 from aiohttp import ClientTimeout, TCPConnector
 import ssl
 
-from scanner.definitions import init_global_limiter, get_limiter
+from scanner.definitions import init_global_limiter, get_limiter, always_include_headers
 from scanner.targets import build_scan_targets, ScanTargets
 from scanner.redirects import RedirectResolver, ResolutionResult
 from scanner.origins import build_origin_targets, OriginTargets
@@ -83,7 +83,7 @@ async def run_scan(
 
 
     timeout = ClientTimeout(total=http_timeout_s)
-    async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
+    async with aiohttp.ClientSession(timeout=timeout, connector=connector, headers=always_include_headers()) as session:
         resolver = RedirectResolver(
             session=session,
             timeout=timeout,
@@ -93,7 +93,7 @@ async def run_scan(
         resolutions: Dict[str, ResolutionResult] = await resolver.resolve_all(
             scan_targets.uris
         )
-
+        return
         origin_targets: OriginTargets = build_origin_targets(scan_targets, resolutions)
 
         with ThreadPoolExecutor(max_workers=max_concurrency) as executor:

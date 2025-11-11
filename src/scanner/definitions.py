@@ -2,6 +2,7 @@ from __future__  import annotations
 
 import asyncio
 import datetime
+import random
 from typing import Optional
 from pathlib import Path
 from aiohttp import ClientResponse
@@ -61,3 +62,34 @@ async def log_rate_limit(origin: str, response: ClientResponse, module: str) -> 
     async with _rate_log_lock:
         async with await asyncio.to_thread(open, _rate_log_path, "a", encoding="utf-8") as f:
             f.write(msg + "\n")
+
+
+def always_include_headers() -> dict[str, str]:
+    """
+    Return a set of default headers that make our HTTP requests
+    look more like real browser traffic.
+    These are applied on every GET/HEAD request unless overridden.
+    """
+    return {
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/119.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/avif,image/webp,*/*;q=0.8"
+        ),
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "close",
+        "DNT": "1",
+        "Upgrade-Insecure-Requests": "1",
+    }
+
+async def sample_noise(min_delay: float = 0.1, max_delay: float = 0.5) -> None:
+    """
+    Sleep for a random duration between min_delay and max_delay seconds.
+    Used to break deterministic request patterns that may trigger WAFs.
+    """
+    await asyncio.sleep(random.uniform(min_delay, max_delay))
