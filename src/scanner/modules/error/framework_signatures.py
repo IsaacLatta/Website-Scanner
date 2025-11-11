@@ -173,11 +173,11 @@ FRAMEWORK_SIGNATURES: List[Signature] = [
         category="fullstack",
         aliases=["remix"],
     ),
-    Signature(
-        display_name="Solid.js",
-        category="frontend",
-        aliases=["solid", "solid.js", "solidjs"],
-    ),
+    # Signature( # Noisy, many false positives
+    #     display_name="Solid.js",
+    #     category="frontend",
+    #     aliases=["solid", "solid.js", "solidjs"],
+    # ),
     Signature(
         display_name="Yii 2",
         category="backend",

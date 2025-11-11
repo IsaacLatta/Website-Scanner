@@ -33,6 +33,9 @@ class ResolutionResult:
 
     entry_origin: str
 
+    entry_status: Optional[int] = None
+    entry_headers: Optional[Dict[str, str]] = None
+
     final_url: Optional[str] = None
     final_origin: Optional[str] = None
 
@@ -109,14 +112,17 @@ class RedirectResolver:
                     timeout=self._timeout,
                 ) as resp:
                     status = resp.status
+                    headers_lower = {k.lower(): v for k, v in resp.headers.items()}
+
+                    if result.entry_headers is None:
+                        result.entry_status = status
+                        result.entry_headers = headers_lower
 
                     # If not a 3xx, this is our final response
                     if not (300 <= status < 400):
                         result.final_url = str(resp.url)
                         result.final_status = status
-                        result.final_headers = {
-                            k.lower(): v for k, v in resp.headers.items()
-                        }
+                        result.final_headers = headers_lower
 
                         final_parsed = urlparse(result.final_url)
                         if final_parsed.hostname:

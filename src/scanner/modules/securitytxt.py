@@ -67,7 +67,6 @@ def _parse_security_txt(lines: List[str]) -> Dict[str, object]:
         "expires_raw": expires_raw,
     }
 
-
 @dataclass
 class SecurityTxtResult:
     origin: str

@@ -96,7 +96,7 @@ async def run_scan(
                 HTTPSConnectivityExport(session=session, timeout_s=http_timeout_s, limiter=limiter),
                 HSTSModule(session=session, timeout_s=http_timeout_s, limiter=limiter),
                 SecurityTxtExport(
-                    verify_certificate=True,
+                    verify_certificate=verify_certificate,
                     timeout_s=http_timeout_s,
                     session=session,
                     limiter=limiter,

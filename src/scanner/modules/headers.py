@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from scanner.modules.revealing_headers import REVEALING_HEADERS
 
 HeaderClass: TypeAlias = Literal["recommended", "sufficient", "insecure", "obsolete", "unknown"]
+HeaderCategory: TypeAlias = Literal["security", "revealing"]
 
 @dataclass
 class HeaderRule:
@@ -16,6 +17,8 @@ class HeaderRule:
     on_missing_class: HeaderClass = "insecure"
     has_additional_fields: bool = False
     add_fields_parser: Optional[Callable[[str], dict[str, Any]]] = None
+    category: HeaderCategory = "security"
+
 
 @dataclass
 class HeaderResult:
@@ -24,6 +27,7 @@ class HeaderResult:
     rating: HeaderClass
     raw: str
     additional_fields: Optional[dict[str, any]]
+    category: HeaderCategory
 
 
 # OWASP only recommends sowco, MDN recommends all of these
@@ -298,6 +302,7 @@ def load_missing_header_rules() -> list[HeaderRule]:
                 display_name=display,
                 classifier=missing_header_classifier,
                 on_missing_class="recommended",
+                category="revealing"
             )
         )
     return rules
@@ -382,7 +387,8 @@ class HeaderAnalyzer:
                     present=present,
                     rating=rating,
                     raw=raw,
-                    additional_fields=additional_fields
+                    additional_fields=additional_fields,    
+                    category=rule.category
                 )
             )
 

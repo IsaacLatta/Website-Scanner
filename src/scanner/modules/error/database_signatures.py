@@ -92,11 +92,11 @@ DATABASE_SIGNATURES: List[Signature] = [
         category="service",  # Postgres-as-a-service / BaaS
         aliases=["supabase"],
     ),
-    Signature(
-        display_name="H2",
-        category="embedded",
-        aliases=["h2", "h2 database"],
-    ),
+    # Signature( # Too many false positives
+    #     display_name="H2",
+    #     category="embedded",
+    #     aliases=["h2", "h2 database"],
+    # ),
     Signature(
         display_name="Azure Cosmos DB",
         category="nosql_document",

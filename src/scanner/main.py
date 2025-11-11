@@ -6,6 +6,7 @@ import argparse
 import asyncio
 from pathlib import Path
 import json
+import time
 
 from scanner.input_utils import load_domains_from_file, load_column_from_csv
 from scanner.runner import run_scan
@@ -72,6 +73,7 @@ def _load_domains_from_args(args: argparse.Namespace) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> None:
+    start = time.perf_counter()
     args = parse_args(argv)
     try:
         domains = _load_domains_from_args(args)
@@ -108,6 +110,10 @@ def main(argv: list[str] | None = None) -> None:
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         raise SystemExit(1)
+    finally:
+        end = time.perf_counter()
+        duration_ms = (end - start) * 1000
+        print(f"Scan completed in : {duration_ms:.2f}ms")
 
 
 if __name__ == "__main__":
