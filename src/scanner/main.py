@@ -68,7 +68,7 @@ def _load_domains_from_args(args: argparse.Namespace) -> list[str]:
         raise SystemExit(f"Input file does not exist: {path}")
 
     if args.csv_column:
-        domains = load_column_from_csv(path, column=args.csv_column, offset=args.offset)
+        domains = load_column_from_csv(path, column=args.csv_column, offset=args.offset, limit=args.row_limit)
     else:
         domains = load_domains_from_file(path)
 
