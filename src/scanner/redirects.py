@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from tqdm.asyncio import tqdm_asyncio
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Set
 
@@ -69,12 +70,25 @@ class RedirectResolver:
         self._semaphore = asyncio.Semaphore(concurrency)
         self._results: Dict[str, ResolutionResult] = {}
 
-    async def resolve_all(self, urls: List[str]) -> Dict[str, ResolutionResult]:
+    # async def resolve_all(self, urls: List[str], show_progress: bool = False) -> Dict[str, ResolutionResult]:
+    #     """
+    #     Resolve all given URLs concurrently.
+    #     Returns a map: input_url -> ResolutionResult
+    #     """
+    #     await asyncio.gather(*(self._resolve_with_limit(u) for u in urls))
+    #     return self._results
+
+    async def resolve_all(self, urls: List[str], show_progress: bool = False) -> Dict[str, ResolutionResult]:
         """
         Resolve all given URLs concurrently.
         Returns a map: input_url -> ResolutionResult
         """
-        await asyncio.gather(*(self._resolve_with_limit(u) for u in urls))
+        tasks = [self._resolve_with_limit(u) for u in urls]
+        if show_progress:
+            print(f"\n[Progress] Resolving {len(urls)} URLs...")
+            await tqdm_asyncio.gather(*tasks, total=len(urls))
+        else:
+            await asyncio.gather(*tasks)
         return self._results
 
     async def _resolve_with_limit(self, url: str) -> None:

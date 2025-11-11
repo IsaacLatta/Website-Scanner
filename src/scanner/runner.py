@@ -93,7 +93,7 @@ async def run_scan(
             concurrency=max_concurrency,
         )
         resolutions: Dict[str, ResolutionResult] = await resolver.resolve_all(
-            scan_targets.uris
+            scan_targets.uris, show_progress=show_progress
         )
         print("URIs resolved.")
         origin_targets: OriginTargets = build_origin_targets(scan_targets, resolutions)

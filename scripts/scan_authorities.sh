@@ -2,7 +2,9 @@
 
 MAX_PER_SITE=5
 MAX_TOTAL=80
-SLEEP_TIME_S=600
+SLEEP_TIME_S=400
+
+echo "Starting scan ..."
 
 python3 -m scanner.main ./resources/uk_sites.csv --csv-column url --offset 0 --row-limit 347 --max-concurrency ${MAX_TOTAL} --max-per-site ${MAX_PER_SITE} --output-json ./results/uk_authority_results.json
 

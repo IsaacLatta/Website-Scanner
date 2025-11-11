@@ -52,7 +52,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument(
         "--timeout",
         type=int,
-        default=10,
+        default=3,
         help="HTTP client timeout in seconds (default: 10).",
     )
     ap.add_argument(
