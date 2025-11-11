@@ -1,4 +1,3 @@
-# scanner/runner.py
 from __future__ import annotations
 
 import asyncio
@@ -64,6 +63,13 @@ async def run_scan(
 
     scan_targets: ScanTargets = build_scan_targets(domains)
 
+    print(
+        f"Found {len(domains)} input domains: "
+        f"normalized_uris={len(scan_targets.uris)}, "
+        f"unique_origins={len(scan_targets.origins)}"
+    )
+
+
     init_global_limiter(max_concurrency)
     limiter = get_limiter()
 
@@ -108,15 +114,28 @@ async def run_scan(
             origin_modules: List[ModuleExport] = [m for m in modules if m.scope() == "origin"]
             uri_modules: List[ModuleExport] = [m for m in modules if m.scope() == "uri"]
 
+            print(f"Loaded {len(origin_modules)} origin modules: {origin_modules}.")
+            print(f"Loaded {len(uri_modules)} URI modules: {uri_modules}")
+
             tasks: List[asyncio.Future] = []
 
             if origin_modules:
                 origin_list = origin_targets.all_origins
                 tasks.extend(m.run(origin_list) for m in origin_modules)
 
+            final_uris = []
             if uri_modules:
                 final_uris = _final_uris_from_resolutions(resolutions)
                 tasks.extend(m.run(final_uris) for m in uri_modules)
+
+            print(f"Redirect resolutions={len(resolutions)}")
+            print(
+                "origin_targets: "
+                f"entry={len(origin_targets.entry_origins)}, "
+                f"final={len(origin_targets.final_origins)}, "
+                f"all={len(origin_targets.all_origins)}"
+            )
+            print(f"unique_final_uris_after_redirects={len(final_uris)}")
 
             if tasks:
                 await asyncio.gather(*tasks)
@@ -140,6 +159,7 @@ async def run_scan(
     resolutions_dict: Dict[str, Dict[str, Any]] = {
         url: res.to_dict() for url, res in resolutions.items()
     }
+
 
     return {
         "scan_targets": {

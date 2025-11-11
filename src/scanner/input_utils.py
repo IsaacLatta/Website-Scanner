@@ -19,28 +19,33 @@ def load_domains_from_file(path: str | Path) -> list[str]:
 
 
 def load_column_from_csv(
-    path: str | Path,
+    path: Path,
     column: str,
     offset: int = 0,
+    limit: int | None = None,
 ) -> list[str]:
-    if offset < 0:
-        raise ValueError("offset must be non-negative")
-
-    p = Path(path)
     values: list[str] = []
 
-    with p.open("r", encoding="utf-8", newline="") as f:
+    with path.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        if reader.fieldnames is None or column not in reader.fieldnames:
+        if column not in reader.fieldnames:
             raise ValueError(
-                f"column {column!r} not found in CSV header: {reader.fieldnames}"
+                f"Column {column!r} not found in CSV. "
+                f"Columns={reader.fieldnames}"
             )
 
         skipped = 0
+        seen_after_offset = 0
+
         for row in reader:
             if skipped < offset:
                 skipped += 1
                 continue
+
+            # Stop once we've consumed `limit` rows after the offset
+            if limit is not None and seen_after_offset >= limit:
+                break
+            seen_after_offset += 1
 
             raw = row.get(column, "")
             if not raw:

@@ -53,6 +53,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         help="Optional path to write full JSON results. If omitted, a brief summary is printed.",
     )
+    ap.add_argument(
+        "--row-limit",
+        type=int,
+        default=None,
+        help="Max number of rows to read after --offset (default: no limit).",
+    )
     return ap.parse_args(argv)
 
 
