@@ -104,6 +104,7 @@ class SecurityTxtExport(ModuleExport):
     async def run(self, origins: List[str]) -> None:
         tasks = [self._scan_one(o) for o in origins]
         await asyncio.gather(*tasks)
+        print(f"[{self.name()}] Done.")
 
     async def _scan_one(self, origin: str) -> None:
         row = SecurityTxtResult(
