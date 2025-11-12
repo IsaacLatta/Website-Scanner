@@ -13,11 +13,11 @@ FrameworkCategory = Literal[
 ]
 
 FRAMEWORK_SIGNATURES: List[Signature] = [
-    Signature(
-        display_name="Node.js",
-        category="runtime",
-        aliases=["node.js", "nodejs", "node"],
-    ),
+    # Signature(
+    #     display_name="Node.js",
+    #     category="runtime",
+    #     aliases=["node.js", "nodejs", "node"],
+    # ),
     Signature(
         display_name="React",
         category="frontend",
@@ -33,11 +33,11 @@ FRAMEWORK_SIGNATURES: List[Signature] = [
         category="fullstack",
         aliases=["next.js", "nextjs", "next js", "next"],
     ),
-    Signature(
-        display_name="Express",
-        category="backend",
-        aliases=["express", "express.js", "expressjs"],
-    ),
+    # Signature(
+    #     display_name="Express",
+    #     category="backend",
+    #     aliases=["express", "express.js", "expressjs"],
+    # ),
     Signature(
         display_name="Angular",
         category="frontend",
@@ -183,11 +183,11 @@ FRAMEWORK_SIGNATURES: List[Signature] = [
         category="backend",
         aliases=["yii 2", "yii2", "yii"],
     ),
-    Signature(
-        display_name="Play Framework",
-        category="backend",
-        aliases=["play framework", "playframework", "play"],
-    ),
+    # Signature(
+    #     display_name="Play Framework",
+    #     category="backend",
+    #     aliases=["play framework", "playframework", "play"],
+    # ),
     Signature(
         display_name="Elm",
         category="frontend",

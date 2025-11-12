@@ -121,7 +121,7 @@ class SecurityTxtExport(ModuleExport):
             url = f"https://{origin}{loc}"
             async with acquire_global_and_host(url):
                 try:
-                    async with self._session.get(url, timeout=self._timeout) as resp:
+                    async with self._session.get(url, timeout=self._timeout, allow_redirects=False) as resp:
                         await log_rate_limit(url, resp, "securitytxt")
                         
                         if resp.status != 200:
@@ -139,6 +139,9 @@ class SecurityTxtExport(ModuleExport):
                             break
 
                         parsed = _parse_security_txt(lines)
+                        if not parsed["contact"] and parsed["expires"] is None:
+                            continue
+
                         row.present = True
                         row.has_contact = len(parsed["contact"]) > 0
                         row.has_expires = parsed["expires"] is not None

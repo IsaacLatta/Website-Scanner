@@ -126,13 +126,13 @@ CLOUD_PLATFORM_SIGNATURES: List[Signature] = [
             "oracle cloud infrastructure", "oracle cloud", "oci",
         ],
     ),
-    Signature(
-        display_name="Render",
-        category="paas_serverless",
-        aliases=[
-            "render.com", "render",
-        ],
-    ),
+    # Signature(
+    #     display_name="Render",
+    #     category="paas_serverless",
+    #     aliases=[
+    #         "render.com", "render",
+    #     ],
+    # ),
     Signature(
         display_name="Fly.io",
         category="paas_serverless",

@@ -129,3 +129,30 @@ async def test_securitytxt_multiple_contacts_and_canonical(ssl_ctx, session):
         assert row["has_expires"] is True and row["expires_valid"] is True
     finally:
         await r.cleanup()
+
+
+async def test_securitytxt_redirect_to_homepage_is_not_present(ssl_ctx, session):
+    app = web.Application()
+
+    async def redirect_handler(request):
+        raise web.HTTPMovedPermanently(headers={"Location": "/"})
+
+    async def homepage_handler(request):
+        return web.Response(text="<!doctype html><html><body>home</body></html>",
+                            content_type="text/html")
+
+    app.router.add_get("/.well-known/security.txt", redirect_handler)
+    app.router.add_get("/", homepage_handler)
+
+    r = await start_site(app, 9043, ssl_ctx)
+    try:
+        mod = SecurityTxtExport(verify_certificate=False, timeout_s=5, session=session)
+        await mod.run(["127.0.0.1:9043"])
+        row = mod.results()["127.0.0.1:9043"]
+
+        assert row["present"] is False
+        assert row["location"] == ""
+        assert row["has_contact"] is False
+        assert row["has_expires"] is False
+    finally:
+        await r.cleanup()
