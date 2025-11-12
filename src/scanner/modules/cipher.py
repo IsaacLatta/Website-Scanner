@@ -399,22 +399,12 @@ class CipherSuitesModule(ModuleExport):
             self._rows[origin] = row
             return
 
-        # async def _guard_tls(label: str, coro):
-        #     if not should_run_tls_modules(origin):
-        #         return None
-
-        #     try:
-        #         return await coro
-        #     except Exception as e:
-        #         record_tls_timeout(origin, e)
-        #         row.error += ("" if not row.error else " | ") + f"{label}_timeout:{type(e).__name__}"
-        #         raise
-
         async def _guard_tls(label: str, coro):
             if not should_run_tls_modules(origin):
                 return None
+
             try:
-                return await asyncio.wait_for(coro, timeout=self._timeout + 1.0)
+                return await coro
             except Exception as e:
                 record_tls_timeout(origin, e)
                 row.error += ("" if not row.error else " | ") + f"{label}_timeout:{type(e).__name__}"
