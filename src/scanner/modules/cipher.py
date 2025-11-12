@@ -228,6 +228,7 @@ class CipherSuitesModule(ModuleExport):
 
     async def run(self, origins: List[str]) -> None:
         await asyncio.gather(*(self._scan_one(o) for o in origins))
+        print(f"[{self.name()}] Done.")
 
     async def _in_executor(self, func, *args, **kwargs):
         loop = asyncio.get_running_loop()
@@ -344,7 +345,6 @@ class CipherSuitesModule(ModuleExport):
                 raise
 
         try:
-            # 1) Natural handshake
             res = await _guard_tls("natural", self._natural(host, port))
             if res is not None:
                 ok, cipher, proto = res
@@ -360,7 +360,6 @@ class CipherSuitesModule(ModuleExport):
                 if not ok and not cipher:
                     row.error += ("" if not row.error else " | ") + "natural_handshake_failed"
 
-            # 2) TLS 1.3 forced observe
             await sample_noise()
             res13 = await _guard_tls("tls13_obs", self._force_tls13_observe(host, port))
             if res13 is not None:
@@ -368,7 +367,6 @@ class CipherSuitesModule(ModuleExport):
                 row.tls13_forced_cipher = c13
                 row.tls13_forced_category = cat13
 
-            # 3) TLS 1.2 forced + buckets
             await sample_noise()
             res12 = await _guard_tls("tls12_obs", self._force_tls12_observe(host, port))
             if res12 is not None:

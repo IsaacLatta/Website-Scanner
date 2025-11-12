@@ -197,13 +197,11 @@ class ErrorLeakExport(ModuleExport):
         signatures: Optional[List[Signature]] = None,
         stack_traces: Optional[List[StackTraceSignature]] = None,
         max_body_bytes: int = 64_000,
-        limiter: Optional[asyncio.Semaphore] = None
     ) -> None:
         self._session = session
         self._signatures = signatures or default_signatures()
         self._stack_traces = stack_traces or default_stack_traces()
         self._max_body_bytes = max_body_bytes
-        self._limiter = limiter or get_limiter()
 
         self._alias_patterns: Dict[str, re.Pattern[str]] = {}
         for sig in self._signatures:
@@ -250,6 +248,7 @@ class ErrorLeakExport(ModuleExport):
     async def run(self, origins: List[str]) -> None:
         tasks = [self._scan_origin(o) for o in origins]
         await asyncio.gather(*tasks)
+        print(f"[{self.name()}] Done.")
 
     async def _scan_origin(self, origin: str) -> None:
         if not should_run_http_modules(origin):

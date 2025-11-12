@@ -32,6 +32,7 @@ class HTTPSConnectivityExport(ModuleExport):
 
     async def run(self, origins: List[str]) -> None:
         await asyncio.gather(*[self._check(o) for o in origins])
+        print(f"[{self.name()}] Done.")
 
     async def _check(self, origin: str) -> None:
         row = HTTPSConnectivityRow(

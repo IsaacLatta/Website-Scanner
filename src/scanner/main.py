@@ -53,7 +53,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--timeout",
         type=int,
         default=3,
-        help="HTTP client timeout in seconds (default: 10).",
+        help="HTTP client timeout in seconds (default: 3).",
     )
     ap.add_argument(
         "--output-json",
@@ -117,6 +117,11 @@ def main(argv: list[str] | None = None) -> None:
 
         print(f"Scanned {n_input} input URLs across {n_origins} origins.")
 
+        end = time.perf_counter()
+        duration_ms = (end - start) * 1000
+        print(f"Scan completed in : {duration_ms:.2f}ms")
+        result["scan_time_ms"] = duration_ms
+
         if args.output_json:
             args.output_json.parent.mkdir(parents=True, exist_ok=True)
             args.output_json.write_text(
@@ -133,10 +138,6 @@ def main(argv: list[str] | None = None) -> None:
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         raise SystemExit(1)
-    finally:
-        end = time.perf_counter()
-        duration_ms = (end - start) * 1000
-        print(f"Scan completed in : {duration_ms:.2f}ms")
 
 
 if __name__ == "__main__":

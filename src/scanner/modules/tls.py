@@ -133,6 +133,7 @@ class TLSModule(ModuleExport):
 
     async def run(self, origins: List[str]) -> None:
         await asyncio.gather(*(self._scan_one(o) for o in origins))
+        print(f"[{self.name()}] Done.")
 
     async def _scan_one(self, origin: str) -> None:
         host, port = _split_host_port(origin, 443)
