@@ -8,6 +8,7 @@ import ssl
 from OpenSSL import SSL
 
 from scanner.modules.export import ModuleExport
+from scanner.origin_health import *
 from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
 
 def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
@@ -46,6 +47,10 @@ def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: f
             pass
         return True
     except Exception as e:
+        # Ensure caller can record the timeout
+        if is_timeout_exc(e):
+            raise
+
         return False
     finally:
         try:
@@ -108,13 +113,11 @@ class TLSModule(ModuleExport):
         *,
         executor: ThreadPoolExecutor,
         timeout_s: float,
-        limiter: Optional[asyncio.Semaphore] = None,
     ):
         self._executor = executor
         self._timeout = float(timeout_s)
         self._caps = _detect_caps()
         self._rows: Dict[str, TLSRow] = {}
-        self._limiter = limiter or get_limiter()
 
     def name(self) -> str:
         return "tls"
@@ -144,12 +147,12 @@ class TLSModule(ModuleExport):
             error="",
         )
 
-        loop = asyncio.get_running_loop()
+        if not should_run_tls_modules(origin):
+            row.error = "origin offline"
+            self._rows[origin] = row
+            return
 
-        # async def _guarded(func, *args):
-        #     async with self._limiter:
-        #         await sample_noise()
-        #         return await loop.run_in_executor(self._executor, func, *args)
+        loop = asyncio.get_running_loop()
 
         async def _guarded(func, *args):
             host = args[0]
@@ -160,31 +163,39 @@ class TLSModule(ModuleExport):
                 return await loop.run_in_executor(self._executor, func, *args)
 
 
-        if self._caps.can_tls13:
+        if self._caps.can_tls13 and should_run_tls_modules(origin):
             try:
                 row.tls13 = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.TLS1_3_VERSION, self._timeout)
             except Exception as e:
+                record_tls_timeout(origin, e)
                 row.tls13, row.error = False, f"{row.error} tls13:{e}"
-        if self._caps.can_tls12:
+
+        if self._caps.can_tls12 and should_run_tls_modules(origin):
             try:
                 row.tls12 = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.TLS1_2_VERSION, self._timeout)
             except Exception as e:
+                record_tls_timeout(origin, e)
                 row.tls12, row.error = False, f"{row.error} tls12:{e}"
 
-        if self._caps.can_tls11:
+        if self._caps.can_tls11 and should_run_tls_modules(origin):
             try:
                 row.tls11 = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.TLS1_1_VERSION, self._timeout)
             except Exception as e:
+                record_tls_timeout(origin, e)
                 row.tls11, row.error = False, f"{row.error} tls11:{e}"
-        if self._caps.can_tls10:
+        
+        if self._caps.can_tls10 and should_run_tls_modules(origin):
             try:
                 row.tls10 = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.TLS1_VERSION, self._timeout)
             except Exception as e:
+                record_tls_timeout(origin, e)
                 row.tls10, row.error = False, f"{row.error} tls10:{e}"
-        if self._caps.can_ssl_legacy:
+        
+        if self._caps.can_ssl_legacy and should_run_tls_modules(origin):
             try:
                 row.ssl_legacy = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.SSL3_VERSION, self._timeout)
             except Exception as e:
+                record_tls_timeout(origin, e)
                 row.ssl_legacy, row.error = False, f"{row.error} sslv3:{e}"
 
         self._rows[origin] = row

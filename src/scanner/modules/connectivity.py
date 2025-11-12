@@ -6,7 +6,8 @@ import asyncio
 import aiohttp
 from aiohttp.client_exceptions import ClientError
 from scanner.modules.export import ModuleExport
-from scanner.definitions import get_limiter, log_rate_limit, sample_noise, acquire_global_and_host
+from scanner.definitions import log_rate_limit, sample_noise, acquire_global_and_host
+from scanner.origin_health import *
 
 @dataclass
 class HTTPSConnectivityRow:
@@ -19,11 +20,10 @@ class HTTPSConnectivityRow:
     error: str
 
 class HTTPSConnectivityExport(ModuleExport):
-    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int, limiter: Optional[asyncio.Semaphore] = None):
+    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int):
         self._session = session
         self._timeout = aiohttp.ClientTimeout(total=timeout_s)
         self._results: Dict[str, HTTPSConnectivityRow] = {}
-        self._limiter = limiter or get_limiter()
 
     def name(self) -> str: return "https_connectivity"
     def scope(self) -> str: return "origin"
@@ -38,6 +38,12 @@ class HTTPSConnectivityExport(ModuleExport):
             origin=origin, success=False, status=None, final_scheme="",
             redirects=0, has_hsts=False, error=""
         )
+
+        # if not should_run_http_modules(origin):
+        #     row.error = "origin offline"
+        #     self._results[origin] = row
+        #     return
+
         url = f"https://{origin}"
         try:
             async with acquire_global_and_host(url):
@@ -55,6 +61,7 @@ class HTTPSConnectivityExport(ModuleExport):
                     row.success = (row.final_scheme == "https")
         except asyncio.TimeoutError:
             row.error = "timeout"
+            record_http_timeout(origin)
         except ClientError as e:
             row.error = str(e)
         except Exception as e:

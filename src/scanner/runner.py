@@ -15,6 +15,7 @@ from scanner.targets import build_scan_targets, ScanTargets
 from scanner.redirects import RedirectResolver, ResolutionResult
 from scanner.origins import build_origin_targets, OriginTargets
 from scanner.modules.export import ModuleExport
+from scanner.origin_health import snapshot_origin_health
 
 from scanner.modules.error.error_leak import ErrorLeakExport
 from scanner.modules.tls import TLSModule
@@ -100,16 +101,15 @@ async def run_scan(
 
         with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
             modules: List[ModuleExport] = [
-                TLSModule(executor=executor, timeout_s=http_timeout_s, limiter=limiter),
-                HTTPSConnectivityExport(session=session, timeout_s=http_timeout_s, limiter=limiter),
-                HSTSModule(session=session, timeout_s=http_timeout_s, limiter=limiter),
+                TLSModule(executor=executor, timeout_s=http_timeout_s),
+                HTTPSConnectivityExport(session=session, timeout_s=http_timeout_s),
+                HSTSModule(session=session, timeout_s=http_timeout_s),
                 SecurityTxtExport(
                     verify_certificate=verify_certificate,
                     timeout_s=http_timeout_s,
                     session=session,
-                    limiter=limiter,
                 ),
-                CipherSuitesModule(executor=executor, timeout_s=http_timeout_s, limiter=limiter),
+                CipherSuitesModule(executor=executor, timeout_s=http_timeout_s),
                 ErrorLeakExport(session=session),
             ]
 
@@ -169,7 +169,6 @@ async def run_scan(
         url: res.to_dict() for url, res in resolutions.items()
     }
 
-
     return {
         "scan_targets": {
             "origins": scan_targets.origins,
@@ -178,5 +177,6 @@ async def run_scan(
         "origin_targets": asdict(origin_targets),
         "resolutions": resolutions_dict,
         "modules": module_results,
+        "origin_health": snapshot_origin_health()
     }
 

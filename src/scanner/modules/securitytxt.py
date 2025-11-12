@@ -3,9 +3,10 @@ import asyncio, aiohttp, csv
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional
 from datetime import datetime, timezone
-from aiohttp import ClientTimeout
+from aiohttp import ClientTimeout, ClientError
 
 from scanner.definitions import get_limiter, log_rate_limit, acquire_global_and_host
+from scanner.origin_health import *
 from scanner.modules.export import ModuleExport
 
 _MAX_BYTES = 32 * 1024
@@ -88,13 +89,11 @@ class SecurityTxtExport(ModuleExport):
         timeout_s: int,
         session: aiohttp.ClientSession,
         locations: List[str] | None = None,
-        limiter: Optional[asyncio.Semaphore] = None
     ):
         self._timeout = ClientTimeout(total=timeout_s)
         self._session = session
         self._locations = locations or default_locations()
         self._results: Dict[str, SecurityTxtResult] = {}
-        self._limiter = limiter or get_limiter()
 
     def name(self) -> str: return "securitytxt"
     def scope(self) -> str: return "origin"
@@ -113,6 +112,11 @@ class SecurityTxtExport(ModuleExport):
             location="", error=""
         )
 
+        if not should_run_http_modules(origin):
+            row.error = "origin offline"
+            self._results[origin] = row
+            return
+
         for loc in self._locations:
             url = f"https://{origin}{loc}"
             async with acquire_global_and_host(url):
@@ -122,7 +126,6 @@ class SecurityTxtExport(ModuleExport):
                         
                         if resp.status != 200:
                             continue
-                        
                         
                         content = await resp.content.read(_MAX_BYTES + 1)
                         if len(content) > _MAX_BYTES:
@@ -148,10 +151,14 @@ class SecurityTxtExport(ModuleExport):
                         row.canonical = ",".join(parsed["canonical"])
                         row.location = loc
                         break
+                except (asyncio.TimeoutError, ClientError) as e:
+                    record_http_timeout(origin)
+                    row.error = f"timeout:{type(e).__name__}"
+                    print(f"[{self.name()}] timeout:{type(e).__name__}")
                 except Exception as e:
                     row.error = str(e)
                     continue
 
-            self._results[origin] = row
+        self._results[origin] = row
 
 

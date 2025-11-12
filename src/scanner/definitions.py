@@ -10,6 +10,8 @@ from aiohttp import ClientResponse
 from contextlib import asynccontextmanager
 from collections import defaultdict
 
+from scanner.origin_health import record_http_block
+
 # Unlimited for tests
 DEFAULT_MAX_CONCURRENCY = 10_000 
 
@@ -53,7 +55,8 @@ async def log_rate_limit(origin: str, response: ClientResponse, module: str) -> 
     if response.status not in (429, 403, 503):
         return
 
-    msg = f"[RateLimit] {module} -> {origin} ({response.status})"
+    record_http_block(origin, response.status)
+    msg = f"[WAF/RateLimit] {module} -> {origin} ({response.status})"
     print(msg)
 
     if not _rate_log_path:
@@ -68,11 +71,6 @@ async def log_rate_limit(origin: str, response: ClientResponse, module: str) -> 
 
 
 def always_include_headers() -> dict[str, str]:
-    """
-    Return a set of default headers that make our HTTP requests
-    look more like real browser traffic.
-    These are applied on every GET/HEAD request unless overridden.
-    """
     return {
         "User-Agent": (
             "Mozilla/5.0 (X11; Linux x86_64) "
@@ -91,16 +89,12 @@ def always_include_headers() -> dict[str, str]:
     }
 
 async def sample_noise(min_delay: float = 0.1, max_delay: float = 0.5) -> None:
-    """
-    Sleep for a random duration between min_delay and max_delay seconds.
-    Used to break deterministic request patterns that may trigger WAFs.
-    """
     await asyncio.sleep(random.uniform(min_delay, max_delay))
 
 _per_host_locks: dict[str, asyncio.Semaphore] = {}
 _per_host_global_lock = asyncio.Lock()
 _HOST_SEM_LIMIT = None
-_DEFAULT_HOST_SEM_LIMIT = 5
+_DEFAULT_HOST_SEM_LIMIT = 10_000
 
 def init_host_semaphore(limit: int):
     global _HOST_SEM_LIMIT
@@ -122,16 +116,6 @@ async def host_semaphore(url: str):
     async with sem:
         yield
 
-# @asynccontextmanager
-# async def acquire_global_and_host(url: str):
-#     global_sem = get_limiter()
-#     parsed = urlparse(url)
-#     host = parsed.hostname or parsed.netloc or url
-#     host_sem = await _get_host_semaphore(host)
-
-#     async with global_sem, host_sem:
-#         yield
-
 @asynccontextmanager
 async def acquire_global_and_host(url: str):
     global _g_limiter
@@ -149,3 +133,17 @@ async def acquire_global_and_host(url: str):
     finally:
         sem.release()
         _g_limiter.release()
+
+# _blocked_hosts: set[str] = set()
+# _blocked_lock = asyncio.Lock()
+
+# async def mark_host_blocked(origin: str):
+#     async with _blocked_lock:
+#         _blocked_hosts.add(origin)
+
+# def is_host_blocked(origin: str) -> bool:
+#     return origin in _blocked_hosts
+
+# async def host_available(origin: str) -> bool:
+#     async with _blocked_lock:
+#         return origin not in _blocked_hosts

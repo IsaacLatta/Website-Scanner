@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 import aiohttp
 
 from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
+from scanner.origin_health import *
 from scanner.modules.error.signature import Signature, StackTraceSignature
 from scanner.modules.export import ModuleExport
 from scanner.modules.error.framework_signatures import FRAMEWORK_SIGNATURES
@@ -251,12 +252,21 @@ class ErrorLeakExport(ModuleExport):
         await asyncio.gather(*tasks)
 
     async def _scan_origin(self, origin: str) -> None:
+        if not should_run_http_modules(origin):
+            return
+
         url = f"https://{origin}{_random_probe_path()}"
 
         try:
             async with acquire_global_and_host(url):
                 await sample_noise()
                 async with self._session.get(url) as resp:
+                    # We are expecting an error here. So only if that error is
+                    # an explicit rate limit do we record the block.
+                    if resp.status == 429:
+                        record_http_block(origin, resp.status)
+                        return
+
                     content_type = resp.headers.get("content-type", "")
                     if not _is_textual_content_type(content_type):
                         return
@@ -267,6 +277,9 @@ class ErrorLeakExport(ModuleExport):
                         body = raw.decode("utf-8", errors="replace")
                     except Exception:
                         return
+        except (asyncio.TimeoutError, aiohttp.ClientError):
+            record_http_timeout(origin)
+            return
         except Exception:
             return
 

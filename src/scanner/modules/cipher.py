@@ -13,6 +13,7 @@ from OpenSSL import SSL  # pyOpenSSL
 
 from scanner.modules.export import ModuleExport
 from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
+from scanner.origin_health import *
 
 # From CCSA
 TLS13_RECOMMENDED = [
@@ -154,7 +155,9 @@ def _pyopenssl_handshake(
         except Exception:
             pass
         return True, cipher, proto
-    except Exception:
+    except Exception as e:
+        if is_timeout_exc(e):
+            raise
         return False, "", ""
     finally:
         try:
@@ -203,14 +206,11 @@ class CipherSuitesModule(ModuleExport):
         *,
         executor: ThreadPoolExecutor,
         timeout_s: float = 6.0,
-        catalog: Optional[CipherCatalog] = None,
-        limiter: Optional[asyncio.Semaphore] = None,
+        catalog: Optional[CipherCatalog] = None
     ):
         self._exec = executor
         self._timeout = float(timeout_s)
         self._rows: Dict[str, CipherRow] = {}
-        # self._catalog_lookup = _make_catalog_lookup(catalog or [])
-        self._limiter = limiter or get_limiter()
 
         if catalog is None:
             catalog = build_catalog_from_api(timeout_s=self._timeout)
@@ -228,12 +228,6 @@ class CipherSuitesModule(ModuleExport):
 
     async def run(self, origins: List[str]) -> None:
         await asyncio.gather(*(self._scan_one(o) for o in origins))
-
-    # async def _in_executor(self, func, *args, **kwargs):
-    #     loop = asyncio.get_running_loop()
-    #     bound = functools.partial(func, *args, **kwargs)
-    #     async with self._limiter:
-    #         return await loop.run_in_executor(self._exec, bound)
 
     async def _in_executor(self, func, *args, **kwargs):
         loop = asyncio.get_running_loop()
@@ -333,39 +327,125 @@ class CipherSuitesModule(ModuleExport):
             allows_sha1_tls12=None, allows_cbc_tls12=None, error="",
         )
 
-        ok, cipher, proto = await self._natural(host, port)
-        row.negotiated_cipher = cipher
-        row.negotiated_version = proto
-        if cipher and self._catalog_lookup:
-            row.negotiated_security = self._catalog_lookup.get(cipher) or \
-                                      self._catalog_lookup.get(cipher.replace("_", "-"))
-        if not ok and not cipher:
-            row.error = "natural_handshake_failed"
+        if not should_run_tls_modules(origin):
+            row.error = "origin offline"
+            self._rows[origin] = row
+            return
+
+        async def _guard_tls(label: str, coro):
+            if not should_run_tls_modules(origin):
+                return None
+
+            try:
+                return await coro
+            except Exception as e:
+                record_tls_timeout(origin, e)
+                row.error += ("" if not row.error else " | ") + f"{label}_timeout:{type(e).__name__}"
+                raise
 
         try:
-            await sample_noise()
-            c13, cat13 = await self._force_tls13_observe(host, port)
-            row.tls13_forced_cipher = c13
-            row.tls13_forced_category = cat13
-        except Exception as e:
-            row.error += f" | tls13_obs:{e}"
+            # 1) Natural handshake
+            res = await _guard_tls("natural", self._natural(host, port))
+            if res is not None:
+                ok, cipher, proto = res
+                row.negotiated_cipher = cipher
+                row.negotiated_version = proto
 
-        try:
+                if cipher and self._catalog_lookup:
+                    row.negotiated_security = (
+                        self._catalog_lookup.get(cipher)
+                        or self._catalog_lookup.get(cipher.replace("_", "-"))
+                    )
+
+                if not ok and not cipher:
+                    row.error += ("" if not row.error else " | ") + "natural_handshake_failed"
+
+            # 2) TLS 1.3 forced observe
             await sample_noise()
-            c12, cat12 = await self._force_tls12_observe(host, port)
-            row.tls12_forced_cipher = c12
-            row.tls12_forced_category = cat12
+            res13 = await _guard_tls("tls13_obs", self._force_tls13_observe(host, port))
+            if res13 is not None:
+                c13, cat13 = res13
+                row.tls13_forced_cipher = c13
+                row.tls13_forced_category = cat13
+
+            # 3) TLS 1.2 forced + buckets
             await sample_noise()
-            row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
-            await sample_noise()
-            row.accepts_sufficient_tls12  = await self._try_bucket_tls12(host, port, TLS12_SUFFICIENT)
-            await sample_noise()
-            row.accepts_insecure_tls12    = await self._try_insecure_tls12(host, port)
-            await sample_noise()
-            row.allows_sha1_tls12         = await self._probe_sha1_tls12(host, port)
-            await sample_noise()
-            row.allows_cbc_tls12          = await self._probe_cbc_tls12(host, port)
-        except Exception as e:
-            row.error += f" | tls12:{e}"
+            res12 = await _guard_tls("tls12_obs", self._force_tls12_observe(host, port))
+            if res12 is not None:
+                c12, cat12 = res12
+                row.tls12_forced_cipher = c12
+                row.tls12_forced_category = cat12
+
+                await sample_noise()
+                row.accepts_recommended_tls12 = await _guard_tls(
+                    "tls12_recommended",
+                    self._try_bucket_tls12(host, port, TLS12_RECOMMENDED),
+                )
+
+                await sample_noise()
+                row.accepts_sufficient_tls12 = await _guard_tls(
+                    "tls12_sufficient",
+                    self._try_bucket_tls12(host, port, TLS12_SUFFICIENT),
+                )
+
+                await sample_noise()
+                row.accepts_insecure_tls12 = await _guard_tls(
+                    "tls12_insecure",
+                    self._try_insecure_tls12(host, port),
+                )
+
+                await sample_noise()
+                row.allows_sha1_tls12 = await _guard_tls(
+                    "tls12_sha1",
+                    self._probe_sha1_tls12(host, port),
+                )
+
+                await sample_noise()
+                row.allows_cbc_tls12 = await _guard_tls(
+                    "tls12_cbc",
+                    self._probe_cbc_tls12(host, port),
+                )
+
+        except Exception:
+            # Any timeout will land here after record_tls_timeout + row.error update.
+            # We don't need to re-raise; we just stop further probes for this origin.
+            pass
 
         self._rows[origin] = row
+
+        # ok, cipher, proto = await self._natural(host, port)
+        # row.negotiated_cipher = cipher
+        # row.negotiated_version = proto
+        # if cipher and self._catalog_lookup:
+        #     row.negotiated_security = self._catalog_lookup.get(cipher) or \
+        #                               self._catalog_lookup.get(cipher.replace("_", "-"))
+        # if not ok and not cipher:
+        #     row.error = "natural_handshake_failed"
+
+        # try:
+        #     await sample_noise()
+        #     c13, cat13 = await self._force_tls13_observe(host, port)
+        #     row.tls13_forced_cipher = c13
+        #     row.tls13_forced_category = cat13
+        # except Exception as e:
+        #     row.error += f" | tls13_obs:{e}"
+
+        # try:
+        #     await sample_noise()
+        #     c12, cat12 = await self._force_tls12_observe(host, port)
+        #     row.tls12_forced_cipher = c12
+        #     row.tls12_forced_category = cat12
+        #     await sample_noise()
+        #     row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
+        #     await sample_noise()
+        #     row.accepts_sufficient_tls12 = await self._try_bucket_tls12(host, port, TLS12_SUFFICIENT)
+        #     await sample_noise()
+        #     row.accepts_insecure_tls12 = await self._try_insecure_tls12(host, port)
+        #     await sample_noise()
+        #     row.allows_sha1_tls12 = await self._probe_sha1_tls12(host, port)
+        #     await sample_noise()
+        #     row.allows_cbc_tls12 = await self._probe_cbc_tls12(host, port)
+        # except Exception as e:
+        #     row.error += f" | tls12:{e}"
+
+        # self._rows[origin] = row

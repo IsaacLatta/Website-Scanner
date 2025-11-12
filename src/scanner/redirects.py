@@ -14,6 +14,7 @@ from aiohttp.client_exceptions import ClientError
 
 from scanner.targets import ScanTargets, _normalize_origin
 from scanner.definitions import sample_noise, acquire_global_and_host
+from scanner.origin_health import record_http_timeout
 
 @dataclass
 class RedirectHop:
@@ -69,14 +70,6 @@ class RedirectResolver:
         self._max_hops = max_hops
         self._semaphore = asyncio.Semaphore(concurrency)
         self._results: Dict[str, ResolutionResult] = {}
-
-    # async def resolve_all(self, urls: List[str], show_progress: bool = False) -> Dict[str, ResolutionResult]:
-    #     """
-    #     Resolve all given URLs concurrently.
-    #     Returns a map: input_url -> ResolutionResult
-    #     """
-    #     await asyncio.gather(*(self._resolve_with_limit(u) for u in urls))
-    #     return self._results
 
     async def resolve_all(self, urls: List[str], show_progress: bool = False) -> Dict[str, ResolutionResult]:
         """
@@ -170,6 +163,7 @@ class RedirectResolver:
 
             except asyncio.TimeoutError:
                 result.error = "timeout"
+                record_http_timeout(url)
                 return result
             except ClientError as e:
                 result.error = f"client_error: {e}"

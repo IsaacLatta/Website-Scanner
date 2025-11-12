@@ -5,10 +5,11 @@ from typing import Dict, List, Optional
 from urllib.parse import urljoin, urlparse
 
 import aiohttp
-from aiohttp import ClientTimeout
+from aiohttp import ClientTimeout, ClientError
 
 from scanner.modules.export import ModuleExport
 from scanner.definitions import get_limiter, log_rate_limit, sample_noise, acquire_global_and_host
+from scanner.origin_health import record_http_block, record_http_timeout, should_run_http_modules  
 
 _ONE_YEAR = 31536000
 
@@ -50,11 +51,10 @@ class HSTSRow:
 
 
 class HSTSModule(ModuleExport):
-    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int = 10, limiter: Optional[asyncio.Semaphore] = None):
+    def __init__(self, *, session: aiohttp.ClientSession, timeout_s: int = 10):
         self._session = session
         self._timeout = ClientTimeout(total=timeout_s)
         self._results: Dict[str, HSTSRow] = {}
-        self._limiter = limiter or get_limiter()
 
     def name(self) -> str: return "hsts"
     def scope(self) -> str: return "origin"
@@ -68,25 +68,29 @@ class HSTSModule(ModuleExport):
     async def _scan_one(self, origin: str) -> None:
         row = HSTSRow(origin=origin)
 
+        if not should_run_http_modules(origin):
+            row.error = "origin offline"
+            self._results[origin] = row
+            return
+
         http_url = f"http://{origin}/"
         https_target = f"https://{origin}/"
 
         async with acquire_global_and_host(http_url):
             try:
-                async with self._limiter:
-                    await sample_noise()
-                    async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
-                        row.redirect_status = r.status
-                        loc = r.headers.get("Location", "")
-                        row.redirect_location = loc
+                await sample_noise()
+                async with self._session.get(http_url, allow_redirects=False, timeout=self._timeout) as r:
+                    row.redirect_status = r.status
+                    loc = r.headers.get("Location", "")
+                    row.redirect_location = loc
 
-                        await log_rate_limit(http_url, r, f"{self.name()} http check")
+                    await log_rate_limit(http_url, r, f"{self.name()} http check")
 
-                        if 300 <= r.status < 400 and loc:
-                            target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
-                            if urlparse(target).scheme.lower() == "https":
-                                row.redirected_to_https = True
-                                https_target = target
+                    if 300 <= r.status < 400 and loc:
+                        target = loc if urlparse(loc).scheme else urljoin(http_url, loc)
+                        if urlparse(target).scheme.lower() == "https":
+                            row.redirected_to_https = True
+                            https_target = target
             except Exception as e:
                 row.error = f"http_probe: {e}"
 
@@ -104,6 +108,10 @@ class HSTSModule(ModuleExport):
                         )
                         row.include_subdomains = parsed["include_subdomains"]
                         row.preload = parsed["preload"]
+            except (asyncio.TimeoutError, ClientError) as e:
+                record_http_timeout(origin)
+                row.error = f"timeout:{type(e).__name__}"
+                print(f"[{self.name()}] timeout:{type(e).__name__}")
             except Exception as e:
                 row.error = (row.error + " | " if row.error else "") + f"https_probe: {e}"
 
