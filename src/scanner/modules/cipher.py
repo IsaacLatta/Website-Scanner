@@ -9,7 +9,6 @@ import requests
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
-from OpenSSL import SSL  # pyOpenSSL
 
 from scanner.modules.export import ModuleExport
 from scanner.definitions import get_limiter, sample_noise, acquire_global_and_host
@@ -100,60 +99,56 @@ def build_catalog_from_api(timeout_s: float = 6.0) -> CipherCatalog:
         print(f"WARNING: Could not load cipher suite data from {url}: {e}")
     return []
 
-def _pyopenssl_handshake(
+def _map_tls_version(min_ver: Optional[int], max_ver: Optional[int]):
+    min_v = max_v = None
+    if hasattr(ssl, "TLSVersion"):
+        if min_ver == SSL.TLS1_3_VERSION:
+            min_v = ssl.TLSVersion.TLSv1_3
+        elif min_ver == SSL.TLS1_2_VERSION:
+            min_v = ssl.TLSVersion.TLSv1_2
+
+        if max_ver == SSL.TLS1_3_VERSION:
+            max_v = ssl.TLSVersion.TLSv1_3
+        elif max_ver == SSL.TLS1_2_VERSION:
+            max_v = ssl.TLSVersion.TLSv1_2
+
+    return min_v, max_v
+
+def _ssl_handshake(
     host: str,
     port: int,
     *,
     min_ver: Optional[int] = None,
     max_ver: Optional[int] = None,
-    tls13_ciphers: Optional[str] = None,
+    tls13_ciphers: Optional[str] = None,   # ignored for now
     tls12_ciphers: Optional[str] = None,
     timeout: float = 5.0,
 ) -> Tuple[bool, str, str]:
-    sock = None
+    raw_sock = None
+    ssock = None
     try:
-        ctx = SSL.Context(SSL.TLS_METHOD)
-        if min_ver is not None:
-            ctx.set_min_proto_version(min_ver)
-        if max_ver is not None:
-            ctx.set_max_proto_version(max_ver)
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        min_v, max_v = _map_tls_version(min_ver, max_ver)
+        if min_v is not None:
+            ctx.minimum_version = min_v
+        if max_v is not None:
+            ctx.maximum_version = max_v
 
         if tls12_ciphers:
-            ctx.set_cipher_list(tls12_ciphers.encode("ascii"))
+            ctx.set_ciphers(tls12_ciphers)
 
-        # Some machine's have older ssl builds installed, even if a 
-        # a modern PyOpenSSL (>= 3.1.1) package is present, seems 
-        # like the system install can override. Thus, preventing
-        # this scanner from forcing certain cipher suites at tls 1.3.
-        if tls13_ciphers and hasattr(ctx, "set_ciphersuites"):
-            try:
-                ctx.set_ciphersuites(tls13_ciphers.encode("ascii"))
-            except Exception:
-                pass
+        raw_sock = socket.create_connection((host, port), timeout=timeout)
+        raw_sock.settimeout(timeout)
 
-        sock = socket.create_connection((host, port), timeout=timeout)
-        sock.settimeout(timeout)
+        ssock = ctx.wrap_socket(raw_sock, server_hostname=host)
 
-        conn = SSL.Connection(ctx, sock)
-        conn.set_connect_state()
-        try:
-            conn.set_tlsext_host_name(host.encode("utf-8"))
-        except Exception:
-            pass
+        cipher_info = ssock.cipher() 
+        cipher = cipher_info[0] if cipher_info else ""
+        proto = ssock.version() or ""
 
-        conn.setblocking(True)
-        conn.do_handshake()
-
-        cipher = conn.get_cipher_name() or ""
-        try:
-            proto = conn.get_protocol_version_name() or ""
-        except Exception:
-            proto = ""
-
-        try:
-            conn.shutdown()
-        except Exception:
-            pass
         return True, cipher, proto
     except Exception as e:
         if is_timeout_exc(e):
@@ -161,9 +156,80 @@ def _pyopenssl_handshake(
         return False, "", ""
     finally:
         try:
-            sock.close()
+            if ssock is not None:
+                ssock.close()
         except Exception:
             pass
+        try:
+            if raw_sock is not None:
+                raw_sock.close()
+        except Exception:
+            pass
+
+# def _pyopenssl_handshake(
+#     host: str,
+#     port: int,
+#     *,
+#     min_ver: Optional[int] = None,
+#     max_ver: Optional[int] = None,
+#     tls13_ciphers: Optional[str] = None,
+#     tls12_ciphers: Optional[str] = None,
+#     timeout: float = 5.0,
+# ) -> Tuple[bool, str, str]:
+#     sock = None
+#     try:
+#         ctx = SSL.Context(SSL.TLS_METHOD)
+#         if min_ver is not None:
+#             ctx.set_min_proto_version(min_ver)
+#         if max_ver is not None:
+#             ctx.set_max_proto_version(max_ver)
+
+#         if tls12_ciphers:
+#             ctx.set_cipher_list(tls12_ciphers.encode("ascii"))
+
+#         # Some machine's have older ssl builds installed, even if a 
+#         # a modern PyOpenSSL (>= 3.1.1) package is present, seems 
+#         # like the system install can override. Thus, preventing
+#         # this scanner from forcing certain cipher suites at tls 1.3.
+#         if tls13_ciphers and hasattr(ctx, "set_ciphersuites"):
+#             try:
+#                 ctx.set_ciphersuites(tls13_ciphers.encode("ascii"))
+#             except Exception:
+#                 pass
+
+#         sock = socket.create_connection((host, port), timeout=timeout)
+#         sock.settimeout(timeout)
+
+#         conn = SSL.Connection(ctx, sock)
+#         conn.set_connect_state()
+#         try:
+#             conn.set_tlsext_host_name(host.encode("utf-8"))
+#         except Exception:
+#             pass
+
+#         conn.setblocking(True)
+#         conn.do_handshake()
+
+#         cipher = conn.get_cipher_name() or ""
+#         try:
+#             proto = conn.get_protocol_version_name() or ""
+#         except Exception:
+#             proto = ""
+
+#         try:
+#             conn.shutdown()
+#         except Exception:
+#             pass
+#         return True, cipher, proto
+#     except Exception as e:
+#         if is_timeout_exc(e):
+#             raise
+#         return False, "", ""
+#     finally:
+#         try:
+#             sock.close()
+#         except Exception:
+#             pass
 
 def _make_catalog_lookup(catalog: Optional[CipherCatalog]) -> Dict[str, str]:
     if not catalog:
@@ -242,7 +308,7 @@ class CipherSuitesModule(ModuleExport):
 
     async def _natural(self, host: str, port: int) -> Tuple[bool, str, str]:
         return await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=None, max_ver=None, tls13_ciphers=None, tls12_ciphers=None,
             timeout=self._timeout,
         )
@@ -251,7 +317,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls13:
             return None, None
         ok, cipher, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_3_VERSION, max_ver=SSL.TLS1_3_VERSION,
             tls13_ciphers=None, tls12_ciphers=None,
             timeout=self._timeout,
@@ -264,7 +330,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls12:
             return None, None
         ok, cipher, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
             tls13_ciphers=None, tls12_ciphers=None,
             timeout=self._timeout,
@@ -277,7 +343,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls12 or not names12:
             return None
         ok, cipher, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
             tls13_ciphers=None, tls12_ciphers=_join(names12),
             timeout=self._timeout,
@@ -288,7 +354,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls12:
             return None
         ok, _, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
             tls13_ciphers=None, tls12_ciphers=INSECURE_CIPHER_STRING_TLS12,
             timeout=self._timeout,
@@ -299,7 +365,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls12:
             return None
         ok, _, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
             tls13_ciphers=None, tls12_ciphers="SHA1",
             timeout=self._timeout,
@@ -310,7 +376,7 @@ class CipherSuitesModule(ModuleExport):
         if not self._can_tls12:
             return None
         ok, _, proto = await self._in_executor(
-            _pyopenssl_handshake, host, port,
+            _ssl_handshake, host, port,
             min_ver=SSL.TLS1_2_VERSION, max_ver=SSL.TLS1_2_VERSION,
             tls13_ciphers=None, tls12_ciphers="CBC",
             timeout=self._timeout,
@@ -333,12 +399,22 @@ class CipherSuitesModule(ModuleExport):
             self._rows[origin] = row
             return
 
+        # async def _guard_tls(label: str, coro):
+        #     if not should_run_tls_modules(origin):
+        #         return None
+
+        #     try:
+        #         return await coro
+        #     except Exception as e:
+        #         record_tls_timeout(origin, e)
+        #         row.error += ("" if not row.error else " | ") + f"{label}_timeout:{type(e).__name__}"
+        #         raise
+
         async def _guard_tls(label: str, coro):
             if not should_run_tls_modules(origin):
                 return None
-
             try:
-                return await coro
+                return await asyncio.wait_for(coro, timeout=self._timeout + 1.0)
             except Exception as e:
                 record_tls_timeout(origin, e)
                 row.error += ("" if not row.error else " | ") + f"{label}_timeout:{type(e).__name__}"
@@ -411,39 +487,3 @@ class CipherSuitesModule(ModuleExport):
 
         self._rows[origin] = row
 
-        # ok, cipher, proto = await self._natural(host, port)
-        # row.negotiated_cipher = cipher
-        # row.negotiated_version = proto
-        # if cipher and self._catalog_lookup:
-        #     row.negotiated_security = self._catalog_lookup.get(cipher) or \
-        #                               self._catalog_lookup.get(cipher.replace("_", "-"))
-        # if not ok and not cipher:
-        #     row.error = "natural_handshake_failed"
-
-        # try:
-        #     await sample_noise()
-        #     c13, cat13 = await self._force_tls13_observe(host, port)
-        #     row.tls13_forced_cipher = c13
-        #     row.tls13_forced_category = cat13
-        # except Exception as e:
-        #     row.error += f" | tls13_obs:{e}"
-
-        # try:
-        #     await sample_noise()
-        #     c12, cat12 = await self._force_tls12_observe(host, port)
-        #     row.tls12_forced_cipher = c12
-        #     row.tls12_forced_category = cat12
-        #     await sample_noise()
-        #     row.accepts_recommended_tls12 = await self._try_bucket_tls12(host, port, TLS12_RECOMMENDED)
-        #     await sample_noise()
-        #     row.accepts_sufficient_tls12 = await self._try_bucket_tls12(host, port, TLS12_SUFFICIENT)
-        #     await sample_noise()
-        #     row.accepts_insecure_tls12 = await self._try_insecure_tls12(host, port)
-        #     await sample_noise()
-        #     row.allows_sha1_tls12 = await self._probe_sha1_tls12(host, port)
-        #     await sample_noise()
-        #     row.allows_cbc_tls12 = await self._probe_cbc_tls12(host, port)
-        # except Exception as e:
-        #     row.error += f" | tls12:{e}"
-
-        # self._rows[origin] = row
