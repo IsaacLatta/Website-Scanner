@@ -392,5 +392,4 @@ class HeaderAnalyzer:
                 )
             )
 
-        print(f"[header_analyzer] Done.")
         return results
