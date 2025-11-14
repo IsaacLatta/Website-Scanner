@@ -1,0 +1,515 @@
+% !TeX root = main.tex
+
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage[title]{appendix}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{manyfoot}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage{pgfplotstable} % read/filter CSVs into tables
+\usepackage{booktabs}      % you already load this (for \toprule, etc.)
+\usepackage{changepage}    % if you want wider local margins
+% \pgfplotsset{compat=1.18} % optional; any recent compat is fine
+
+\usepackage{capt-of}  % provides \captionof{figure} and \captionof{table}
+% Inline block with padding above/below (works for tables or figures)
+\newlength{\inlinecapskip}
+\setlength{\inlinecapskip}{0.75\baselineskip} % adjust to taste (0.5--1.0)
+\newenvironment{inlinecap}[1][\textwidth]
+  {\par\vspace{\inlinecapskip}\noindent\begin{minipage}{#1}\centering}
+  {\end{minipage}\par\vspace{\inlinecapskip}}
+
+\numberwithin{equation}{section}
+
+\theoremstyle{thmstyleone}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}
+
+\raggedbottom
+
+%%%%%% LENGTHS %%%%%%
+
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{0cm}
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{25cm}
+% \setlength{\oddsidemargin}{-0.2cm}
+% \setlength{\evensidemargin}{-0.2cm}
+\setlength{\topmargin}{-0.5cm}
+\setlength{\footskip}{1cm}
+
+\newlength{\plotwidth}
+\setlength{\plotwidth}{0.8\textwidth}
+
+
+\usepackage{siunitx}
+\sisetup{
+  round-mode=figures,
+  round-precision=2, 
+  detect-weight,
+  detect-inline-family
+}
+
+\newcommand{\QuoteFigure}[4][0.9\textwidth]{%
+  \begin{center}
+    \begin{minipage}{#1}
+      \centering
+      \itshape
+      \textquotedblleft #2\textquotedblright
+      \par\vspace{0.4\baselineskip}
+      \captionof{figure}{#3}
+      \label{#4}
+    \end{minipage}
+  \end{center}%
+}
+
+
+
+\begin{document}
+
+\title[Article Title]{Advancing Canadian Web Security: A Standards-Driven
+Initiative}
+
+\author[1]{\fnm{Isaac} \sur{Latta}\footnotemark[1]}\email{lattai11@mytru.ca}
+\author[1]{\fnm{Sina} \sur{Keshvadi}\footnotemark[3]}\email{skeshvadi@tru.ca}
+
+
+\affil[1]{\orgdiv{Dept. Software Engineering}, \orgname{Thompson Rivers University},
+\state{BC}, \country{Canada}}
+
+\abstract{}
+
+\keywords{}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+\subsection{Orientation Paragraph}
+
+% Orientation ideas:
+% - Rapid digitization of public services; Canadians increasingly rely on gov/critical infra, finance, and universities online.
+% - No single Canadian authority enforces a concrete baseline of web security controls.
+% - Fragmentation => some authorities follow modern guidance (CCCS, CSA, NIST, OWASP), others lag.
+% - Hard even to define the population: no central list of "Canadian public authorities" domains.
+% - This paper: (1) builds a standards-based checklist; (2) compiles a large, standards-backed sample of CA/US/UK public/financial/educational/energy sites; (3) empirically measures adoption of key controls.
+% - Emphasize "citizen trust" and "regulatory gaps" theme: people trust these sites implicitly, but there is no routine, standards-aligned measurement.
+% - Often authorities recommendations must adhere to outdated standards to remain compatable with legacy systems.
+
+\textbf{\emph{NOTE}}: This is copy-pasted from the application.
+
+\vspace{1em}The rapid digitization of society has transformed the way we engage with the World Wide Web. Organizations and government bodies increasingly rely on their online presence to deliver essential services, building upon the public’s inherent trust in government websites. However, no single authority is responsible for enforcing modern security standards in Canada, leaving many public websites vulnerable to newly discovered threats. Moreover,because there is no mandatory set of requirements for web security, agencies operate under recommendations rather than enforceable rules. This fragmented approach results in gaps in secure implementations, leaving websites---and their users—vulnerable to cyber threats. Compounding this issue, the process of identifying precisely which websites are under Canadian public authority is itself non-trivial. No centralized entity maintains an exhaustive list of government domains, complicating the task of measuring widespread compliance with existing security guidelines. Additionally, continual monitoring of these web services can be cumbersome. Administrators often depend on internal scripts or third-party vendors to maintain security, often resulting in inconsistent adoption of essential protective measures. Furthermore, many government websites lack a standardized communication channel through which security researchers or concerned citizens can report discovered vulnerabilities—leading to risks remaining unpatched and unaddressed for extended periods. In this research, we aim to develop an automated scanning tool that incorporates the most recent Canadian specific security guidelines and best practices to evaluate the security readiness of Canadian web authorities. Our goal is to provide both technical insights, and practical recommendations for enhancing web security measures across the public sector. By addressing the above challenges, we hope to propose a more unified, proactive set of standards for maintaining secure digital services in Canada. To address these challenges, our research will involve compiling a comprehensive list of government domains by leveraging WHOIS lookup services, filtering out non-Canadian entities Next, we will determine a set of critical security measures to benchmark. We will define key security benchmarks---such as Transport Layer Security (TLS), HTTP Strict Transport Security (HSTS), and vulnerability disclosure mechanisms—based on recognized standards such as CSA ISO/IEC 27007:20 [1], ISO/IEC 27005:19 [2], Mozilla Observatory [3], and Personal Information Protection and Electronic Documents Act (PIPEDA). Building upon a Swedish open-source scanning tool [4], we will modify its source code to handle Canadian-specific domains, add configuration options, and provide more diagnostic insights. Allowing administrators and independent auditors to continually monitor compliance with recognized security standards. In parallel, we will propose a structured reporting process, following modern Security Vulnerability Disclosure protocols [5], enabling researchers and the public to notify webmasters of discovered flaws. This practice, greatly reduces the odds that unpatched vulnerabilities do not remain hidden. By synthesizing these data into a report we will provide actionable recommendations to enhance security measures across Canadian government websites. Provide both administrators and policymakers with data-driven insights that can support a unified, proactive security strategy for Canadian governmental websites. Supporting the call for new, standards---backed trust in digital public services, and their authorities.
+
+\subsection{Main Questions Posed}
+
+% Candidate RQs:
+% RQ1: To what extent do Canadian public-sector and critical web services currently implement key web security controls recommended by national (CCCS, PIPEDA) and international guidance (TLS 1.2/1.3, HSTS, secure cookies, anti-fingerprinting headers, etc.)?
+% RQ2: How does the adoption of these controls vary by sector (government authorities, finance, education, critical energy infrastructure) and by jurisdiction (Canada vs. US vs. UK authorities/financial/educational sites)?
+% RQ3: Beyond transport-layer basics, how widely are "second-line" hardening measures (CSP, Permissions-Policy, strict referrer policies, secure error-handling, security.txt) and responsible disclosure channels deployed, and what gaps do these patterns reveal for future standards and guidance?
+ % RQ1: What are the key security features, emerging technologies, and regulatory standards (e.g., PIPEDA) for securing Canadian websites and their visitors?
+ %    RQ2: In an aggregated form, how can a set of websites' security standards and best practice implementations be gathered, interpreted, and displayed in an automated way?
+ %    RQ3: What is the current website security situation of the Canadian authorities' websites?
+ %    RQ4: How can the findings of this assessment be effectively communicated to Canadian web authorities to encourage improvements where necessary?
+
+
+
+\begin{itemize}
+    \vspace{0.4em} \item \textbf{RQ1}:
+    \vspace{0.4em} \item \textbf{RQ2}:
+    \vspace{0.4em} \item  \textbf{RQ3}:
+\end{itemize}
+
+\subsection{Previous Literature}
+
+% borrow from application
+    % rephrase + augment
+
+% Previous literature ideas:
+% - Measurement work on HTTPS/TLS/HSTS adoption (e.g., USENIX work like "Measuring HTTPS adoption", Mozilla Observatory, prior internet-wide scans) and what they focused on (mostly US/global, not Canada-specific, often less standards-specific).
+% - Standards/guidance side: CCCS ITSP.40.062, ITSM.60.005; IETF RFCs on TLS, HSTS, security.txt; OWASP and MDN best-practice docs. (Position them as normative baselines, not "literature" per se.) 
+% - The Swedish automated tool paper you are extending (focus, scope, limitations—e.g., fewer bespoke crypto checks, different jurisdiction/standards focus).
+% - The Swedish tool also some implementation flaws, and performance concerns. 
+% - Note the gap: no large-scale, standards-based scan focused on Canadian public authorities, nor cross-country sectoral comparison aligned with Canadian standards.
+    
+\subsection{Reasons for Choosing Method}\label{sec:reasons}
+
+% Reasons for method:
+% Why automated scanning + Python:
+%   - Need to evaluate ~O(10^3) sites consistently; manual auditing is infeasible.
+%   - Python ecosystem (requests, OpenSSL/PyOpenSSL/ssl, asyncio) + prior Swedish codebase gave a practical base to extend.
+%   - Easy to encode standards as rules and re-run as guidelines evolve.
+% Why use a cloud VM:
+%   - Stable public IP + good bandwidth for large-scale scanning.
+%   - Isolation from local network; easier to snapshot and control resource usage.
+%   - Reproducible environment for future researchers (image + config).
+
+
+% Why these website sources:
+%   - All CA sites are derived from official, authoritative lists (federal dept/institution/crown corp, regulators, port/airport authorities, health authorities, election and privacy commissioners, courts, emergency management, etc.).
+%   - Financial, educational, and energy lists are sourced from government-maintained registries or industry bodies (CBA, provincial credit-union regulators, Universities Canada, Electricity Canada, etc.).
+%   - US/UK sites similarly drawn from .gov indexes and official APIs (USA.gov agency index, FDIC, College Scorecard, UK GOV.UK organisations API, PRA/FCA, Discover Uni, etc.).
+%
+% Why those sectors:
+%   - Government authorities: core public services and regulators—baseline of "public trust".
+%   - Finance (banks/credit unions): handle highly sensitive financial data, strong incentives and regulation around security.
+%   - Education (universities): mixed research/admin/consumer portals with large user bases; valuable to understand posture.
+%   - Critical infrastructure (energy pipelines, utilities, nuclear): small N but high impact; public informational sites for mission-critical operators.
+%
+% Why compare CA vs US/UK:
+%   - US federal govt has explicit mandates (HTTPS-only, HSTS, BOD 18-01); UK GDS has its own security guidance. Canada has strong guidelines (CCCS) but less central enforcement.
+%   - Comparing similar sectors across jurisdictions helps reveal whether gaps are uniquely Canadian or part of a broader pattern.
+
+
+\subsection{What Is New With This Paper?}
+
+% never been done for canada
+% no existing tool perform checks adhering to canadian standards
+% tool also performs bespoke crypto graphic checks
+
+\section{Materials \& Methods}\label{sec:methods}
+
+\subsection{Overview - Factual guide}
+
+% where we got the websites from
+
+% where we got our sources for what to look for
+
+% tool implementation
+
+% what/why we actually checked for
+
+% backoff/breaker strategy
+
+% Overview ideas:
+% - Dataset construction:
+%   * How many sites per sector/jurisdiction.
+%   * Brief description of each authoritative source list (with examples).
+% - Standards & guidance sources:
+%   * CCCS, IETF RFCs (TLS/HSTS/security.txt), OWASP cheat sheets, MDN header references, NIST SP 800-52r2, etc.
+% - Tool implementation:
+%   * Built in Python, extended from the Swedish tool: modules for HTTPS/HSTS, TLS version negotiation, cipher enumeration, header parsing, cookie analysis, error page probing, security.txt discovery, etc.
+%   * Use of threads/async to parallelise scans with global + per-host rate limits.
+% - What and why we checked:
+%   * Group checks into categories: 
+%       - Transport/TLS (HTTPS enforcement, HSTS, TLS versions, ciphers).
+%       - Browser-side headers (Referrer-Policy, X-Frame-Options/CSP frame-ancestors, X-Content-Type-Options, Permissions-Policy).
+%       - Cookies (Secure/HttpOnly/SameSite).
+%       - Application posture (error pages and stack traces).
+%       - Disclosure/communication (security.txt).
+% - Backoff/breaker strategy:
+%   * Per-origin failure tracking and temporary blacklisting when WAFs/CDNs respond with repeated 403/503 or effectively null-route traffic.
+%   * Global timeouts and connection limits to avoid overwhelming endpoints and to prevent the scanner from hanging.
+
+\subsection{Simulation? Experimental? Subjects?}
+
+% "Subjects" framing:
+% - Not human subjects; "subjects" are production websites belonging to:
+%   * Canadian authorities, financial institutions, universities, energy companies.
+%   * Comparator sets in the US and UK (authorities, banks, universities; no UK energy due to lack of link data).
+% - Clarify that scanning is limited to:
+%   * Landing pages over HTTP/HTTPS, error pages on a synthetic path, and a small number of well-defined auxiliary paths (e.g., /.well-known/security.txt).
+%   * Only safe, low-intensity GET requests with strict rate limiting.
+% - Note: This is closer to "internet measurement" than lab simulation; no intrusive fuzzing, no auth, no POSTs.
+
+
+\subsection{Experimental Procedure/Paradigm}
+
+% Procedure outline:
+% 1. Domain collection:
+%    - Fetch raw lists from each authoritative source/API.
+%    - Normalise to canonical hostnames (strip query params, normalise schemes).
+%    - Deduplicate within and across sector/jurisdiction lists.
+% 2. Target selection:
+%    - For each logical "entity", choose primary web origin (e.g., main www.* or bare domain).
+%    - Document how you handled entities without a clearly resolvable website.
+% 3. Scanning pipeline:
+%    - Step 1: HTTPS capability test and TLS handshake (finds supported protocol versions and negotiated cipher suites).
+%    - Step 2: HTTP->HTTPS redirect test (start at http://, follow 3xx up to a depth limit).
+%    - Step 3: Header & cookie capture on the final landing page (2xx/3xx), including CSP, Permissions-Policy, Referrer-Policy, X-Frame-Options, X-Content-Type-Options, Set-Cookie.
+%    - Step 4: Error-page test:
+%        * GET a definitely-nonexistent path (e.g., /__scan__/<uuid>).
+%        * Record status, headers, and truncated body; run stack-trace regexes (JS, Python, PHP, C#, Java, etc.).
+%    - Step 5: security.txt test:
+%        * Check /.well-known/security.txt and /security.txt over HTTPS.
+% 4. WAF/CDN handling:
+%    - Record specific categories of failure (immediate 403/503, connection drops/timeouts, "browser integrity" pages, CAPTCHAs).
+%    - Apply per-origin backoff: after N hard failures within a window, skip further tests for that origin.
+% 5. Manual verification:
+%    - For a sample of sites in each category, manually load pages in a browser to verify scanner interpretations (e.g., confirm soft-404 vs normal 200, check that a CSP is actually enforcing).
+
+\subsection{Data Analysis}
+% Data analysis plan:
+% - For each site, derive binary/ternary indicators per check:
+%   * Example: HTTPS enforced (yes/no/partial), HSTS quality (good/weak/missing), TLS version support (modern/legacy), etc.
+% - Aggregate by:
+%   * Sector (authority/finance/education/energy).
+%   * Jurisdiction (CA/US/UK).
+%   * CDN/WAF vs non-CDN (where inferable from headers/CNAMEs).
+% - Compute:
+%   * Proportion of sites meeting each recommended control.
+%   * "Profiles" of controls (e.g., % with strong TLS but weak headers vs the reverse).
+%   * Distribution of security.txt adoption, CSP presence, and cookie flag hygiene.
+% - For RQ2:
+%   * Compare distributions across CA vs US vs UK for the same sector.
+%   * Highlight statistically meaningful gaps (even if just descriptive comparisons, not heavy stats).
+% - Handle WAF-affected sites:
+%   * Treat as a distinct category (unmeasurable due to active blocking).
+%   * Report their counts separately to avoid biasing denominators.
+
+\subsection{Evaluation metrics}
+% Evaluation metrics:
+% - Per-check classification:
+%   * Recommended / acceptable / missing, based on concrete standards (e.g., HSTS max-age >= 1 year; TLS >= 1.2; Referrer-Policy at least strict-origin-when-cross-origin; etc.).
+% - Site-level "profiles" instead of a single score:
+%   * Transport posture: {modern TLS only, legacy allowed, HTTPS not enforced}.
+%   * Header posture: {all key hardening headers present, partial, minimal}.
+%   * Application posture: {no error leaks, minor leaks, stack trace / directory listing exposed}.
+%   * Disclosure posture: {security.txt present and complete, present but weak, absent}.
+% - Sector/jurisdiction metrics:
+%   * For each sector + jurisdiction: report percentages for all major checks with CIs or at least clear N.
+% - Optional composite:
+%   * A simple "meets a minimum Canadian baseline" flag (e.g., HTTPS enforced, HSTS present, modern TLS only, no obvious error leaks) to answer RQ1 succinctly.
+
+\subsection{Security Checks and Attacks Mitigated}
+% Checks and attacks (for a compact subsubsection in Methods + later references in Discussion):
+%
+% Enforce HTTPS + HSTS:
+%   - Attacks: passive eavesdropping, on-path tampering, SSL-stripping on first visit, downgrade + user click-through on bad certs.
+%   - Why: ensures confidentiality/integrity of traffic to gov/finance/edu portals; HSTS stops "accidental" HTTP.
+%
+% TLS versions (>=1.2/1.3 only):
+%   - Attacks: exploitation of legacy protocol weaknesses (BEAST, POODLE-style issues, downgrade to TLS 1.0/1.1/SSL).
+%   - Why: removes attack surface from obsolete protocol modes; aligns with RFC 8996 and NIST guidance.
+%
+% Cipher & hash strength (AEAD only, no RC4/3DES/SHA-1):
+%   - Attacks: known-weak stream/block ciphers, MAC-then-encrypt issues, SHA-1 collision/forgery, export-grade suites.
+%   - Why: ensures that even if TLS is present, it is cryptographically modern and robust.
+%
+% Referrer-Policy:
+%   - Attacks: leakage of sensitive URLs and query strings to third parties; helps phishing/recon and privacy violations.
+%
+% X-Frame-Options / CSP frame-ancestors:
+%   - Attacks: clickjacking / UI redressing (hidden iframes tricking users into clicking "approve", "submit payment", etc.).
+%
+% X-Content-Type-Options: nosniff:
+%   - Attacks: MIME type confusion leading to script execution or drive-by download when servers mislabel content types.
+%
+% Cookies: Secure / HttpOnly / SameSite:
+%   - Attacks: session theft over HTTP (no Secure), theft via XSS (no HttpOnly), CSRF / cross-site state changes (no SameSite).
+%
+% security.txt:
+%   - Attacks mitigated indirectly: long-lived vulnerabilities due to lack of a clear contact path; reduces "vulnerability latency" by enabling responsible disclosure.
+%
+% CSP (baseline) + Permissions-Policy:
+%   - Attacks: reflected/stored XSS, compromised third-party scripts, supply-chain attacks, over-permissive access to camera/mic/geo etc via embedded content.
+%
+% Revealing headers:
+%   - Attacks: targeted exploitation based on known-vulnerable versions (e.g., scanning for Apache/2.4.49), recon for phishing and lateral movement.
+%
+% Error-page hygiene:
+%   - Attacks: information disclosure (stack traces, SQL errors, file paths), easier exploit development, phishing/SEO abuse via soft-404s.
+%
+% Placement:
+%   - Methods: for each check, 1–2 sentences on the above.
+%   - Results: present prevalence stats per check.
+%   - Discussion: interpret which attacks are still feasible in common configurations and which are meaningfully constrained.
+
+
+\section{Results}\label{sec:result}
+\subsection{Facts Only, No Interpretation}
+
+\subsubsection{Canada}
+\textbf{Educational Institutions}
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/edu/redirects/hop_distribution_all_success.png}
+\captionof{figure}{This figure shows how many redirects the scanner had to follow from the initial input URL to reach a final response (of any status) for URLs that completed the redirect resolution without errors. A bar at 0 indicates URLs that returned a final response immediately without redirecting; a bar at 1 indicates URLs that performed exactly one redirect, and so on. This distribution gives a sense of how \emph{deep} typical redirect chains are in the studied population.
+}
+\label{fig:ca:edu:hop_all_success}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+\captionof{figure}{Each bar corresponds to one high-level outcome category for the redirect resolution stage. ``ok\_final\_2xx'' indicates URLs where the scanner successfully followed redirects and obtained a 2xx response. ``blocked\_403\_503'' indicates URLs where at least one response in the resolution chain returned HTTP 403 or 503, suggesting the presence of a WAF or access control that blocked the scanner. ``timeout\_error'', ``redirect\_error'', and ``other\_error'' capture various error conditions. The relative bar heights show how often each outcome occurred.}
+\label{fig:ca:edu:resolution_outcomes}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+\captionof{figure}{
+This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
+}
+\label{fig:ca:edu:resolution_outcomes}
+\end{minipage}
+\end{center}
+
+% results from each module. Should also not CA gov standards as an explicity section, then move onto the bonus stuff (e.g., MDN, OWASP)
+
+% Break down the following results per domain (gov, 
+    % error_leak
+        % - NOTE: Ignore next.js here, lots of false positives
+        % what fraction of error pages leaked info
+        % what fraction of error pages leaked info about non cloudflare/wordpress/drupal
+            % e.g frameworks vs cloud vs servers
+        % what fraction had versions 
+            % - NOTE: drupal had versions in nearly all of them but the scanner missed drupal specifically
+    % hsts/https (CA gov)
+        % what percentage redirected http -> https
+        % what fraction accepted an http request
+        % what fraction actually implemented sts header
+    % headers
+        % what fraction actually followed best practices (recommended)
+        % what fraction contained revealing headers
+        % what header's recommendation was most/least abided by.
+    % cipher suite/tls (CA gov)
+    % any WAF/CDN behaviour observed
+
+% Results structure ideas (facts only):
+% - Subsection 1: HTTPS, HSTS, TLS, cipher suites
+%   * For CA authorities / CA finance / CA education / CA energy:
+%       - % of sites that:
+%           · Redirect HTTP→HTTPS for root.
+%           · Maintain HTTPS-only (no HTTP listener or always redirect).
+%           · Set HSTS, and fraction with "strong" policy (>= 1 year, includeSubDomains).
+%       - TLS versions observed: % supporting 1.3, 1.2, % still willing to negotiate 1.0/1.1 (if any).
+%       - Cipher posture: % with only modern AEAD suites; % where legacy/weak suites appear in negotiation.
+%   * Repeat summary for US and UK comparators by sector.
+%
+% - Subsection 2: Headers & cookies
+%   * Referrer-Policy: fraction with strong defaults vs weaker vs missing.
+%   * Clickjacking: % with CSP frame-ancestors and/or X-Frame-Options; note overlaps.
+%   * X-Content-Type-Options: nosniff prevalence.
+%   * Cookies:
+%       - Among sites that set cookies: % using Secure, HttpOnly, and SameSite; count of sites with apparently "session-like" cookies missing flags.
+%
+% - Subsection 3: CSP, Permissions-Policy, security.txt
+%   * CSP: % of sites with any CSP; % with a baseline-protective policy vs extremely permissive (e.g., script-src '*', 'unsafe-inline').
+%   * Permissions-Policy: % that set it at all; % with non-trivial deny-lists for powerful features.
+%   * security.txt: % with a valid file under /.well-known or /; note common fields present/absent.
+%
+% - Subsection 4: Error-page behaviour (error_leak module)
+%   * For the synthetic missing path:
+%       - Status codes: fraction using proper 404/410 vs soft-404 2xx.
+%       - Header parity: fraction of sites where error pages "drop" important headers relative to 200s.
+%       - Leak patterns: counts for framework banners, full stack traces, file paths, SQL/ORM messages, directory listings.
+%   * Note methodological caveat: ignore known Next.js false positives where the "dev style" error pages are benign or mis-classified.
+%
+% - Subsection 5: WAF/CDN behaviour
+%   * Count sites where:
+%       - Scanner received immediate 403/503 or "browser check" pages.
+%       - Connections consistently timed out / null-routed for all tests.
+%   * Report them by sector/jurisdiction as a separate category (not merged into failures).
+
+\subsection{Enough to support main questions}
+% RQ coverage:
+% - RQ1 (Canadian posture vs baseline):
+%   * Use the CA-only numbers for HTTPS, HSTS, TLS versions, cipher strength, cookies, and basic headers.
+% - RQ2 (sector/jurisdiction variation):
+%   * Tables comparing CA vs US vs UK within each sector for key metrics (HTTPS/HSTS, CSP, security.txt, etc.).
+% - RQ3 (second-line defenses and gaps):
+%   * Prevalence of CSP, Permissions-Policy, referrer policies, error-page hygiene, security.txt.
+%   * WAF/CDN behaviour data (how many sites effectively "opt out" of being measured).
+
+
+\section{Discussion}\label{sec3}
+\subsection{Summary of Results}
+% Summary planning:
+% - One paragraph per main theme:
+%   * Transport-layer: are most public sites on HTTPS with modern TLS or not? Any notable pockets of legacy?
+%   * Header/cookie hardening: broadly adopted or patchy? Any sectors standout?
+%   * Second-line defenses (CSP, Permissions-Policy, security.txt): still niche or common in certain sectors/jurisdictions?
+%   * WAF/CDN: how often our measurement was actively blocked; note that blocking measurement ≠ insecure, but reduces transparency.
+
+ \subsection{Restate \& Answer Main Questions}
+ % Answering RQs:
+% - RQ1: Conclude whether a typical Canadian public website meets a reasonable minimum baseline (with explicit percentages).
+% - RQ2: Highlight clearest cross-sector and cross-country differences (e.g., "finance consistently ahead on TLS/cookies, education lags on security.txt", or whatever your data show).
+% - RQ3: Explain where hardening is rare, and what that implies for standards (e.g., CSP and security.txt adoption low despite strong recommendations).
+
+\subsection{Limitations}
+% Limitations:
+% - Coverage:
+%   * Dataset limited to sites that appear in public registries and resolve cleanly; some authorities may use portals under third-party domains.
+%   * No deep crawling: results reflect landing pages and a single synthetic error path only.
+% - Measurement:
+%   * Single vantage point (cloud VM); some behaviours may be geo- or ASN-dependent.
+%   * WAF/CDN interference: some results are "unmeasurable" by design.
+%   * TLS/cipher behaviour may differ for other SNI/ALPN combinations (e.g., HTTP/2 vs 1.1).
+% - Semantics:
+%   * Presence of a header does not guarantee correct app-level use (e.g., CSP might be overly permissive).
+%   * Stack-trace regexes may miss exotic frameworks or misclassify some verbose messages.
+% - Standards interpretation:
+%   * "Recommended" vs "required" is a spectrum; you anchored in current guidance but others could choose different thresholds.
+
+\subsection{Conclusion/Recommendation}
+% Conclusion & recommendations:
+% - For Canadian standards bodies / policymakers:
+%   * Consider codifying a clear minimum web security baseline for public-sector sites (HTTPS-only, HSTS, modern TLS, basic hardening headers, security.txt).
+%   * Encourage or require regular, automated self-assessment aligned with CCCS and CSA guidance.
+% - For site operators:
+%   * Practical checklist derived from this study: easiest wins (e.g., HSTS, referrer policy, nosniff, secure cookies) vs more complex items (CSP roll-out, Permissions-Policy).
+%   * Suggest incremental adoption paths (e.g., CSP report-only → enforcing; adding security.txt with monitored contact).
+% - For the wider community:
+%   * Emphasize value of transparent, standards-aligned measurement across jurisdictions and sectors.
+\subsection{Future Work}
+% Future work:
+% - DNS and certificate authority checks (CAA records, OCSP/CRL behaviour) that you deliberately excluded from this phase.
+% - Deeper crawling of internal paths and authenticated apps (with appropriate ethics/permissions).
+% - Longitudinal measurements to track improvement or regression over time.
+% - Extending scanning to additional sectors (healthcare as its own sector, municipal websites, NGOs).
+% - Integrating more nuanced WAF detection and collaboration (e.g., whitelisting research scanners).
+% - Open-sourcing the tool and encouraging contributions/replications in other countries.
+
+\section{Acknowledgments}\label{sec4}
+% Acknowledgments ideas:
+% - Funding: CSA Group undergraduate research grant (project name).
+% - Institutional support: TRU supervisors/mentors, lab resources.
+% - Any assistance with infrastructure (cloud credits, security review, etc.).
+
+\subsection{Funding/Equipment}
+\newpage \begin{appendices}\label{app:reproducibility}
+\section{Reproducibility Notes}
+% Reproducibility notes:
+% - Environment:
+%   * Python version; key libraries (requests, ssl/PyOpenSSL, etc.).
+%   * OS and VM specs.
+% - Code:
+%   * Repository structure; which commit/tag corresponds to this paper.
+%   * High-level configuration: rate limits, timeouts, retry/backoff params.
+% - Inputs:
+%   * How to reconstruct site lists from the same public sources (without shipping full lists if they are sensitive).
+% - Outputs:
+%   * What artifacts you can safely share (aggregate stats, per-site anonymised summaries, or full per-site results if approved).
+\end{appendices}
+\newpage 
+% \bibliographystyle{IEEEtranN}
+% \bibliography{sn-bibliography}
+% \bibliographystyle{sn-mathphys-num}
+% \bibliography{sn-bibliography}
+
+\end{document}

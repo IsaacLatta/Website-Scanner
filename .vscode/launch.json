@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Scanner",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/scanner/main.py",
+            "args": ["${workspaceFolder}/src/tests/res/sites.txt"],
+            "console": "integratedTerminal"
+        },
+        {
+        "name": "pytest: all",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-q", "-s"],
+        "justMyCode": true,
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "name": "pytest: file",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-q", "-s", "${file}"],
+        "justMyCode": true,
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "name": "pytest: single test (k expr)",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-q", "-s", "-k", "${input:testExpr}"],
+        "justMyCode": true,
+        "cwd": "${workspaceFolder}"
+      },
+      {
+        "name": "pytest: hsts test",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-q", "-s", "tests/test_hsts.py", "-k", "test_hsts_redirect_and_header"],
+        "justMyCode": true,
+        "cwd": "${workspaceFolder}"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "testExpr",
+        "type": "promptString",
+        "description": "Enter -k expression (e.g. test_hsts_redirect_and_header)"
+      }
+    ]
+  }
+  

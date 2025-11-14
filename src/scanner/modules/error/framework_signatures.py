@@ -28,11 +28,11 @@ FRAMEWORK_SIGNATURES: List[Signature] = [
     #     category="library",
     #     aliases=["jquery"],
     # ),
-    Signature(
-        display_name="Next.js",
-        category="fullstack",
-        aliases=["next.js", "nextjs", "next js", "next"],
-    ),
+    # Signature(
+    #     display_name="Next.js",
+    #     category="fullstack",
+    #     aliases=["next.js", "nextjs", "next js", "next"],
+    # ),
     # Signature(
     #     display_name="Express",
     #     category="backend",

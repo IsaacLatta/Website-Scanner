@@ -1,0 +1,183 @@
+{
+  "inputs": {
+    "n_all_origins": 373,
+    "n_entry_origins": 343,
+    "n_final_only_origins": 30,
+    "n_final_origins": 241,
+    "n_input_origins": 343,
+    "n_input_uris": 573,
+    "uris_per_entry_origin": {
+      "count": 343,
+      "max": 100,
+      "mean": 1.6705539358600583,
+      "median": 1,
+      "p95": 3
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 36
+    },
+    "http_timeout_buckets": {
+      "0": 322,
+      "1": 30,
+      "2": 10,
+      "3_plus": 62
+    },
+    "n_origins": 424,
+    "n_origins_all_inputs_unreachable": 78,
+    "n_origins_any_timeout": 102,
+    "n_origins_http_dead": 62,
+    "n_origins_http_forbidden": 36,
+    "n_origins_tls_dead": 12,
+    "origins_all_inputs_unreachable": [
+      "fpcc-cpac.gc.ca",
+      "humanrightsmuseum.ca",
+      "ncc-ccn.gc.ca",
+      "npa.ca",
+      "npa.gc.ca",
+      "onf-nfb.gc.ca",
+      "pm.gc.ca",
+      "www.admtl.com",
+      "www.appointments-nominations.gc.ca",
+      "www.bac-lac.gc.ca",
+      "www.civilization.ca",
+      "www.crtc.gc.ca",
+      "www.feddevontario.gc.ca",
+      "www.historymuseum.ca",
+      "www.ncc-ccn.gc.ca",
+      "www.oag-bvg.gc.ca",
+      "www.osc.gov.on.ca",
+      "www.portalberniportauthority.ca",
+      "www.portofhalifax.ca",
+      "www.portvancouver.com",
+      "www.publicsafety.gc.ca",
+      "www.scc-csc.ca",
+      "www.sshrc-crsh.gc.ca",
+      "www.tc.gc.ca",
+      "www.tpsgc-pwgsc.gc.ca",
+      "www.tribunaux.qc.ca",
+      "www.waa.ca",
+      "www.warmuseum.ca",
+      "www.yvr.ca",
+      "b2bbank.com",
+      "cart-crac.gc.ca",
+      "ccperb-cceebc.gc.ca",
+      "courdappelduquebec.ca",
+      "csps-efpc.gc.ca",
+      "elections.yk.ca",
+      "hfr-tgf.ca",
+      "housing-infrastructure.canada.ca",
+      "impact.canada.ca",
+      "ingeniumcanada.org",
+      "irb-cisr.gc.ca",
+      "lautorite.qc.ca",
+      "portauthority.npa.ca",
+      "pslreb-crtefp.gc.ca",
+      "rcmp.ca",
+      "slwb.com",
+      "sst-tss.gc.ca",
+      "torontopearson.com",
+      "www.alberta.ca",
+      "www.bcauditor.com",
+      "www.bmo.com",
+      "www.chairs-chaires.gc.ca",
+      "www.chrt-tcdp.gc.ca",
+      "www.cirb-ccri.gc.ca",
+      "www.citt-tcce.gc.ca",
+      "www.clo-ocol.gc.ca",
+      "www.cppinvestments.com",
+      "www.csps-efpc.gc.ca",
+      "www.ct-tc.gc.ca",
+      "www.digitalmuseums.ca",
+      "www.electionsmanitoba.ca",
+      "www.eptc-tpec.gc.ca",
+      "www.gordiehoweinternationalbridge.com",
+      "www.gov.nu.ca",
+      "www.hayriverhealth.ca",
+      "www.infrastructure.gc.ca",
+      "www.ipc.on.ca",
+      "www.justice.gouv.qc.ca",
+      "www.mbsecurities.ca",
+      "www.ombudsman.forces.gc.ca",
+      "www.ombudsman.yk.ca",
+      "www.priv.gc.ca",
+      "www.psdpt-tpfd.gc.ca",
+      "www.rcmp-grc.gc.ca",
+      "www.sdtc.ca",
+      "www.tatc.gc.ca",
+      "www.wdbridge.com",
+      "ylw.kelowna.ca",
+      "yukon.ca"
+    ],
+    "tls_timeout_buckets": {
+      "0": 411,
+      "1": 1,
+      "2_plus": 12
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 234,
+      "301": 189,
+      "302": 19,
+      "303": 1,
+      "307": 3,
+      "308": 3,
+      "404": 13,
+      "406": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 234,
+      "3xx": 215,
+      "4xx": 14
+    },
+    "final_status_counts": {
+      "200": 395,
+      "400": 1,
+      "404": 33,
+      "406": 1
+    },
+    "final_status_family_counts": {
+      "2xx": 395,
+      "4xx": 35
+    },
+    "hop_buckets_all_success": {
+      "0": 248,
+      "1": 118,
+      "2": 53,
+      "3_plus": 11
+    },
+    "hop_buckets_success_non_block": {
+      "0": 248,
+      "1": 118,
+      "2": 53,
+      "3_plus": 11
+    },
+    "hop_counts_all_success": {
+      "count": 430,
+      "max": 4,
+      "mean": 0.6,
+      "median": 0.0,
+      "p95": 2
+    },
+    "hop_counts_success_non_block": {
+      "count": 430,
+      "max": 4,
+      "mean": 0.6,
+      "median": 0.0,
+      "p95": 2
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 573,
+    "n_timeout_error": 56,
+    "outcome_counts": {
+      "ok_final_2xx": 395,
+      "ok_final_4xx_non_block": 35,
+      "other_error": 87,
+      "timeout_error": 56
+    },
+    "timeout_error_fraction": 9.773123909249565
+  }
+}
