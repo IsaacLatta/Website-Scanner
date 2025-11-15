@@ -12,6 +12,7 @@ FrameworkCategory = Literal[
     "library",
 ]
 
+# The ones commented out had too many false positives.
 FRAMEWORK_SIGNATURES: List[Signature] = [
     # Signature(
     #     display_name="Node.js",
@@ -173,7 +174,7 @@ FRAMEWORK_SIGNATURES: List[Signature] = [
         category="fullstack",
         aliases=["remix"],
     ),
-    # Signature( # Noisy, many false positives
+    # Signature( 
     #     display_name="Solid.js",
     #     category="frontend",
     #     aliases=["solid", "solid.js", "solidjs"],

@@ -136,6 +136,8 @@ Initiative}
     \vspace{0.4em} \item \textbf{RQ1}:
     \vspace{0.4em} \item \textbf{RQ2}:
     \vspace{0.4em} \item  \textbf{RQ3}:
+    \vspace{0.4em} \item  \textbf{RQ4}:
+    \vspace{0.4em} \item  \textbf{RQ5}:
 \end{itemize}
 
 \subsection{Previous Literature}
@@ -595,6 +597,184 @@ This figure shows the distribution of HTTP status codes for the final responses 
 \includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_category_distribution.png}
 \captionof{figure}{Error-page leaks by technology category. Each \texttt{error\_leak} match is labelled with a high-level category (for example, framework, database, cloud platform). For every category, we count how many distinct origins leaked at least one technology in that group. Bars therefore represent the number of sites whose error pages reveal something about their application framework, backing database, hosting platform, or other internal components.}
 \label{fig:ca:auth:error_leak_cat_distribution}
+\end{minipage}
+\end{center}
+
+\paragraph*{Headers: Security \& Revealing}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_baseline_coverage.png}
+\captionof{figure}{
+Distribution of how many core browser-side security headers each site enabled.
+For every origin, the scanner's \texttt{headers} module inspects the final HTTP
+response and classifies five ``baseline'' protections: \texttt{Referrer-Policy},
+CSP \texttt{frame-ancestors}, \texttt{X-Frame-Options}, \texttt{X-Content-Type-Options},
+and \texttt{Permissions-Policy}. A header is counted as ``enabled'' if its rating
+is either \emph{recommended} or \emph{sufficient} according to OWASP/MDN-inspired
+rules in the classifier. Each site is placed into one of four buckets based on how
+many of these five protections are enabled (0, 1--2, 3--4, or all 5). The height
+of each bar shows how many sites fall into that bucket, so taller bars indicate
+that configuration pattern is more common.}
+\label{fig:ca:auth:headers_baseline}
+\end{minipage}
+\end{center}
+  
+
+\begin{center}
+  \begin{minipage}{\plotwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_posture_bucket.png}
+  \captionof{figure}{
+Overall security-header posture of each site. Using the same five baseline
+headers as in Figure~\ref{fig:headers_baseline}, the scanner counts how
+many are rated \emph{recommended} or \emph{sufficient} and also notes whether
+any are rated \emph{insecure} or \emph{obsolete}. A site is labelled
+\emph{strong} if at least three baseline headers are recommended or sufficient
+and none are insecure/obsolete, \emph{weak} if none of the five are
+recommended/sufficient, and \emph{mixed} otherwise (some protections present,
+but at least one header misconfigured or missing). Each bar reports how many
+sites fall into each posture category. Reading from left to right therefore
+shows how many sites have broadly good, partial, or weak browser-side header
+configurations.}
+  \label{fig:ca:auth:headers_posture_bucket}
+  \end{minipage}
+  \end{center}
+  
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_security_rule_ratings.png}
+\captionof{figure}{
+Rating outcomes for each core security header rule. For every site and every
+rule (\texttt{referrer\_policy}, CSP \texttt{frame\_ancestors},
+\texttt{X-Frame-Options}, \texttt{X-Content-Type-Options}, and
+\texttt{Permissions-Policy}), the \texttt{headers} module applies a rule-specific
+classifier and assigns one of five ratings: \emph{recommended}, \emph{sufficient},
+\emph{insecure}, \emph{obsolete}, or \emph{unknown}. For each rule, we then count
+how many sites received each rating and stack those counts into a single bar.
+Within each bar, the height of each coloured segment shows the number of sites
+with that outcome, and the total bar height equals the number of sites analysed.
+Bars dominated by blue/orange segments indicate that the corresponding header is
+usually configured well; bars dominated by green/red show headers that are
+typically missing or misconfigured.}
+\label{fig:ca:auth:headers_ratings}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_security_header_presence.png}
+\captionof{figure}{
+Explicit use of each core security header. For each site and each baseline
+header rule, the scanner records whether the corresponding HTTP header is
+actually present in the final response (\texttt{present = True}). This figure
+counts, for each rule, the number of sites that explicitly send that header,
+regardless of how it is configured. Missing headers may still receive a rating
+via the classifier's \texttt{on\_missing\_class} default, but are not counted in
+these bars. The horizontal axis shows how many sites send each header, so longer
+bars indicate protections that are explicitly configured by most sites, while
+shorter bars highlight headers that are rarely used in practice.}
+\label{fig:ca:auth:headers_security_presence}
+\end{minipage}
+\end{center}
+  
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_revealing_any.png}
+\captionof{figure}{
+Presence of OWASP ``revealing'' headers per site. The \texttt{headers} module
+checks each final response for a list of information-leaking headers (for
+example \texttt{Server}, \texttt{X-Powered-By}, \texttt{X-Generator} and similar
+banners identified by OWASP as candidates for removal). A site is placed in the
+``At least one revealing header'' group if any of these headers are present,
+otherwise it is placed in the ``No revealing headers'' group. Each bar shows how
+many sites fall into each category. Reading this figure indicates what fraction
+of sites expose at least one stack-identifying header versus those that suppress
+such banners entirely.}
+\label{fig:ca:auth:headers_revealing_any}
+\end{minipage}
+\end{center}
+  
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_revealing_topN.png}
+\captionof{figure}{
+Most common revealing headers across all sites. For every site that exposes at
+least one OWASP ``revealing'' header, the scanner records which header names
+were present (for example, \texttt{server}, \texttt{x\_powered\_by},
+\texttt{x\_generator}). This figure selects the top $N$ header names by the
+number of sites that use them and plots those counts as horizontal bars. The
+length of each bar shows how many sites include that particular header in their
+final response. Reading from top to bottom reveals which banners---such as
+generic \texttt{Server} strings or specific framework identifiers---are most
+widely exposed to the internet.}
+\label{fig:ca:auth:headers_revealing_topN}
+\end{minipage}
+\end{center}
+    
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_revealing_count_distribution.png}
+\captionof{figure}{
+Number of distinct revealing headers exposed per site. For each origin, the
+scanner counts how many different revealing header types (from the OWASP list)
+are present in the final response. Sites are then grouped into buckets with 0,
+1, 2, or 3-or-more such headers. The height of each bar shows how many sites
+fall into that bucket. This chart therefore indicates not only whether sites
+leak stack information via headers at all, but also how verbose their banners
+are---for example, whether they expose multiple overlapping identifiers (such as
+\texttt{Server} plus \texttt{X-Powered-By} plus \texttt{X-Generator}) or none.}
+\label{fig:ca:auth:headers_revealing_count_distribution}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_cookies_flags.png}
+\captionof{figure}{
+Cookie flag usage on sites that set cookies. The \texttt{headers} module
+aggregates information from the final response's \texttt{Set-Cookie} headers and
+classifies a sample cookie per site. This figure considers only sites that set
+at least one cookie and, for that sample cookie, counts how many sites used each
+flag: \texttt{Secure}, \texttt{HttpOnly}, which \texttt{SameSite} value
+(\texttt{Strict}, \texttt{Lax}, \texttt{None}, or missing/other), and whether a
+lifetime was explicitly specified via \texttt{Max-Age} or \texttt{Expires}. Each
+bar shows the number of cookie-setting sites where the corresponding attribute
+was present. Reading across the bars reveals how common it is for session
+cookies to be protected against network theft (Secure), script access
+(HttpOnly), cross-site attacks (SameSite), and long-lived persistence
+(explicit lifetime).}
+\label{fig:ca:auth:headers_cookies_flags}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/headers/headers_cookies_ratings.png}
+\captionof{figure}{
+Classifier outcomes for sample cookies on cookie-setting sites. For every site
+that sends at least one \texttt{Set-Cookie} header, the scanner applies a
+rule-based classifier to a sample cookie and assigns one of several ratings:
+\emph{recommended} (Secure + HttpOnly + SameSite=Strict),
+\emph{sufficient} (Secure + HttpOnly + SameSite=Lax), \emph{insecure} (missing
+one or more of these protections), or other categories such as \emph{unknown}.
+This figure counts how many cookie-setting sites fall into each rating. The
+height of each bar therefore indicates how often session cookies are configured
+in a strongly locked-down way versus partially protected or weakly configured.}
+\label{fig:ca:auth:headers_cookies_ratings}
 \end{minipage}
 \end{center}
 

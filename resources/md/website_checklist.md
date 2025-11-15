@@ -431,36 +431,3 @@ We send **one GET** to a clearly nonexistent path and compare with the normal 20
 * **Status correctness:** 404/4xx vs soft-4xx.
 * **Leaks found:** banners/frameworks (and versions), stack trace, SQL strings, directory listing (with short snippet).
 * **Reflected XSS on error page:** yes/no.
-
----
-
-## TODO List For The Tool
-
-> Below is what I would need to implement in the code to add checks for these features. Most of the above is already implemented. I just need to update some of the parsing logic to check for more specific header parameters. The error page checks will need to be fully implemented.
-
-#### Cipher & Hash Strength
-
-* Update tests for RC4/3DES/CBC to check the direct SSL suites (not generic strings, sweedish did just a str).
-* Check signature hash family and key size/type.
-* NOTE: Might need to use PyOpenSSL for this, I am not sure OpenSSL has support for all of these. I have used OpenSSL as the sweedish code used it.
-
-#### Anti-framing (CSP `frame-ancestors` / X-Frame-Options)
-
-* Update CSP header parser to check for `frame-ancestors`
-
-#### `security.txt`
-
-* Add check to validate fields (`Contact`, `Expires`), basic URL/mailto syntax. (Optional, I already check for security.txt in `/` and `.well-known`)
-
-#### Content-Security-Policy (baseline)
-
-* Update parser to include all of: `default-src 'self'`, `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`, `form-action 'self'`
-
-#### Permissions-Policy
-
-* Parse header and deny-list (e.g., `camera=(), microphone=(), geolocation=()`).
-* Current check only looks for `=*`
-
-#### Error Pages (404/410) & Edge Responses
-
-* This needs to be fully implemented, there is nothing in the tool.
