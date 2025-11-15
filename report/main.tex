@@ -361,17 +361,55 @@ Initiative}
 \end{minipage}
 \end{center}
 
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/entry_status_distribution.png}
+\captionof{figure}{
+This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
+}
+\label{fig:ca:auth:entry_status}
+\end{minipage}
+\end{center}
+
 
 \begin{center}
 \begin{minipage}{\plotwidth}
 \centering
-\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/resolution_outcomes.png}
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/final_status_distribution.png}
 \captionof{figure}{
-This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
-}
-\label{fig:ca:auth:resolution_outcomes}
+This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error. }
+\label{fig:ca:auth:final_status}
 \end{minipage}
 \end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/origin_http_timeout_buckets.png}
+\captionof{figure}{This figure shows, for each origin, how many HTTP-level timeouts the scanner experienced during the entire scan, aggregated into buckets. Origins in the ``0'' bucket never timed out; those in``3\_plus'' produced three or more HTTP timeouts, indicating sites that were repeatedly unreachable or unreliable during the scan window.}
+\label{fig:ca:auth:http_timeout}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/origin_tls_timeout_buckets.png}
+\captionof{figure}{This figure shows how many TLS handshake timeouts the scanner encountered per origin, bucketed into 0, 1, and 2-or-more timeouts. Origins in the ``2\_plus'' bucket systematically failed to complete the TLS handshake, which may correspond to misconfigured servers, aggressive WAF behaviour, or transient network issues.}
+\label{fig:ca:auth:tls_timeout}
+\end{minipage}
+\end{center}
+  
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/origin_http_forbidden_statuses.png}
+\captionof{figure}{This figure shows which HTTP status codes are associated with origins that the scanner marked as http\_forbidden. For each origin where the scanner concluded that HTTP access was forbidden, we recorded any HTTP status codes returned (typically 403 or 503). The bars indicate how many origins produced 403 Forbidden responses, how many produced 503 Service Unavailable responses, and how many produced other status codes. This helps characterise the kinds of blocking or WAF behaviour we encountered at the origin level.}
+\label{fig:ca:auth:forbidden_status}
+\end{minipage}
+\end{center}
+
 
 \paragraph*{HTTPS/HSTS Connectivity \& Redirection}
 
@@ -408,7 +446,7 @@ This figure shows the distribution of HTTP status codes for the final responses 
   \centering
   \includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/hsts_flags_among_hsts_sites.png}
   \captionof{figure}{Configuration of HSTS flags among origins that set any HSTS header. We first restrict to origins where the HSTS module marked \texttt{https\_ok{=}True} and \texttt{has\_hsts{=}True}. Among this HSTS-enabled subset we count how many also configured (i) a \texttt{max-age} directive of at least one year (\texttt{max\_age\_ge\_1yr}), (ii) the \texttt{includeSubDomains} directive, and (iii) the \texttt{preload} directive. Bar heights therefore represent how often each strengthening flag appears among sites that already deploy HSTS.}
-  \label{fig:ca:auth:htsts_flags}
+  \label{fig:ca:auth:hsts_flags}
   \end{minipage}
   \end{center}
 
@@ -418,7 +456,7 @@ This figure shows the distribution of HTTP status codes for the final responses 
 \centering
 \includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/hsts_presence_and_strength.png}
 \captionof{figure}{HSTS presence and strength among origins whose HTTPS response succeeded. We first restrict to origins where the HSTS module recorded \texttt{https\_ok{=}True}. Within this set, \emph{no\_hsts} counts sites that did not send a Strict-Transport-Security header; \emph{hsts\_any} counts all sites that did; and \emph{hsts\_strong} counts the subset that configured both \texttt{max-age}~$\geq$~1~year and \texttt{includeSubDomains} (our ``strong HSTS'' baseline).}
-\label{fig:ca:auth:htsts_flags}
+\label{fig:ca:auth:hsts_presence}
 \end{minipage}
 \end{center}
 
@@ -479,6 +517,97 @@ This figure shows the distribution of HTTP status codes for the final responses 
 \label{fig:ca:auth:tls12_weak_features}
 \end{minipage}
 \end{center}
+
+\paragraph*{Security.txt}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/securitytxt/securitytxt_presence.png}
+\captionof{figure}{Deployment of \texttt{security.txt} per origin. The scanner records three outcomes: \emph{has\_securitytxt}, where at least one usable \texttt{security.txt} file was found at \texttt{/.well-known/security.txt} or \texttt{/security.txt} and contained a \texttt{Contact} or \texttt{Expires} field; \emph{missing\_securitytxt}, where the origin was reachable but no such file was found; and \emph{origin\_offline}, where the origin was marked offline and the module did not probe for \texttt{security.txt}. Bar heights show the number of origins in each category.}
+\label{fig:ca:auth:securitytxt_presence}
+\end{minipage}
+\end{center}
+  
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/securitytxt/securitytxt_field_combinations.png}
+\captionof{figure}{Field combinations observed in deployed \texttt{security.txt} files. Among origins where \texttt{security.txt} was present, we classify each file as \emph{contact\_only} (at least one \texttt{Contact} field but no \texttt{Expires}), \emph{expires\_only} (an \texttt{Expires} field but no \texttt{Contact}), or \emph{contact\_and\_expires} (both fields present). Counts are per origin, not per file, and show how often each minimal disclosure combination appears.}
+\label{fig:ca:auth:securitytxt_field}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/securitytxt/securitytxt_expires_validity.png}
+\captionof{figure}{Coverage and freshness of the \texttt{Expires} field in \texttt{security.txt}. For origins with \texttt{security.txt} present, we separate files into three groups: \emph{valid\_expires}, where a syntactically valid \texttt{Expires} value was parsed and remained in the future at scan time; \emph{expired\_expires}, where \texttt{Expires} was present but already in the past; and \emph{no\_expires}, where the file contained no \texttt{Expires} field at all.}
+\label{fig:ca:auth:securitytxt_expires}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/securitytxt/securitytxt_locations.png}
+\captionof{figure}{Locations used for \texttt{security.txt}. Among origins that deployed a usable \texttt{security.txt} file, we count how many placed it at the RFC~9116-recommended path \texttt{/.well-known/security.txt} versus the legacy fallback \texttt{/security.txt}. Each bar corresponds to one path and reports the number of origins using it.}
+\label{fig:ca:auth:securitytxt_location}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/securitytxt/securitytxt_contact_canonical.png}
+\captionof{figure}{Contact and canonical information advertised via \texttt{security.txt}. Among origins with a present \texttt{security.txt} file, the \emph{has\_contact} bar counts files that expose at least one \texttt{Contact} field (for example, an email address or URL for reporting vulnerabilities), while the \emph{has\_canonical} bar counts files that include at least one \texttt{Canonical} URL pointing to the authoritative copy of their disclosure policy. Bars are counts of origins, not individual fields.}
+\label{fig:ca:auth:securitytxt_contact}
+\end{minipage}
+\end{center}
+
+\paragraph*{Error Leaks}
+
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_tech_topN_all.png}
+\captionof{figure}{Top technologies disclosed by error pages. For each origin, the scanner sends a request to a randomly generated non-existent path and inspects the resulting error page for framework, database, and cloud-platform signatures using regular expressions. After filtering out technologies in an explicit ignore list (for example, \texttt{Next.js}, which produced many false positives), we count how many origins leak each \texttt{tech\_name}. Bars show the top $N$ technologies by number of origins, including major platforms such as WordPress, Cloudflare, and Drupal.}
+\label{fig:ca:auth:error_leak_top_N_all}
+\end{minipage}
+\end{center}
+  
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_tech_topN_no_wp_cf_drupal.png}
+\captionof{figure}{Second-tier technologies leaked by error pages (excluding WordPress, Cloudflare, and Drupal). Using the same detection method as in the previous figure, we remove the three most common platform signatures and re-rank the remaining technologies. Each bar reports how many origins had error pages that mentioned the corresponding framework or component at least once. This highlights less prominent but still widely deployed stacks exposed through error handling.}
+\label{fig:ca:auth:error_leak_top_N_wo_big_guys}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_category_distribution.png}
+\captionof{figure}{Error-page leaks by technology category. Each \texttt{error\_leak} match is labelled with a high-level category (for example, framework, database, cloud platform). For every category, we count how many distinct origins leaked at least one technology in that group. Bars therefore represent the number of sites whose error pages reveal something about their application framework, backing database, hosting platform, or other internal components.}
+\label{fig:ca:auth:error_leak_cat_distribution}
+\end{minipage}
+\end{center}
+
+% CA authorities had no stack traces
+% \begin{center}
+% \begin{minipage}{\plotwidth}
+% \centering
+% \includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_stacktrace_topN.png}
+% \captionof{figure}{Top stack-trace language families exposed on error pages. The scanner searches error responses for language-specific stack-trace patterns (for example, Python \texttt{Traceback}, Java \texttt{Exception in thread}, PHP \texttt{Stack trace:}, or JavaScript \texttt{Error:} frames). After applying an explicit ignore list (currently empty), we count how many origins leaked at least one stack trace for each language family (displayed as \texttt{display\_name}, such as ``JavaScript / Node.js'' or ``C\# / .NET''). Bars show the top $N$ language families by number of affected origins.}
+% \label{fig:ca:auth:error_leak_cat_distribution}
+% \end{minipage}
+% \end{center}
+  
 
 % \textbf{Educational Institutions}
 % \begin{center}
