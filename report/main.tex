@@ -56,7 +56,7 @@
 \setlength{\footskip}{1cm}
 
 \newlength{\plotwidth}
-\setlength{\plotwidth}{0.8\textwidth}
+\setlength{\plotwidth}{0.7\textwidth}
 
 
 \usepackage{siunitx}
@@ -80,6 +80,10 @@
   \end{center}%
 }
 
+\newcommand{\miniheader}[1]{%
+  \vspace{0.75em}%
+  \noindent\textbf{\large #1}\par\vspace{0.4em}
+}
 
 
 \begin{document}
@@ -128,8 +132,6 @@ Initiative}
  %    RQ3: What is the current website security situation of the Canadian authorities' websites?
  %    RQ4: How can the findings of this assessment be effectively communicated to Canadian web authorities to encourage improvements where necessary?
 
-
-
 \begin{itemize}
     \vspace{0.4em} \item \textbf{RQ1}:
     \vspace{0.4em} \item \textbf{RQ2}:
@@ -148,7 +150,7 @@ Initiative}
 % - The Swedish tool also some implementation flaws, and performance concerns. 
 % - Note the gap: no large-scale, standards-based scan focused on Canadian public authorities, nor cross-country sectoral comparison aligned with Canadian standards.
     
-\subsection{Reasons for Choosing Method}\label{sec:reasons}
+\subsection{Reasons for Choosing Method}
 
 % Reasons for method:
 % Why automated scanning + Python:
@@ -336,23 +338,26 @@ Initiative}
 \subsection{Facts Only, No Interpretation}
 
 \subsubsection{Canada}
-\textbf{Educational Institutions}
+\miniheader{Authorities}
+
+\paragraph{Redirection \& Initial Origin Resolution}
+
 \begin{center}
 \begin{minipage}{\plotwidth}
 \centering
-\includegraphics[width=\linewidth]{../results/ca/edu/redirects/hop_distribution_all_success.png}
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/hop_distribution_all_success.png}
 \captionof{figure}{This figure shows how many redirects the scanner had to follow from the initial input URL to reach a final response (of any status) for URLs that completed the redirect resolution without errors. A bar at 0 indicates URLs that returned a final response immediately without redirecting; a bar at 1 indicates URLs that performed exactly one redirect, and so on. This distribution gives a sense of how \emph{deep} typical redirect chains are in the studied population.
 }
-\label{fig:ca:edu:hop_all_success}
+\label{fig:ca:auth:hop_all_success}
 \end{minipage}
 \end{center}
 
 \begin{center}
 \begin{minipage}{\plotwidth}
 \centering
-\includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/resolution_outcomes.png}
 \captionof{figure}{Each bar corresponds to one high-level outcome category for the redirect resolution stage. ``ok\_final\_2xx'' indicates URLs where the scanner successfully followed redirects and obtained a 2xx response. ``blocked\_403\_503'' indicates URLs where at least one response in the resolution chain returned HTTP 403 or 503, suggesting the presence of a WAF or access control that blocked the scanner. ``timeout\_error'', ``redirect\_error'', and ``other\_error'' capture various error conditions. The relative bar heights show how often each outcome occurred.}
-\label{fig:ca:edu:resolution_outcomes}
+\label{fig:ca:auth:resolution_outcomes}
 \end{minipage}
 \end{center}
 
@@ -360,13 +365,94 @@ Initiative}
 \begin{center}
 \begin{minipage}{\plotwidth}
 \centering
-\includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+\includegraphics[width=\linewidth]{../results/ca/authorities/redirects/resolution_outcomes.png}
 \captionof{figure}{
 This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
 }
-\label{fig:ca:edu:resolution_outcomes}
+\label{fig:ca:auth:resolution_outcomes}
 \end{minipage}
 \end{center}
+
+\paragraph*{HTTPS/HSTS Connectivity \& Redirection}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/https_enforcement_overview.png}
+\captionof{figure}{Overview of HTTPS enforcement outcomes per origin. For each origin we combine the \texttt{https\_connectivity} and HSTS module results and count: (i) \emph{https\_unreachable}, where neither module recorded a successful HTTPS response; (ii) \emph{no\_redirect}, where the HTTP probe to \texttt{http://origin/} returned a non--3xx status code and therefore did not redirect to HTTPS; (iii) \emph{redirect\_to\_https}, where the HTTP probe returned a 3xx status and the Location header pointed to an HTTPS URL; and the three nested subsets \emph{redirect\_to\_https\_no\_hsts}, \emph{redirect\_to\_https\_hsts\_weak}, and \emph{redirect\_to\_https\_hsts\_strong}, which further restrict \emph{redirect\_to\_https} to sites whose HTTPS response respectively (a) omits HSTS entirely, (b) sets HSTS but with max-age $<$ 1 year or without \texttt{includeSubDomains}, or (c) sets ``strong'' HSTS with max-age~$\geq$~1~year and \texttt{includeSubDomains}.}
+\label{fig:ca:auth:https_enforcement_overview}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/https_reachability.png}
+\captionof{figure}{HTTPS reachability as reported by the \texttt{https\_connectivity} module. Each origin is classified as \emph{https\_success} if the module completed the request with \texttt{success{=}True} and a final HTTPS scheme; \emph{https\_error} if HTTPS was attempted but the row contains a non-empty error string (for example, timeout or client error) and \texttt{success{=}False}; or \emph{https\_non\_https\_final} if the request completed without an explicit error but the recorded final scheme was not HTTPS. Bar heights represent the number of origins in each category.}
+\label{fig:ca:auth:https_reachable}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+  \begin{minipage}{\plotwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/http_to_https_behaviour.png}
+  \captionof{figure}{Behaviour of \texttt{http://origin/} requests as observed by the HSTS module. For each origin we count: \emph{redirect\_to\_https}, where the HTTP probe returned a 3xx status code and the Location header pointed to an HTTPS URL; \emph{redirect\_3xx\_other}, where the status code was 3xx but the redirect target was not HTTPS; \emph{no\_redirect}, where the HTTP probe succeeded but returned a non--3xx status code (for example, a 200 or 4xx served over HTTP); and \emph{http\_probe\_error}, where no HTTP status code was recorded because the probe failed or timed out before any response.}
+  \label{fig:ca:auth:http_to_https_behaviour}
+  \end{minipage}
+  \end{center}
+  
+\begin{center}
+  \begin{minipage}{\plotwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/hsts_flags_among_hsts_sites.png}
+  \captionof{figure}{Configuration of HSTS flags among origins that set any HSTS header. We first restrict to origins where the HSTS module marked \texttt{https\_ok{=}True} and \texttt{has\_hsts{=}True}. Among this HSTS-enabled subset we count how many also configured (i) a \texttt{max-age} directive of at least one year (\texttt{max\_age\_ge\_1yr}), (ii) the \texttt{includeSubDomains} directive, and (iii) the \texttt{preload} directive. Bar heights therefore represent how often each strengthening flag appears among sites that already deploy HSTS.}
+  \label{fig:ca:auth:htsts_flags}
+  \end{minipage}
+  \end{center}
+
+
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/hsts_https/hsts_presence_and_strength.png}
+\captionof{figure}{HSTS presence and strength among origins whose HTTPS response succeeded. We first restrict to origins where the HSTS module recorded \texttt{https\_ok{=}True}. Within this set, \emph{no\_hsts} counts sites that did not send a Strict-Transport-Security header; \emph{hsts\_any} counts all sites that did; and \emph{hsts\_strong} counts the subset that configured both \texttt{max-age}~$\geq$~1~year and \texttt{includeSubDomains} (our ``strong HSTS'' baseline).}
+\label{fig:ca:auth:htsts_flags}
+\end{minipage}
+\end{center}
+
+% \textbf{Educational Institutions}
+% \begin{center}
+% \begin{minipage}{\plotwidth}
+% \centering
+% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/hop_distribution_all_success.png}
+% \captionof{figure}{This figure shows how many redirects the scanner had to follow from the initial input URL to reach a final response (of any status) for URLs that completed the redirect resolution without errors. A bar at 0 indicates URLs that returned a final response immediately without redirecting; a bar at 1 indicates URLs that performed exactly one redirect, and so on. This distribution gives a sense of how \emph{deep} typical redirect chains are in the studied population.
+% }
+% \label{fig:ca:edu:hop_all_success}
+% \end{minipage}
+% \end{center}
+
+% \begin{center}
+% \begin{minipage}{\plotwidth}
+% \centering
+% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+% \captionof{figure}{Each bar corresponds to one high-level outcome category for the redirect resolution stage. ``ok\_final\_2xx'' indicates URLs where the scanner successfully followed redirects and obtained a 2xx response. ``blocked\_403\_503'' indicates URLs where at least one response in the resolution chain returned HTTP 403 or 503, suggesting the presence of a WAF or access control that blocked the scanner. ``timeout\_error'', ``redirect\_error'', and ``other\_error'' capture various error conditions. The relative bar heights show how often each outcome occurred.}
+% \label{fig:ca:edu:resolution_outcomes}
+% \end{minipage}
+% \end{center}
+
+
+% \begin{center}
+% \begin{minipage}{\plotwidth}
+% \centering
+% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
+% \captionof{figure}{
+% This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
+% }
+% \label{fig:ca:edu:resolution_outcomes}
+% \end{minipage}
+% \end{center}
 
 % results from each module. Should also not CA gov standards as an explicity section, then move onto the bonus stuff (e.g., MDN, OWASP)
 
