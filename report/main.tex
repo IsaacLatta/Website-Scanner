@@ -422,6 +422,64 @@ This figure shows the distribution of HTTP status codes for the final responses 
 \end{minipage}
 \end{center}
 
+\paragraph*{TLS \& Cipher Suites}
+
+\begin{center}
+  \begin{minipage}{\plotwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/tls_protocol_support.png}
+  \captionof{figure}{Support for individual TLS protocol versions. Using the TLS module, we attempt separate handshakes at TLS~1.3, TLS~1.2, TLS~1.1, TLS~1.0, and SSLv3. For each version, the bar height shows how many origins completed a handshake at that exact version (the corresponding field \texttt{tls13}, \texttt{tls12}, \texttt{tls11}, \texttt{tls10}, or \texttt{ssl\_legacy} was \texttt{True}).}
+  \label{fig:ca:auth:tls_protocol_support}
+  \end{minipage}
+  \end{center}
+
+ % This chart is redundant
+  % \begin{center}
+  %   \begin{minipage}{\plotwidth}
+  %   \centering
+  %   \includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/legacy_protocol_exposure.png}
+  %   \captionof{figure}{Legacy TLS protocol exposure. For each origin we check whether any legacy protocol (TLS~1.1, TLS~1.0, or SSLv3) was successfully negotiated. Origins that support none of these are counted as \emph{no\_legacy\_protocols}; origins that support at least one are counted as \emph{any\_legacy\_protocols}. This highlights how many sites have fully disabled deprecated versions versus still accepting them.}
+  %   \label{fig:ca:auth:htsts_flags}
+  %   \end{minipage}
+  %   \end{center}
+  
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/negotiated_tls_versions.png}
+\captionof{figure}{Negotiated TLS versions for the natural client handshake. The cipher module records the \texttt{negotiated\_version} reported by the TLS library when connecting without forcing a specific protocol version. Bars show how many origins negotiated TLS~1.3, TLS~1.2, or another/unspecified version (\emph{other}) under this normal connection profile.}
+\label{fig:ca:auth:natural_tls_version}
+\end{minipage}
+\end{center}
+
+% This chart also might be redundant, I think nearly all TLS 1.3 cipher suites are are "recommended". 
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/tls13_cipher_categories.png}
+\captionof{figure}{Cipher suite categories for forced TLS~1.3 handshakes. For each origin where a TLS~1.3 handshake succeeded, the cipher module records the chosen cipher suite and assigns a category: \emph{recommended} if it appears in the CCCS recommended TLS~1.3 list, \emph{sufficient} if it appears in a secondary acceptable list, and \emph{unknown} otherwise. Bar heights indicate how many origins fell into each category.}
+\label{fig:ca:auth:tls13_cipher_categories}
+\end{minipage}
+\end{center}
+    
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/tls12_cipher_categories.png}
+\captionof{figure}{Cipher suite categories for forced TLS~1.2 handshakes. For origins where a TLS~1.2 handshake succeeded, the cipher module classifies the negotiated cipher suite as \emph{recommended} (modern AEAD/ECDHE suites), \emph{sufficient}, \emph{insecure} (RC4, 3DES, SHA--1, or other legacy families), or \emph{unknown}. Bars show how many origins negotiated a cipher in each category when TLS~1.2 was forced.}
+\label{fig:ca:auth:tls12_cipher_categories}
+\end{minipage}
+\end{center}
+  
+\begin{center}
+\begin{minipage}{\plotwidth}
+\centering
+\includegraphics[width=\linewidth]{../results/ca/authorities/tls_cipher/tls12_weak_features.png}
+\captionof{figure}{Acceptance of weak TLS~1.2 cipher features. Using targeted probes, the cipher module tests whether a server will negotiate (i) any cipher from an explicitly insecure bundle sourced from the NSA, (ii) SHA--1 based cipher suites only (\texttt{allows\_sha1\_tls12}), or (iii) CBC-mode cipher suites only (\texttt{allows\_cbc\_tls12}). Each bar counts the number of origins for which the corresponding probe succeeded (\texttt{True}), indicating that the server is still willing to accept that class of weak TLS~1.2 configuration.}
+\label{fig:ca:auth:tls12_weak_features}
+\end{minipage}
+\end{center}
+
 % \textbf{Educational Institutions}
 % \begin{center}
 % \begin{minipage}{\plotwidth}
