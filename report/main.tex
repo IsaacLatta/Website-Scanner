@@ -58,6 +58,8 @@
 \newlength{\plotwidth}
 \setlength{\plotwidth}{0.7\textwidth}
 
+\newlength{\tablewidth}
+\setlength{\tablewidth}{1.2\textwidth}
 
 \usepackage{siunitx}
 \sisetup{
@@ -189,18 +191,51 @@ Initiative}
 
 \section{Materials \& Methods}\label{sec:methods}
 
+\subsection{Definitions}
+
+In this context, \textit{URIs} (Uniform Resource Identifiers) referes to the web resource identifiers---not just domains---and may include complete URLs endpoints with paths, and pages containing query strings.
+These URIs were resolved upstream by our scanner, but they represent the \emph{link} a Canadian would click to visit a online resource. 
+For example, the following table provides an example of how a scheme, origin, and endpoint is parsed out of a URI.
+
+\begin{inlinecap}[1.0\textwidth]
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \renewcommand{\arraystretch}{1.15}
+  \captionof{table}{Example URIs and Their Parsed Components.}
+  \label{tab:uri_components}
+  \begin{tabular}{l l l l}
+  \toprule
+  \textbf{URI} & \textbf{Scheme} & \textbf{Origin} & \textbf{Endpoint / Path} \\
+  \midrule
+  
+  \texttt{http://example.org/about/team} &
+  \texttt{http} &
+  \texttt{example.org} &
+  \texttt{/about/team} \\
+  
+  \texttt{https://example.net/resources?id=42} &
+  \texttt{https} &
+  \texttt{example.net} &
+  \texttt{/resources?id=42} \\
+  
+  \texttt{http://192.0.2.15:80/status} &
+  \texttt{http} &
+  \texttt{192.0.2.15:80} &
+  \texttt{/status} \\
+  
+  \texttt{https://192.0.2.15:443/api/v1/info} &
+  \texttt{https} &
+  \texttt{192.0.2.15:443} &
+  \texttt{/api/v1/info} \\
+
+  \bottomrule
+  \end{tabular}
+  \end{inlinecap}
+  
+Going forward, the terms \textit{Scheme} is used synonymously with \textit{Protocol}. \textit{Endpoint} is used synonymously with \textit{Resource}
+and \textit{Path}. 
+
 \subsection{Overview - Factual guide}
-
-% where we got the websites from
-
-% where we got our sources for what to look for
-
-% tool implementation
-
-% what/why we actually checked for
-
-% backoff/breaker strategy
-
 % Overview ideas:
 % - Dataset construction:
 %   * How many sites per sector/jurisdiction.
@@ -221,8 +256,14 @@ Initiative}
 %   * Per-origin failure tracking and temporary blacklisting when WAFs/CDNs respond with repeated 403/503 or effectively null-route traffic.
 %   * Global timeouts and connection limits to avoid overwhelming endpoints and to prevent the scanner from hanging.
 
-\subsection{Simulation? Experimental? Subjects?}
+To perform our evaluation of Canada's cybersecurity readiness we compiled a list of Canadian authority URIs. 
+In addition to the authority websites, we also compiled lists of public sector domains meant to represent the infrastructure 
+Canadians interact with and depend on daily.
+These sectors include education institutions, financial institutions, and energy providers. To provide a refrence points 
+for Canada's security posture, we perform a similar aggregation of sites representing both the United Kingdom (UK) and
+Unites States (US). Below we elaborate on exactly how each sector's URI list was sourced for each country.
 
+\subsection{Simulation? Experimental? Subjects?}
 % "Subjects" framing:
 % - Not human subjects; "subjects" are production websites belonging to:
 %   * Canadian authorities, financial institutions, universities, energy companies.
@@ -233,7 +274,97 @@ Initiative}
 % - Note: This is closer to "internet measurement" than lab simulation; no intrusive fuzzing, no auth, no POSTs.
 
 
+
+\subsubsection{Canada}
+
+We have 3 \emph{buckets} of websites we performed evaluation on for each country. \emph{Authorities}, consist of government 
+institutions, departments, crown corporations, and aiport/health/maritime authorities. 
+\emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
+includes banks and credit unions of the parent country. 
+Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing \emph{critical infrastructure}.  
+
+\vspace{1em}The Canadian endpoints evaluated were sourced directly from publicly facing registries hosted by the Canadian Government. 
+Our list of Candian Domains consists of and was sourced from, the following; 
+Government Departments \cite{canada_depts}, Government Institutions \cite{canada_institutions}, Crown Corporations \cite{crown_corps}, 
+Airport Authorities \cite{ca_airports}, Maritime Port Authorities \cite{maritime_ports}, Security Commissioners \cite{ca_securities_admins},
+Provincial Courts \cite{canada_courts_list} and Emergency Management \cite{ca_emergency_management}. 
+In addition to the above the lists, we sourced domains for Canada's election agencies by manually looking up each province's election agency. 
+Similarly, we looked up each province's privacy commissioner. Each province also maintains a list of health authorities, 
+we looked up each province's healthcare authorities manually as most provinces only have a handful of healthcare authorities. 
+However, we omitted sourcing healthcare authorities from both Quebec and Ontario as there seemed to be numeruous, 
+with no authoritative lists.
+In total, $\approx600$ canadian authority URIs were sourced from these sites.
+
+\vspace{1em}Canadian Financial Institutions were composed of both banks, and credit unions. Canadian banks were sourced from
+the Canadian Banks Association (CBA). The CBA maintains list of schedule I, II, and III banks. Schedule I and II consist of 
+domestic and foreign domestic hosts. While schedule III consists of international banks, many of whom do not reside in Canada.
+As such we only extracted URIs from schedule I and II, since they represent banks \emph{in Canada}. Due to the plethora
+of credit unions available in each canadian province. We selected credit unions from provinces who had holistic lists readily available.
+Our credit union list covers Ontario, British Columbia (BC), Saskatchewan and New Brunswick. Ontario's credit union URIs 
+were derived from the Financial Services Regulatory Authority of Ontario (FSRA) \cite{ontario-credit-unions-fsra}. BC's credit unions were
+sourced from the BC Financial Services Authority (BCFSA) \cite{bc-credit-unions}. Saskatchewan's credit unions were derived from SaskCentral, 
+Saskatchewan's liquity manager which is owned by the credit unions of Saskatchewan \cite{sask-credit-unions}. Lastly, New Brunswick's credit unions
+were compiled from the New Brunswick Credit Union Deposit Insurance Corporation's list of protected institutions \cite{nb-credit-unions}. In total this list
+provided 115 credit unions URIs, and 43 bank URIs.  
+
+\vspace{1em}Canadian Educational Institutions were sourced directly from Universities Canada \cite{ca_unis_list}, 
+which yielded $\approx100$ URIs.
+
+\vspace{1em}Canadian Energy providers were derived from a handful of authoritative sources. Electrical companies were sourced
+from Electricity Canada's list of members \cite{electric_canada_members}. Natural Gas companies were obtained from the 
+Canadian Gas Association (CGA)'s industry links page \cite{cga_industry_links}. Canadian pipelines were collected from the Canadian Energy Regulator (CER). 
+The CER maintains a list of pipelines whom they regulate \cite{cer_pipeline_companies}. Finally, Canadian nuclear powerplants were extracted the Canadian 
+Nuclear Safety Comission (CSNC) list of nuclear facilities \cite{cnsc_nuclear_facilities}. In total, these canadian energy sources provided $\approx$260 URIs. 
+
+\subsubsection{USA}
+
+We compiled a very similar set of URIs for american authorities, financial and education institutions, as well as energy companies. The United States Government hosts an index into
+all of their agencies webpages \cite{usa-agency-index}. From this index we gather our american authority URIs.
+
+\vspace{1em}American Financial Institutions were gathered from the US Government Federal Deposit Insurance Corporation (FDIC) public ``BankFind'' API \cite{fdic-bankfind-api}. Given that there are a 
+myriad of banks in the United States, we took the top 10 states according to US Population statistics \cite{us-population-stats}, then took the top 10 banks by assets undermanagement
+for each of these states. These states included; California, Texas, Florida, New York, Pennsylvania, Illinois, Ohio, Georgia, Noth Carolina, and Michigan.
+
+\vspace{1em}USA education institutions were retrieved from the US Department of Education's ``College Scorecard'' API \cite{us-college-scorecard-docs}. We once again took the top 10 states by population, then used queried the API
+for the top 5 education institutions by population. 
+
+\vspace{1em}For US Energy, we leveraged Edision Electric's list of member companies websites \cite{edison-electric-member-sites}.
+
+\subsubsection{UK}
+
+The UK maintains a authoritative of list of their government organizations \cite{uk-gov-organisations}, this list is also served via the UK Government's ``Collections API'' \cite{uk-gov-collections-api-docs}.
+We used this Collections API as our source for UK government URIs. We pulled all pages from the collections endpoint \cite{uk-gov-collections-api}, 
+then extracted all organizations marked ``live'', to avoid tainting our scan by any deprecated organizations.
+
+\vspace{1em}UK Financial Institutions were derived using the union of two sources; the Bank of England Prudential Regulation Authority's (PRA) list of regulated bank's FRNs \cite{uk-pra-creditunions-list}, and 
+the UK Financial Conduct Authority (FCA) ``FSDeveloper API'' \cite{uk-fca-api-docs}. The list of FRNs sourced from the FSDeveloper API was cross referenced against
+the list of regulated banks FRNs from the PRA list. This was done as the PRA list is a subset of the FCA API's list, cross referencing ensured our list was composed 
+of \emph{only} UK banks, not the surplus of financial institutions present in the FCA API. 
+
+\vspace{1em}Educational Institutions of the UK were collected from the Government's ``Discover Uni'' dataset. This dataset hosts a colection of files with various information 
+about each educational institution present in the UK. In the dataset, is a file titled ``INSTITUTIONS.csv'', which houses a list of the names and URLs of each university in the United Kingdom.
+
+\vspace{1em}Lastly, no UK energy companies were included in this scan. Unfortunately, we were unable to find a well-backed and authoritative list that contained useable links for our scanner. 
+As such, we chose to omit this sector from the UK, and instead leave our energy site comparison between Canada and the US.
+
 \subsection{Experimental Procedure/Paradigm}
+
+After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs without a scheme were given HTTPS as a default (e.g, e.g., \texttt{example.gov} was rewritten as
+\texttt{https://example.gov/}), and all host names with were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
+unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). The second set consisted of a list of 
+normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass. Where the scanner sends a \texttt{GET} request and examines the response.
+Any non 3xx status code (e.g., 200 OK, 403 Forbidden) was treated as the final response. For 3xx responses with the \texttt{Location} header, the scanner followed the header's value. For
+each hop the scanner records the HTTP status and target URL. After performing this resolution, we cached the final and entry headers. If the redirect chain exceeded 8 hops, 
+or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as an error rather than continuing indefinitely. This resolution 
+yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. Going forward, we discuss our set of analysis modules in terms of their scope, 
+i.e. whether they target an origin or the request URI. All of our tests origin-targeting tests (e.g., cryptographic tests) were performed on both the final and entry origin. 
+All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
+
+\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured number of total and per-origin number of simultaneous connections. 
+For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 3 connections to each origin at a time. For the other sectors (finance, education, energy) 
+we allowed 20 total concurrent connections with 5 concurrent per origin. Each request was bounded by a client-side timeout of 3 seconds. The scanner also maintains per-origin timeout counters.
+Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, and no further HTTP/TLS modules were run against them.
+This allowed us to distinguish genuinely unreachable sites, while also reducing the risk of overloading web infrastructure or triggering any defense mechanisms.
 
 % Procedure outline:
 % 1. Domain collection:
@@ -963,6 +1094,6 @@ in a strongly locked-down way versus partially protected or weakly configured.}
 % \bibliographystyle{IEEEtranN}
 % \bibliography{sn-bibliography}
 % \bibliographystyle{sn-mathphys-num}
-% \bibliography{sn-bibliography}
+\bibliography{sn-bibliography}
 
 \end{document}
