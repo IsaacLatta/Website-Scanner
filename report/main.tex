@@ -348,24 +348,6 @@ about each educational institution present in the UK. In the dataset, is a file 
 As such, we chose to omit this sector from the UK, and instead leave our energy site comparison between Canada and the US.
 
 \subsection{Experimental Procedure/Paradigm}
-
-After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs without a scheme were given HTTPS as a default (e.g, e.g., \texttt{example.gov} was rewritten as
-\texttt{https://example.gov/}), and all host names with were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
-unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). The second set consisted of a list of 
-normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass. Where the scanner sends a \texttt{GET} request and examines the response.
-Any non 3xx status code (e.g., 200 OK, 403 Forbidden) was treated as the final response. For 3xx responses with the \texttt{Location} header, the scanner followed the header's value. For
-each hop the scanner records the HTTP status and target URL. After performing this resolution, we cached the final and entry headers. If the redirect chain exceeded 8 hops, 
-or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as an error rather than continuing indefinitely. This resolution 
-yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. Going forward, we discuss our set of analysis modules in terms of their scope, 
-i.e. whether they target an origin or the request URI. All of our tests origin-targeting tests (e.g., cryptographic tests) were performed on both the final and entry origin. 
-All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
-
-\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured number of total and per-origin number of simultaneous connections. 
-For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 3 connections to each origin at a time. For the other sectors (finance, education, energy) 
-we allowed 20 total concurrent connections with 5 concurrent per origin. Each request was bounded by a client-side timeout of 3 seconds. The scanner also maintains per-origin timeout counters.
-Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, and no further HTTP/TLS modules were run against them.
-This allowed us to distinguish genuinely unreachable sites, while also reducing the risk of overloading web infrastructure or triggering any defense mechanisms.
-
 % Procedure outline:
 % 1. Domain collection:
 %    - Fetch raw lists from each authoritative source/API.
@@ -388,6 +370,43 @@ This allowed us to distinguish genuinely unreachable sites, while also reducing 
 %    - Apply per-origin backoff: after N hard failures within a window, skip further tests for that origin.
 % 5. Manual verification:
 %    - For a sample of sites in each category, manually load pages in a browser to verify scanner interpretations (e.g., confirm soft-404 vs normal 200, check that a CSP is actually enforcing).
+
+After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs without a scheme were given HTTPS as a default (e.g, e.g., \texttt{example.gov} was rewritten as
+\texttt{https://example.gov/}), and all host names with were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
+unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). The second set consisted of a list of 
+normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass. Where the scanner sends a \texttt{GET} request and examines the response.
+Any non 3xx status code (e.g., 200 OK, 403 Forbidden) was treated as the final response. For 3xx responses with the \texttt{Location} header, the scanner followed the header's value. For
+each hop the scanner records the HTTP status and target URL. After performing this resolution, we cached the final and entry headers. If the redirect chain exceeded 8 hops, 
+or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as an error rather than continuing indefinitely. This resolution 
+yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. Going forward, we discuss our set of analysis modules in terms of their scope, 
+i.e. whether they target an origin or the request URI. All of our tests origin-targeting tests (e.g., cryptographic tests) were performed on both the final and entry origin. 
+All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
+
+
+\vspace{1em}For each target in our normalized and resolved list. We then performed a series of \emph{tests} on each target. As mentioned earlier some tests target origins, 
+while others target URIs. Because different information becomes available at different stages of the network stack, some checks must occur at the origin level while others 
+occur at the URI level. Cryptographic properties are negotiated before any HTTP data is sent, whereas headers and resource-specific behavior can only be evaluated after the 
+connection is established and the full request URI is revealed.
+
+\vspace{1em}The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS in line with modern guidance. The CCSA outlines in
+ITSP.40.062 \cite{cccs-itsp-40-062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, but also implement HTTP Strict Transport 
+Security (HSTS) as outlined in RFC 6797 \cite{rfc6797}. HSTS informs the browser that this origin should \emph{only} be accessed over HTTPS, and any attempts at connecting over HTTP
+should automatically be upgraded to HTTPS. Furthermore, the American CIO also advocates for HTTPS-only and HSTS \cite{uscio-https-guide, uscio-hsts}. 
+In addition to these, modern browsers also explicitly document warning or outright blocking websites who do not enforce HTTPS as seen in Safari, Chrome, 
+and Firefox \cite{apple-http-warning,chrome-always-https,firefox-https-only-mode} documentation. In line with this guidance, our scanner first checks whether each origin accepts an HTTP and HTTPS connection. Secondly, it tests whether the HTTP connection was correctly redirected to
+an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required for HSTS. If this header is 
+present we extract 3 directives from the header's value. The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser should \emph{remember} that this origin
+should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second directive---\texttt{includeSubDomains}---indicates that this HSTS policy should apply to all subdomains on this origin.
+Thirdy, were extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
+Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}, this list is best described by the Chromium . Note that for a site to be successfully added to the preload list, 
+it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
+
+
+\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured number of total and per-origin number of simultaneous connections. 
+For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 3 connections to each origin at a time. For the other sectors (finance, education, energy) 
+we allowed 20 total concurrent connections with 5 concurrent per origin. Each request was bounded by a client-side timeout of 3 seconds. The scanner also maintains per-origin timeout counters.
+Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, and no further HTTP/TLS modules were run against them.
+This allowed us to distinguish genuinely unreachable sites, while also reducing the risk of overloading web infrastructure or triggering any defense mechanisms.
 
 \subsection{Data Analysis}
 % Data analysis plan:
