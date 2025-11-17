@@ -388,19 +388,109 @@ while others target URIs. Because different information becomes available at dif
 occur at the URI level. Cryptographic properties are negotiated before any HTTP data is sent, whereas headers and resource-specific behavior can only be evaluated after the 
 connection is established and the full request URI is revealed.
 
-\vspace{1em}The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS in line with modern guidance. The CCSA outlines in
+\vspace{1em}The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS in line with modern guidance. The CCCS outlines in
 ITSP.40.062 \cite{cccs-itsp-40-062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, but also implement HTTP Strict Transport 
 Security (HSTS) as outlined in RFC 6797 \cite{rfc6797}. HSTS informs the browser that this origin should \emph{only} be accessed over HTTPS, and any attempts at connecting over HTTP
 should automatically be upgraded to HTTPS. Furthermore, the American CIO also advocates for HTTPS-only and HSTS \cite{uscio-https-guide, uscio-hsts}. 
 In addition to these, modern browsers also explicitly document warning or outright blocking websites who do not enforce HTTPS as seen in Safari, Chrome, 
 and Firefox \cite{apple-http-warning,chrome-always-https,firefox-https-only-mode} documentation. In line with this guidance, our scanner first checks whether each origin accepts an HTTP and HTTPS connection. Secondly, it tests whether the HTTP connection was correctly redirected to
-an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required for HSTS. If this header is 
-present we extract 3 directives from the header's value. The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser should \emph{remember} that this origin
+an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required 
+in RFC 6797. If this header is present we extract 3 directives from the header's value. The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser should \emph{remember} that this origin
 should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second directive---\texttt{includeSubDomains}---indicates that this HSTS policy should apply to all subdomains on this origin.
 Thirdy, were extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
-Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}, this list is best described by the Chromium . Note that for a site to be successfully added to the preload list, 
+Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
 it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
 
+% NOTE: Need to consider removing CBC from any plots and discussions, as much of the CCCS sufficient cipher suites contain CBC algorithms.
+\vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the underlying TLS protocols and cipher suites.
+The goal of these checks was two answer practical questions, do public-facing services offer modern TLS versions, and are legacy or explicitly deprecated cipher
+suites still enabled, contrary to current guidance. The CCCS provides an explicit recommendation of configuring clients and servers to only use TLS 1.3 in 
+ITSP.40.062 \cite{cccs-itsap-40016}. In this same ITSP, the CCCS also recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
+modern sites should not include TLS versions older than 1.2, or any versions of the Secure Socket Layer (SSL). 
+The desirability of TLS 1.3 and deprecation of older TLS and SSL versions is further coroborated by derectives 
+from both the NSA and NIST \cite{nist_800_52r2, nsa_eliminating_obsolete_tls}. Aligned with these recommendations, 
+our scanner attempts a series of handshakes at TLS 1.3, TLS 1.2, TLS 1.1, TLS 1.0 and SSLv3. Thus, yielding a simple profile for each origin on how well they meet 
+modern HTTPS encryption standards. To understand what a typical user actually receives in practice, we then
+performed a single ``natural'' TLS handshake to each origin using a modern
+client configuration. This allows us to count how many sites have fully migrated to the modern TLS versions and how many continue to offer older protocols that have
+been formally deprecated due to known weaknesses and downgrade risks.
+
+\vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
+The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', '``sufficient'', ``phase out''. Augmenting this, we
+reference the NSA ``obsolete'' cipher suite list to further consolodate these groups. We also explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
+in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. Each TLS handshake's outcome is crossferenced
+against these lists to provide additional insights beyond simply the version.  
+
+\vspace{1em} Next, we probe each origin for the presence of \texttt{security.txt}, ``A File Format to Aid in Security Vulnerability Disclosure'' \cite{rfc9116}. \texttt{Security.txt} is a simple 
+specifications that provides a means of open vulnerability disclosure and management. America's Cybersecurity and Infrastructure Agency (CISA) advocates that all 
+organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value}n and that each domain and subdomain within an agency's network. 
+This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
+
+\begin{center}
+  \begin{minipage}{\plotwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../resources/images/cisa_securitytxt.png}
+  \captionof{figure}{
+  The US Cybersecurity and infrastructure Agency (CISA) \texttt{security.txt} file.
+  }
+  \label{fig:cisa_securitytxt}
+  \end{minipage}
+  \end{center}
+
+\vspace{1em}Congruent with RFC 9116 and the CISA guidance, the scanner sends a \texttt{GET} request to the paths '\texttt{/security.txt}', and '\texttt{/.well-known/security.txt}'.
+A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
+syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. 
+
+
+\vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked unnecessary implementation details through so--called ``revealing'' HTTP response headers. 
+These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP HTTP Security Response Headers
+Cheat Sheet and the OWASP Secure Headers Project explicitly recommends removing or genericising headers such as \texttt{Server}, \texttt{X-Powered-By}, 
+and framework version banners because they ease fingerprinting and targeted exploitation of known vulnerabilities \cite{owasp_secure_headers_project, owasp_http_security_response_headers}. 
+More generally, government and national guidance on secure configuration, including CCCS ITSG--33 and related profiles, emphasises limiting information leakage from public services, 
+which includes avoiding unnecessary disclosure of software and version details. To operationalize this, our scanner imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owasp_secure_headers_remove_json}. 
+For each origin's final response, the scanner recorded whether any response header name matched the OWASP list 
+(e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks. Table~\ref{tab:revealing-headers-examples} 
+illustrates typical examples of revealing headers that our scanner tracked.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{p{3cm}p{4.5cm}p{6.5cm}}
+    \hline
+    \textbf{Header} & \textbf{Example value} & \textbf{Why it is revealing} \\
+    \hline
+    \texttt{Server} &
+    \texttt{Apache/2.4.49 (Unix)} &
+    Discloses the exact web server product and version; attackers can search for this version when a remote code execution or path traversal CVE is published. \\
+    \texttt{X-Powered-By} &
+    \texttt{PHP/7.4.33} or \texttt{Express} &
+    Reveals the application platform or framework in use (PHP, Node.js, etc.), again often with a specific version number. \\
+    \texttt{X-Generator} &
+    \texttt{Drupal 9.4.1}, \texttt{PrestaShop} &
+    Discloses the CMS product and version, facilitating targeted CMS exploitation. \\
+    \hline
+  \end{tabular}
+  \caption{Examples of ``revealing'' HTTP headers tracked by our scanner. These headers are not required for end-user functionality but expose details about the server's software stack and versions. Our analysis focuses on how many public-sector sites retain such headers versus those that follow OWASP guidance and remove or genericise them.}
+  \label{tab:revealing-headers-examples}
+\end{table}
+
+% NOTE: Should maybe cite OWASP here.
+Misconfigured error pages are another common source of unintended information disclosure. These error pages can reveal the exact framework, cloud provider, or database
+in use, and in the worst case they display full stack traces to unauthenticated users. To assess this risk in a safe and consistent way, we carried out a
+single, non-invasive probe of each origin's error handling. For every origin, the scanner issued one HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
+\texttt{https://\textit{origin}/\_\_scanner\_404\_\_\textit{token}/}, where\textit{token} is a random 16-character string chosen per origin. This is
+intended to trigger the site's standard 404/4xx error handler without sending any exploit payloads. Responses were only analysed further if the \texttt{Content-Type} header indicated textual 
+content. Otherwise, the origin was treated as not exposing any interpretable error page. The body of each textual error page was then scanned for two classes of
+information leaks. First, we looked for technology banners using a curated set of signatures for common web frameworks, cloud platforms, and databases. These signatures
+were derived from the most widely used web technologies in the 2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}. 
+Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
+minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
+identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
+
+\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previosuly mentioned Stack Overflow Survey. For
+each language we defined a pair of regular-expression families. These families include header patterns
+that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
+When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
+the leaked language is recorded. Results were limited to at most one trace per language per origin.
 
 \vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured number of total and per-origin number of simultaneous connections. 
 For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 3 connections to each origin at a time. For the other sectors (finance, education, energy) 
