@@ -441,6 +441,91 @@ This text file contains a concise set of fields that outlining an entity's prefe
 A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
 syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. 
 
+\vspace{1em}Additionally, our scanner also performs a series of presence and evalution checks on set of security headers. The first header we probe for is \texttt{Referrer-Policy}.
+The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent along when a browser navigates to another site or loads third-party content.
+Without an explicit policy, browsers may send the full URL, including path and query parameters, to analytics, embedded widgets, or links to external services. 
+On public-sector and financial sites, these URLs can easily contain case identifiers or other sensitive tokens. We derive this header's evaluation from the guidance
+of OWASP and MDN. OWASP recommends setting the header to \texttt{Referrer-Policy: strict-origin-when-cross-origin} 
+\cite{owasp_http_security_response_headers}. This directive
+indicates the browser should only send the origin, path, and query string when making a same-origin request, only send the origin
+in cross-origin requests when protocol security remains the same (e.g., HTTPS to HTTPS), and finally never send the \texttt{Referer} header to less secure destinations (e.g., HTTPS to HTTPS). 
+MDN advocates for setting the strictest \texttt{Referrer-Policy} comptable with th server. MDN lists the following derictives as the only \emph{client-protecting} directives in
+decreasing order of protection; \texttt{no-referrer}, \texttt{no-origin}, \texttt{strict-origin}, \texttt{strict-origin-when-cross-origin} 
+\cite{mdn_referrer_policy_config}. 
+Following OWASP and MDN guidance, we treat policies that never send full paths to third-party origins (for example \texttt{strict-origin-when-cross-origin}, 
+\texttt{strict-origin}, \texttt{same-origin}, or \texttt{no-referrer}) as recommended defaults 
+. Policies that still expose full URLs across sites (such as \texttt{unsafe-url} or \texttt{origin-when-cross-origin}) are classified as weak. Absense of the policy
+is also treated as recommended, since MDN states the default is \texttt{strict-origin-when-cross-origin}.
+
+\vspace{1em}Attackers can sometimes load a legitimate government or banking page inside a hidden 
+\texttt{<iframe>} and trick a user into clicking on real buttons (for example ``Approve payment'' or ``Submit application'') 
+while believing they are interacting with a harmless overlay. To counter this ``clickjacking'' risk, modern guidance recommends
+ using either the \texttt{frame-ancestors} directive in Content-Security-Policy (CSP) or the legacy \texttt{X-Frame-Options} header, or 
+ both \cite{owasp_clickjacking_defense_cheat_sheet,mdn_x_frame_options}. For each site, we check whether it sends a CSP that restricts 
+ framing (for example \texttt{frame-ancestors 'none'} or \texttt{frame-ancestors 'self'}) and whether it sets \texttt{X-Frame-Options}
+  to \texttt{DENY} or \texttt{SAMEORIGIN}. Configurations that completely forbid framing (\texttt{'none'} or \texttt{DENY}) are treated
+   as recommended; policies that only allow the site's own pages to frame themselves (\texttt{'self'} or \texttt{SAMEORIGIN}) are treated 
+   as acceptable but weaker. Sites that omit both controls, or explicitly allow any domain to frame them, are classified as lacking clickjacking protection.
+
+
+\vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the attack surface
+of cross-site scripting (XSS) and other content-injection attacks by restricting which sources of scripts, images, and 
+other resources the browser may load. Consider the following illustrative example of an XSS attack: a bad actor discovers a 
+vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that attempts to steal session
+cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
+With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding even if an 
+injection point exists. The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an explicit CSP 
+\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}. CSP is a powerful but application specific measure, 
+we therefore interpret our CSP results narrowly, focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
+This directive provides defence against an attack known as ``clickjacking''. Clickjacking refers to when a malicious website
+embeds another website inside an invisible \texttt{<iframe>}. Thus tricking the user into taking potentially harmful actions
+unknowlingly. OWASP recommends setting the \texttt{frame-ancestors} derective to control exactly which other origins are 
+allowed to embed this origin's content inside an \texttt{<iframe>} \cite{owasp_clickjacking_defense}. 
+As such, we record whether a response includes a 
+\texttt{Content-Security-Policy} header and, if so, 
+extract and classify its \texttt{frame-ancestors} directive. Policies that explicitly forbid all framing 
+(e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
+site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
+https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
+define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
+as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
+\emph{unknown} rather than over-interpreted. This aims to answer the question: 
+``Are sites explicitly controlling who can embed their content?''.
+
+\vspace{1em}
+An older security header that aims to reduce the risk of clickjacking is 
+\texttt{X-Frame-Options} (XFO). Although largely superseded by the 
+\texttt{frame-ancestors} directive in CSP, many sites still rely on XFO
+for backwards compatability. Similar to the CSP's \texttt{frame-ancestors} derective, XFO instructs the 
+browser whether the page may be 
+displayed inside a \texttt{<frame>} or \texttt{<iframe>} element. The header 
+supports three directives: \texttt{DENY} (never permit framing), 
+\texttt{SAMEORIGIN} (allow framing only by pages from the same site), and 
+\texttt{ALLOW-FROM <origin>}. Our scanner attempts to retrieve the raw XFO header. If the header is present and set to 
+\texttt{DENY}, we classify the site as \emph{recommended}. If set to 
+\texttt{SAMEORIGIN}, we classify it as \emph{sufficient}, since the site at 
+least restricts framing to itself. If the site sets XFO to \texttt{ALLOW-FROM}, we record this as \emph{obsolete}---as this directive is now deprecated. 
+If the header is missing entirely, contains unknown syntax, or is malformed we treat it as \emph{unknown}.
+
+\vspace{1em}The \texttt{X-Content-Type-Options} header is a simple but important control. This header eliminates 
+``MIME Sniffing'', where a browser may \emph{guess} the MIME (Multipurpose Internet Mail Extension) type of a 
+resource and act accordingly. This behaviour can be abused in so-called MIME confusion
+attacks, where user-supplied or third-party content is interpreted as active HTML or JavaScript instead of 
+static data. OWASP recommends administrators to set the \texttt{X-Content-Type-Options} to \texttt{nosniff}, instructing
+the browser to \emph{always} follow the content type found in the \texttt{Content-Type} header
+\cite{owasp_http_security_response_headers, mdn_mime_types_guide}. In line with this guidance, our scanner performs a simple
+check as to whether the endpoint has the \texttt{X-Content-Type-Options} header present, and whether it's value is set
+to \texttt{nosniff}.
+
+\vspace{1em}The next header our scanner evaluates is the \texttt{Permissions-Policy} header (formerly \texttt{Feature-Policy}). This header allows a site
+to declare which powerful browser features are enabled on a page and which embedded origins, if any, may use them. Examples include 
+access to the camera, microphone, geolocation, clipboard and more. 
+In the absence of an explicit policy, browsers generally assume that these features are available to the top-level origin and depending on the feature, 
+embedded third-party content. Both OWASP and Google Chrome both recommend web administrators explicitly set the \texttt{Permissions-Policy} 
+\cite{owasp_http_security_response_headers, chrome_permissions_policy}, 
+disabling what isn't in use. The scanner checks for this response header, and 
+evaluates whether this endpoint is explicitly controlling certain features via structured directives of the form \texttt{feature = sources}
+(e.g., \texttt{camera=()})
 
 \vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked unnecessary implementation details through so--called ``revealing'' HTTP response headers. 
 These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP HTTP Security Response Headers
