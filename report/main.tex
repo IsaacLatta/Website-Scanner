@@ -605,6 +605,34 @@ we allowed 20 total concurrent connections with 5 concurrent per origin. Each re
 Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, and no further HTTP/TLS modules were run against them.
 This allowed us to distinguish genuinely unreachable sites, while also reducing the risk of overloading web infrastructure or triggering any defense mechanisms.
 
+\vspace{1em}Because our conclusions depend on automated classification, we invested effort in testing the scanner itself
+before running it at scale. The goal of these tests was not to prove the scanner is perfect, but to ensure that, for a wide range of realistic inputs, the implementation behaves in a way that matches the methodology described above.
+First, we built automated tests for individual modules such as target parsing, HTTPS/TLS connectivity, security.txt discovery and 
+header classification. For these tests we spun up small local web servers on \texttt{localhost} with controlled behaviour
+ (e.g., specific redirects, header combinations, or security.txt contents) and ran the scanner against them. This 
+allowed us to verify that each module correctly interpreted well-formed responses, handled missing or malformed fields gracefully, 
+and produced the expected ratings for headers such as \texttt{Content-Security-Policy}, \texttt{Referrer-Policy}, 
+\texttt{X-Content-Type-Options}, \texttt{Permissions-Policy} and cookie flags. TLS-related tests were performed against local HTTPS endpoints using self-signed certificates. 
+We confirmed that the scanner correctly distinguished between successful and failed HTTPS connections by varying certificate 
+properties and connection parameters on the local web servers. handled certificate validation failures in a controlled way, and 
+reported TLS outcomes consistent with the methodology. 
+
+\vspace{1em}To validate the scanner's error leak detection, we first tested the regular-expression approach offline 
+using hand-crafted examples. For each web language in our signature set, we intentionally executed failing code to 
+generate genuine stack traces and error pages in that language's default format. These raw error messages were 
+fed directly into the parser to confirm that the scanner reliably detected the expected language/technology and extracted the 
+correct label. In parallel, we ran the same detector over leak-free HTML and JSON data drawn from real web endpoints. Asserting that 
+no stack traces or banners were reported, thus guarding against false positives. Similar to our tests, we then configured small local web servers return known responses on specific paths, including pages that 
+contained the captured error messages or only normal content. The scanner then scanned these local endpoints, and our tests 
+asserted the same results were recorded over HTTP. 
+
+\vspace{1em}Finally, we ran end-to-end tests in which all modules were exercised together, imitating a small scan from input list to
+aggregated results. In these scenarios, the scanner was pointed at a collection of local test servers designed to emulate a mix of 
+secure, partially configured and clearly misconfigured sites. We then compared the resulting findings against an expected 
+``ground truth'' for each test target. 
+
+
+
 \subsection{Data Analysis}
 % Data analysis plan:
 % - For each site, derive binary/ternary indicators per check:
@@ -637,50 +665,6 @@ This allowed us to distinguish genuinely unreachable sites, while also reducing 
 %   * For each sector + jurisdiction: report percentages for all major checks with CIs or at least clear N.
 % - Optional composite:
 %   * A simple "meets a minimum Canadian baseline" flag (e.g., HTTPS enforced, HSTS present, modern TLS only, no obvious error leaks) to answer RQ1 succinctly.
-
-\subsection{Security Checks and Attacks Mitigated}
-% Checks and attacks (for a compact subsubsection in Methods + later references in Discussion):
-%
-% Enforce HTTPS + HSTS:
-%   - Attacks: passive eavesdropping, on-path tampering, SSL-stripping on first visit, downgrade + user click-through on bad certs.
-%   - Why: ensures confidentiality/integrity of traffic to gov/finance/edu portals; HSTS stops "accidental" HTTP.
-%
-% TLS versions (>=1.2/1.3 only):
-%   - Attacks: exploitation of legacy protocol weaknesses (BEAST, POODLE-style issues, downgrade to TLS 1.0/1.1/SSL).
-%   - Why: removes attack surface from obsolete protocol modes; aligns with RFC 8996 and NIST guidance.
-%
-% Cipher & hash strength (AEAD only, no RC4/3DES/SHA-1):
-%   - Attacks: known-weak stream/block ciphers, MAC-then-encrypt issues, SHA-1 collision/forgery, export-grade suites.
-%   - Why: ensures that even if TLS is present, it is cryptographically modern and robust.
-%
-% Referrer-Policy:
-%   - Attacks: leakage of sensitive URLs and query strings to third parties; helps phishing/recon and privacy violations.
-%
-% X-Frame-Options / CSP frame-ancestors:
-%   - Attacks: clickjacking / UI redressing (hidden iframes tricking users into clicking "approve", "submit payment", etc.).
-%
-% X-Content-Type-Options: nosniff:
-%   - Attacks: MIME type confusion leading to script execution or drive-by download when servers mislabel content types.
-%
-% Cookies: Secure / HttpOnly / SameSite:
-%   - Attacks: session theft over HTTP (no Secure), theft via XSS (no HttpOnly), CSRF / cross-site state changes (no SameSite).
-%
-% security.txt:
-%   - Attacks mitigated indirectly: long-lived vulnerabilities due to lack of a clear contact path; reduces "vulnerability latency" by enabling responsible disclosure.
-%
-% CSP (baseline) + Permissions-Policy:
-%   - Attacks: reflected/stored XSS, compromised third-party scripts, supply-chain attacks, over-permissive access to camera/mic/geo etc via embedded content.
-%
-% Revealing headers:
-%   - Attacks: targeted exploitation based on known-vulnerable versions (e.g., scanning for Apache/2.4.49), recon for phishing and lateral movement.
-%
-% Error-page hygiene:
-%   - Attacks: information disclosure (stack traces, SQL errors, file paths), easier exploit development, phishing/SEO abuse via soft-404s.
-%
-% Placement:
-%   - Methods: for each check, 1–2 sentences on the above.
-%   - Results: present prevalence stats per check.
-%   - Discussion: interpret which attacks are still feasible in common configurations and which are meaningfully constrained.
 
 
 \section{Results}\label{sec:result}
