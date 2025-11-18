@@ -527,6 +527,28 @@ disabling what isn't in use. The scanner checks for this response header, and
 evaluates whether this endpoint is explicitly controlling certain features via structured directives of the form \texttt{feature = sources}
 (e.g., \texttt{camera=()})
 
+\vspace{1em}Cookies are a common mechanism for tracking sessions and user state on the web. 
+Even ostensibly ``public'' pages often set cookies for language preferences, analytics, anti-CSRF tokens, or short-lived 
+session identifiers. Due to cookies being sent automatically to a site with each request, weak cookie settings can expose
+users to eavesdropping, cross-site request forgery (CSRF), or theft of authentication tokens. The CCCS 
+explicitly recommends the use of cookie security flags as part of secure session
+management \cite{cccs_itsp_40_111}. Additionally, MDN provides practical guidance on applying these flags in modern 
+applications \cite{mdn_secure_cookie_configuration}. Furthermore, OWASP marks multiple cookie protection mechanisms as mandatory.
+In particular, three attributes are widely recognized as baseline protections:
+\begin{itemize}
+  \item \textbf{\texttt{Secure}} ensures that a cookie is only sent over HTTPS, preventing passive attackers on the network from reading its value on unencrypted connections.
+  \item \textbf{\texttt{HttpOnly}} prevents JavaScript from accessing the cookie via \texttt{document.cookie}, which limits the impact of cross-site scripting (XSS) attacks on session tokens.
+  \item \textbf{\texttt{SameSite}} limits when cookies are sent on cross-site requests. Strict or lax settings here can significantly reduce CSRF state changes by omitting cookies from certain cross-origin operations.
+\end{itemize}
+
+To evaluate how these protections are used in practice, our scanner inspects the \texttt{Set-Cookie} header on the final landing page and parses any attributes attached to each cookie name–value pair. We record whether the \texttt{Secure} and \texttt{HttpOnly} flags are present, the value of the \texttt{SameSite} attribute (if any), and whether the cookie appears to have an explicit lifetime via \texttt{Max-Age} or \texttt{Expires}. Because some informational sites do not set 
+cookies at all, we only apply this check when at least one \texttt{Set-Cookie} header is observed on the landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a strict same-site policy are classified as \emph{recommended}, 
+reflecting CCCS, MDN and OWASP guidance for session management. Cookies that are \texttt{Secure} and \texttt{HttpOnly} but use a more permissive same-site setting (e.g., \texttt{SameSite=Lax}) are treated as \emph{sufficient}, 
+since they still provide substantial protection against token theft and many cross-site attacks. 
+Cookies that lack any of these flags, particularly those that are neither \texttt{Secure} nor \texttt{HttpOnly} 
+or that omit a same-site policy entirely, are classified as \emph{insecure}. 
+
+
 \vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked unnecessary implementation details through so--called ``revealing'' HTTP response headers. 
 These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP HTTP Security Response Headers
 Cheat Sheet and the OWASP Secure Headers Project explicitly recommends removing or genericising headers such as \texttt{Server}, \texttt{X-Powered-By}, 
