@@ -1,0 +1,109 @@
+{
+  "inputs": {
+    "n_all_origins": 108,
+    "n_entry_origins": 95,
+    "n_final_only_origins": 13,
+    "n_final_origins": 78,
+    "n_input_origins": 95,
+    "n_input_uris": 95,
+    "uris_per_entry_origin": {
+      "count": 95,
+      "max": 1,
+      "mean": 1.0,
+      "median": 1,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 16,
+      "503": 1
+    },
+    "http_timeout_buckets": {
+      "0": 99,
+      "1": 24,
+      "3_plus": 7
+    },
+    "n_origins": 130,
+    "n_origins_all_inputs_unreachable": 17,
+    "n_origins_any_timeout": 33,
+    "n_origins_http_dead": 7,
+    "n_origins_http_forbidden": 17,
+    "n_origins_tls_dead": 1,
+    "origins_all_inputs_unreachable": [
+      "www.amerisbank.com",
+      "www.db.com",
+      "www.univest.net",
+      "www.applebank.com",
+      "www.bancofcal.com",
+      "www.bankatfirst.com",
+      "www.bmo.com",
+      "www.everbank.com",
+      "www.ffin.com",
+      "www.firstambank.com",
+      "www.flagstar.com",
+      "www.huntington.com",
+      "www.localfirstbank.com",
+      "www.marcus.com",
+      "www.nexbank.com",
+      "www.southstatebank.com",
+      "www.tnbank.com"
+    ],
+    "tls_timeout_buckets": {
+      "0": 127,
+      "1": 2,
+      "2_plus": 1
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 56,
+      "301": 24,
+      "302": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 56,
+      "3xx": 25
+    },
+    "final_status_counts": {
+      "200": 78
+    },
+    "final_status_family_counts": {
+      "2xx": 78
+    },
+    "hop_buckets_all_success": {
+      "0": 56,
+      "1": 16,
+      "2": 6
+    },
+    "hop_buckets_success_non_block": {
+      "0": 56,
+      "1": 16,
+      "2": 6
+    },
+    "hop_counts_all_success": {
+      "count": 78,
+      "max": 2,
+      "mean": 0.358974358974359,
+      "median": 0.0,
+      "p95": 2
+    },
+    "hop_counts_success_non_block": {
+      "count": 78,
+      "max": 2,
+      "mean": 0.358974358974359,
+      "median": 0.0,
+      "p95": 2
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 95,
+    "n_timeout_error": 5,
+    "outcome_counts": {
+      "ok_final_2xx": 78,
+      "other_error": 12,
+      "timeout_error": 5
+    },
+    "timeout_error_fraction": 5.2631578947368425
+  }
+}

@@ -133,24 +133,71 @@ async def test_tls_12_and_13_reports_correctly(tiny_pool):
     finally:
         await runner.cleanup()
 
-# async def test_tls_legacy_acceptance_if_possible(tiny_pool):
-#     if not _has("TLSv1"):
-#         pytest.skip("Runner cannot expose TLSv1 server")
+async def test_tls_11_only_reports_correctly(tiny_pool):
+    # Skip if stdlib doesn't even expose TLSv1_1
+    if not _has("TLSv1_1"):
+        pytest.skip("Runner lacks TLSv1_1 support")
 
-#     port = 9646
-#     runner = await _start_https_app(port, ssl.TLSVersion.TLSv1, ssl.TLSVersion.TLSv1_2)
-#     try:
-#         mod = TLSModule(executor=tiny_pool, timeout_s=5.0, concurrency=32)
-#         caps = mod.probe_caps()
+    port = 9646
+    runner = await _start_https_app(port, ssl.TLSVersion.TLSv1_1, ssl.TLSVersion.TLSv1_1)
+    try:
+        mod = TLSModule(executor=tiny_pool, timeout_s=5.0)
+        caps = mod.probe_caps()
 
-#         await mod.run([f"127.0.0.1:{port}"])
-#         row = list(mod.results().values())[0]
+        await mod.run([f"127.0.0.1:{port}"])
+        row = list(mod.results().values())[0]
 
-#         if caps["can_tls12"]:
-#             assert row["tls12"] is True
-#         if caps["can_tls11"]:
-#             assert row["tls11"] is True
-#         if caps["can_tls10"]:
-#             assert row["tls10"] is True
-#     finally:
-#         await runner.cleanup()
+        # This endpoint is TLS 1.1 only
+        if caps["can_tls11"]:
+            assert row["tls11"] is True
+        else:
+            assert row["tls11"] is None
+
+        # All other versions must be False (if we can probe them) or None (if not)
+        for key, cap in (
+            ("tls13", "can_tls13"),
+            ("tls12", "can_tls12"),
+            ("tls10", "can_tls10"),
+            ("ssl_legacy", "can_ssl_legacy"),
+        ):
+            if caps[cap]:
+                assert row[key] is False
+            else:
+                assert row[key] is None
+    finally:
+        await runner.cleanup()
+
+
+async def test_tls_10_only_reports_correctly(tiny_pool):
+    # Skip if stdlib doesn't even expose TLSv1 (aka TLS 1.0)
+    if not _has("TLSv1"):
+        pytest.skip("Runner lacks TLSv1 support")
+
+    port = 9647
+    runner = await _start_https_app(port, ssl.TLSVersion.TLSv1, ssl.TLSVersion.TLSv1)
+    try:
+        mod = TLSModule(executor=tiny_pool, timeout_s=5.0)
+        caps = mod.probe_caps()
+
+        await mod.run([f"127.0.0.1:{port}"])
+        row = list(mod.results().values())[0]
+
+        # This endpoint is TLS 1.0 only
+        if caps["can_tls10"]:
+            assert row["tls10"] is True
+        else:
+            assert row["tls10"] is None
+
+        # All other versions must be False (if we can probe them) or None (if not)
+        for key, cap in (
+            ("tls13", "can_tls13"),
+            ("tls12", "can_tls12"),
+            ("tls11", "can_tls11"),
+            ("ssl_legacy", "can_ssl_legacy"),
+        ):
+            if caps[cap]:
+                assert row[key] is False
+            else:
+                assert row[key] is None
+    finally:
+        await runner.cleanup()

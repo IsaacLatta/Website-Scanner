@@ -22,10 +22,69 @@ def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
     return origin, default_port
 
 
+# def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: float = 5.0) -> bool:
+#     sock = None
+#     try:
+#         ctx = SSL.Context(SSL.TLS_METHOD)
+#         ctx.set_min_proto_version(minmax_ver)
+#         ctx.set_max_proto_version(minmax_ver)
+
+#         sock = socket.create_connection((host, port), timeout=timeout)
+#         sock.settimeout(timeout)
+
+#         conn = SSL.Connection(ctx, sock)
+#         conn.set_connect_state()
+#         try:
+#             conn.set_tlsext_host_name(host.encode("utf-8"))
+#         except Exception:
+#             pass
+
+#         conn.setblocking(True)
+#         conn.do_handshake()
+#         try:
+#             conn.shutdown()
+#         except Exception:
+#             pass
+#         return True
+#     except Exception as e:
+#         # Ensure caller can record the timeout
+#         if is_timeout_exc(e):
+#             raise
+
+#         return False
+#     finally:
+#         try:
+#             sock.close()
+#         except Exception:
+#             pass
+
+LEGACY_MAX = getattr(SSL, "TLS1_1_VERSION", None)
+
+
 def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: float = 5.0) -> bool:
+    """
+    Perform a blocking TLS handshake where:
+        min_proto_version == max_proto_version == minmax_ver
+
+    Returns:
+        True  if the handshake succeeds
+        False if it fails (except for timeouts, which are re-raised so the
+              caller can record them separately).
+    """
     sock = None
+    conn = None
     try:
         ctx = SSL.Context(SSL.TLS_METHOD)
+
+        # For legacy versions (<= TLS 1.1), drop to SECLEVEL=0 so TLS 1.0/1.1
+        # can actually negotiate on OpenSSL 3.x.
+        if LEGACY_MAX is not None and minmax_ver <= LEGACY_MAX:
+            try:
+                ctx.set_cipher_list(b"DEFAULT:@SECLEVEL=0")
+            except Exception as e:
+                # Non-fatal; worst case we just get more handshake failures.
+                print(f"[tls] failed to set SECLEVEL=0 for legacy probe: {e!r}")
+
         ctx.set_min_proto_version(minmax_ver)
         ctx.set_max_proto_version(minmax_ver)
 
@@ -34,6 +93,8 @@ def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: f
 
         conn = SSL.Connection(ctx, sock)
         conn.set_connect_state()
+
+        # SNI
         try:
             conn.set_tlsext_host_name(host.encode("utf-8"))
         except Exception:
@@ -41,22 +102,32 @@ def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: f
 
         conn.setblocking(True)
         conn.do_handshake()
+
         try:
             conn.shutdown()
         except Exception:
             pass
+
         return True
+
     except Exception as e:
-        # Ensure caller can record the timeout
+        # Preserve timeout classification for the caller.
         if is_timeout_exc(e):
             raise
-
         return False
+
     finally:
-        try:
-            sock.close()
-        except Exception:
-            pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        if sock is not None:
+            try:
+                sock.close()
+            except Exception:
+                pass
+
 
 @dataclass
 class TLSRow:
