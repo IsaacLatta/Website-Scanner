@@ -5,6 +5,7 @@ from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
 import ssl
+import warnings
 from OpenSSL import SSL
 
 from scanner.modules.export import ModuleExport
@@ -21,46 +22,17 @@ def _split_host_port(origin: str, default_port: int = 443) -> Tuple[str, int]:
             return origin, default_port
     return origin, default_port
 
-
-# def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: float = 5.0) -> bool:
-#     sock = None
-#     try:
-#         ctx = SSL.Context(SSL.TLS_METHOD)
-#         ctx.set_min_proto_version(minmax_ver)
-#         ctx.set_max_proto_version(minmax_ver)
-
-#         sock = socket.create_connection((host, port), timeout=timeout)
-#         sock.settimeout(timeout)
-
-#         conn = SSL.Connection(ctx, sock)
-#         conn.set_connect_state()
-#         try:
-#             conn.set_tlsext_host_name(host.encode("utf-8"))
-#         except Exception:
-#             pass
-
-#         conn.setblocking(True)
-#         conn.do_handshake()
-#         try:
-#             conn.shutdown()
-#         except Exception:
-#             pass
-#         return True
-#     except Exception as e:
-#         # Ensure caller can record the timeout
-#         if is_timeout_exc(e):
-#             raise
-
-#         return False
-#     finally:
-#         try:
-#             sock.close()
-#         except Exception:
-#             pass
+def _set_exact_proto_version(ctx: SSL.Context, ver: int) -> None:
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            category=DeprecationWarning,
+            message="Attempting to mutate a Context after a Connection was created.*",
+        )
+        ctx.set_min_proto_version(ver)
+        ctx.set_max_proto_version(ver)
 
 LEGACY_MAX = getattr(SSL, "TLS1_1_VERSION", None)
-
-
 def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: float = 5.0) -> bool:
     """
     Perform a blocking TLS handshake where:
@@ -85,8 +57,9 @@ def _pyopenssl_handshake_exact(host: str, port: int, minmax_ver: int, timeout: f
                 # Non-fatal; worst case we just get more handshake failures.
                 print(f"[tls] failed to set SECLEVEL=0 for legacy probe: {e!r}")
 
-        ctx.set_min_proto_version(minmax_ver)
-        ctx.set_max_proto_version(minmax_ver)
+        _set_exact_proto_version(ctx, minmax_ver)
+        # ctx.set_min_proto_version(minmax_ver)
+        # ctx.set_max_proto_version(minmax_ver)
 
         sock = socket.create_connection((host, port), timeout=timeout)
         sock.settimeout(timeout)
@@ -263,6 +236,7 @@ class TLSModule(ModuleExport):
                 record_tls_timeout(origin, e)
                 row.tls10, row.error = False, f"{row.error} tls10:{e}"
         
+        # Nearly all clients dont support it.
         if self._caps.can_ssl_legacy and should_run_tls_modules(origin):
             try:
                 row.ssl_legacy = await _guarded(_pyopenssl_handshake_exact, host, port, SSL.SSL3_VERSION, self._timeout)

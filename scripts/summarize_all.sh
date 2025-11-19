@@ -25,7 +25,7 @@ python3 scripts/summarize_tls_cipher.py results/uk/fin/uk_fin.json --out-dir res
 python3 scripts/summarize_error_leaks.py results/uk/fin/uk_fin.json --out-dir results/uk/fin/error_leak
 
 # CA Auth
-python3 scripts/summarize_headers.py results/ca/auth/auth/ca_auth.json --out-dir results/ca/auth/headers
+python3 scripts/summarize_headers.py results/ca/auth/ca_auth.json --out-dir results/ca/auth/headers
 python3 scripts/summarize_hsts_https.py results/ca/auth/ca_auth.json --out-dir results/ca/auth/hsts_https
 python3 scripts/summarize_redirects.py results/ca/auth/ca_auth.json --out-dir results/ca/auth/redirects
 python3 scripts/summarize_securitytxt.py results/ca/auth/ca_auth.json --out-dir results/ca/auth/securitytxt

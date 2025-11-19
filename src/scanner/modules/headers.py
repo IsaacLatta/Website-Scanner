@@ -205,35 +205,32 @@ def _parse_permissions_policy(value: str) -> Dict[str, List[str]]:
         directives[name] = [rest.strip(" '\"")]
     return directives
 
-# TODO: Should maybe remove the '*' from the insecure. 
-# If a permissions policy sets a '*', it may not be a 
-# guarantee the site is insecure
+
 def classify_permissions_policy(value: str) -> HeaderClass:
     """
+    Coarse classifier that answers: is the site explicitly describing a
+    Permissions-Policy, or effectively leaving behaviour to defaults?
     recommended:
-        Header present, we can parse at least one directive, and there is
-        no bare '*' origin anywhere. This means the site is explicitly
-        controlling which origins can use features (even if it allows some
-        cross-origin use).
-
+        - Header present and non-empty, AND
+        - We can parse at least one "feature = sources" directive.
     insecure:
-        Header present but at least one directive uses a bare '*'
-        (e.g. geolocation=*), or the value is empty / unparseable
-        so the effective behaviour is the default "allow everything".
+        - Header missing, empty, or whitespace-only, OR
+        - Header is exactly "*", OR
+        - Header present but we cannot parse any directives.
     """
     if not value or not value.strip():
+        return "insecure"
+
+    v = value.strip()
+    if v == "*":
         return "insecure"
 
     directives = _parse_permissions_policy(value)
     if not directives:
         return "insecure"
 
-    for tokens in directives.values():
-        if any(tok == "*" for tok in tokens):
-            return "insecure"
-
-    # Header is set, parsed, and avoids '*', meaning it is explicitly scoping usage.
     return "recommended"
+
 
 def parse_set_cookie_attributes(value: str) -> Dict[str, Any]:
     info: Dict[str, Any] = {

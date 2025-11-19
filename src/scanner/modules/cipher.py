@@ -24,7 +24,60 @@ TLS13_SUFFICIENT = [
     "TLS_AES_128_CCM_8_SHA256",
 ]
 
-# From CCSA
+# From CCCS
+TLS12_PHASE_OUT = [
+    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_RSA_WITH_AES_256_CCM",
+    "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_RSA_WITH_AES_128_CCM",
+    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
+    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
+    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_RSA_WITH_AES_256_CBC_SHA256",
+    "TLS_RSA_WITH_AES_256_CBC_SHA",
+    "TLS_RSA_WITH_AES_128_CBC_SHA256",
+    "TLS_RSA_WITH_AES_128_CBC_SHA",
+    "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+    "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+    "TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
+    "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA", 
+    "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA", 
+    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", 
+    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", 
+    "TLS_DHE_RSA_WITH_AES_256_CBC_SHA", 
+    "TLS_DHE_RSA_WITH_AES_128_CBC_SHA", 
+]
+
+TLS12_PHASE_OUT = [
+    "DHE-RSA-AES256-GCM-SHA384",
+    "DHE-DSS-AES256-GCM-SHA384",
+    "DHE-RSA-AES256-CCM",
+    "DHE-RSA-AES128-GCM-SHA256",
+    "DHE-DSS-AES128-GCM-SHA256",
+    "DHE-RSA-AES128-CCM",
+    "DHE-RSA-AES256-SHA256",
+    "DHE-RSA-AES128-SHA256",
+    "AES256-GCM-SHA384",
+    "AES128-GCM-SHA256",
+    "AES256-SHA256",
+    "AES256-SHA",
+    "AES128-SHA256",
+    "AES128-SHA",
+    "ECDHE-ECDSA-DES-CBC3-SHA",
+    "ECDHE-RSA-DES-CBC3-SHA",
+    "DHE-RSA-DES-CBC3-SHA",
+    "ECDHE-ECDSA-AES256-SHA",
+    "ECDHE-ECDSA-AES128-SHA",
+    "ECDHE-RSA-AES256-SHA",
+    "ECDHE-RSA-AES128-SHA",
+    "DHE-RSA-AES256-SHA",
+    "DHE-RSA-AES128-SHA",
+]
+
+# From CCCS
 TLS12_RECOMMENDED = [
     "ECDHE-ECDSA-AES256-GCM-SHA384",
     "ECDHE-ECDSA-AES256-CCM",
@@ -57,8 +110,6 @@ class CipherRow:
     negotiated_cipher: str
     negotiated_security: Optional[str]
 
-    # Category is in ["recommended", "sufficient", "unknown", None]
-
     tls13_forced_cipher: Optional[str]
     tls13_forced_category: Optional[str]  
 
@@ -67,6 +118,7 @@ class CipherRow:
 
     accepts_recommended_tls12: Optional[bool]
     accepts_sufficient_tls12: Optional[bool]
+    accepts_phase_out_tls12: Optional[bool]
     accepts_insecure_tls12: Optional[bool]
 
     allows_sha1_tls12: Optional[bool]
@@ -166,71 +218,6 @@ def _ssl_handshake(
         except Exception:
             pass
 
-# def _pyopenssl_handshake(
-#     host: str,
-#     port: int,
-#     *,
-#     min_ver: Optional[int] = None,
-#     max_ver: Optional[int] = None,
-#     tls13_ciphers: Optional[str] = None,
-#     tls12_ciphers: Optional[str] = None,
-#     timeout: float = 5.0,
-# ) -> Tuple[bool, str, str]:
-#     sock = None
-#     try:
-#         ctx = SSL.Context(SSL.TLS_METHOD)
-#         if min_ver is not None:
-#             ctx.set_min_proto_version(min_ver)
-#         if max_ver is not None:
-#             ctx.set_max_proto_version(max_ver)
-
-#         if tls12_ciphers:
-#             ctx.set_cipher_list(tls12_ciphers.encode("ascii"))
-
-#         # Some machine's have older ssl builds installed, even if a 
-#         # a modern PyOpenSSL (>= 3.1.1) package is present, seems 
-#         # like the system install can override. Thus, preventing
-#         # this scanner from forcing certain cipher suites at tls 1.3.
-#         if tls13_ciphers and hasattr(ctx, "set_ciphersuites"):
-#             try:
-#                 ctx.set_ciphersuites(tls13_ciphers.encode("ascii"))
-#             except Exception:
-#                 pass
-
-#         sock = socket.create_connection((host, port), timeout=timeout)
-#         sock.settimeout(timeout)
-
-#         conn = SSL.Connection(ctx, sock)
-#         conn.set_connect_state()
-#         try:
-#             conn.set_tlsext_host_name(host.encode("utf-8"))
-#         except Exception:
-#             pass
-
-#         conn.setblocking(True)
-#         conn.do_handshake()
-
-#         cipher = conn.get_cipher_name() or ""
-#         try:
-#             proto = conn.get_protocol_version_name() or ""
-#         except Exception:
-#             proto = ""
-
-#         try:
-#             conn.shutdown()
-#         except Exception:
-#             pass
-#         return True, cipher, proto
-#     except Exception as e:
-#         if is_timeout_exc(e):
-#             raise
-#         return False, "", ""
-#     finally:
-#         try:
-#             sock.close()
-#         except Exception:
-#             pass
-
 def _make_catalog_lookup(catalog: Optional[CipherCatalog]) -> Dict[str, str]:
     if not catalog:
         return {}
@@ -257,6 +244,8 @@ def _classify_tls12(cipher: str) -> str:
         return "recommended"
     if cipher in TLS12_SUFFICIENT:
         return "sufficient"
+    if cipher in TLS12_PHASE_OUT:
+        return "phase_out"
     lower = cipher.lower()
     if any(tok in lower for tok in ("rc4", "3des", "des", "md5")):
         return "insecure"
@@ -390,7 +379,8 @@ class CipherSuitesModule(ModuleExport):
             negotiated_version="", negotiated_cipher="", negotiated_security=None,
             tls13_forced_cipher=None, tls13_forced_category=None,
             tls12_forced_cipher=None, tls12_forced_category=None,
-            accepts_recommended_tls12=None, accepts_sufficient_tls12=None, accepts_insecure_tls12=None,
+            accepts_recommended_tls12=None, accepts_sufficient_tls12=None, 
+            accepts_phase_out_tls12=None, accepts_insecure_tls12=None,
             allows_sha1_tls12=None, allows_cbc_tls12=None, error="",
         )
 
@@ -450,6 +440,12 @@ class CipherSuitesModule(ModuleExport):
                 row.accepts_sufficient_tls12 = await _guard_tls(
                     "tls12_sufficient",
                     self._try_bucket_tls12(host, port, TLS12_SUFFICIENT),
+                )
+
+                await sample_noise()
+                row.accepts_phase_out_tls12 = await _guard_tls(
+                    "tls12_phase_out",
+                    self._try_bucket_tls12(host, port, TLS12_PHASE_OUT),
                 )
 
                 await sample_noise()

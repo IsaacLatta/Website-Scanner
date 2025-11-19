@@ -9,7 +9,8 @@ from scanner.modules.headers import (
     default_header_rules,
     classify_set_cookie,
     parse_set_cookie_attributes,
-    load_missing_header_rules
+    load_missing_header_rules,
+    classify_permissions_policy
 )
 
 pytestmark = pytest.mark.asyncio
@@ -313,57 +314,6 @@ async def test_x_content_type_empty_and_missing_insecure(session, header_server,
     assert xcto2.raw == ""
     assert xcto2.rating == "insecure"
 
-async def test_permissions_policy_recommended_disables_feature(session, header_server, analyzer):
-    base_url, scenarios = header_server
-    scenarios["perm_recommended"] = {
-        "Permissions-Policy": 'geolocation=(), camera=(self "https://video.example")',
-    }
-
-    resp = await session.get(f"{base_url}/perm_recommended")
-    results = analyzer.run(resp.headers)
-
-    pp = _get_result(results, "permissions_policy")
-    assert pp.present is True
-    assert pp.rating == "recommended"
-
-async def test_permissions_policy_recommended_restrictive_only(session, header_server, analyzer):
-    base_url, scenarios = header_server
-    scenarios["perm_restrictive"] = {
-        "Permissions-Policy": 'camera=(self "https://video.example")',
-    }
-
-    resp = await session.get(f"{base_url}/perm_restrictive")
-    results = analyzer.run(resp.headers)
-
-    pp = _get_result(results, "permissions_policy")
-    assert pp.present is True
-    assert pp.rating == "recommended"
-
-async def test_permissions_policy_insecure_star(session, header_server, analyzer):
-    base_url, scenarios = header_server
-    scenarios["perm_insecure_star"] = {
-        "Permissions-Policy": "geolocation=*",
-    }
-
-    resp = await session.get(f"{base_url}/perm_insecure_star")
-    results = analyzer.run(resp.headers)
-
-    pp = _get_result(results, "permissions_policy")
-    assert pp.present is True
-    assert pp.rating == "insecure"
-
-async def test_permissions_policy_missing_header_is_insecure(session, header_server, analyzer):
-    base_url, scenarios = header_server
-    scenarios["perm_missing"] = {}
-
-    resp = await session.get(f"{base_url}/perm_missing")
-    results = analyzer.run(resp.headers)
-
-    pp = _get_result(results, "permissions_policy")
-    assert pp.present is False
-    assert pp.raw == ""
-    assert pp.rating == "insecure"
-
 async def test_set_cookie_recommended_strict(session, header_server, analyzer):
     base_url, scenarios = header_server
     scenarios["cookie_recommended"] = {
@@ -498,3 +448,37 @@ def test_load_missing_header_rules_normalizes_names():
     xpb_rule = next(r for r in rules if r.name == "x-powered-by")
     assert xpb_rule.display_name == "x_powered_by"
     assert xpb_rule.on_missing_class == "recommended"
+
+def test_permissions_policy_missing_or_empty_is_insecure():
+    assert classify_permissions_policy("") == "insecure"
+    assert classify_permissions_policy("   ") == "insecure"
+
+
+def test_permissions_policy_trivial_wildcard_is_insecure():
+    assert classify_permissions_policy("*") == "insecure"
+    assert classify_permissions_policy("   *   ") == "insecure"
+
+
+def test_permissions_policy_unparseable_is_insecure():
+    # No "feature = sources" pairs -> nothing we can interpret as explicit control
+    assert classify_permissions_policy("this is not a real policy") == "insecure"
+
+
+def test_permissions_policy_with_directive_is_recommended():
+    # Denying a feature
+    assert classify_permissions_policy("camera=()") == "recommended"
+
+    # Allowing a feature only on self
+    assert classify_permissions_policy("geolocation=(self)") == "recommended"
+
+    # Mixed list with explicit origins
+    assert classify_permissions_policy(
+        "camera=(self https://example.com) , microphone=()"
+    ) == "recommended"
+
+
+def test_permissions_policy_allows_feature_with_star_is_still_recommended():
+    # We no longer penalize "feature=*" at the header level; it still shows
+    # they are using Permissions-Policy in an explicit way.
+    assert classify_permissions_policy("geolocation=*") == "recommended"
+    assert classify_permissions_policy("camera=(); geolocation=*") == "recommended"
