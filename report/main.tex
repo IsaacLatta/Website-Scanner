@@ -17,9 +17,11 @@
 \usepackage{algpseudocode}%
 \usepackage{listings}%
 \usepackage{pgfplotstable} % read/filter CSVs into tables
-\usepackage{booktabs}      % you already load this (for \toprule, etc.)
-\usepackage{changepage}    % if you want wider local margins
-% \pgfplotsset{compat=1.18} % optional; any recent compat is fine
+\usepackage{booktabs}      
+\usepackage{changepage}    
+% \pgfplotsset{compat=1.18}
+\usepackage{csvsimple}
+
 
 \usepackage{capt-of}  % provides \captionof{figure} and \captionof{table}
 % Inline block with padding above/below (works for tables or figures)
@@ -1230,6 +1232,92 @@ in a strongly locked-down way versus partially protected or weakly configured.}
 
 
 \section{Discussion}\label{sec3}
+
+% Revealing headers per site (0 / 1 / 2 / 3+)
+\begin{table}[t]
+  \centering
+  \caption{Revealing headers per site, by country and sector. 
+  Values are the percentage of sites in each dataset that expose 
+  0, 1, 2, or 3+ OWASP ``revealing'' headers (e.g., Server, X-Powered-By).}
+  \csvreader[
+    tabular=llrrrr,
+    table head=\toprule Dataset & Sector & 0 & 1 & 2 & 3+ \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    pct_revealing_0=\PZero,
+    pct_revealing_1=\POne,
+    pct_revealing_2=\PTwo,
+    pct_revealing_3_plus=\PThreePlus
+  }{%
+    \Dataset & \Sector & \PZero & \POne & \PTwo & \PThreePlus
+  }
+\end{table}
+
+% Presence of core security headers
+\begin{table}[t]
+  \centering
+  \caption{Presence of core HTTP security headers, by country and sector.
+  Values are the percentage of sites in each dataset that send each header
+  at least once on the landing page.}
+  \csvreader[
+    tabular=llrrrrr,
+    table head=\toprule Dataset & Sector &
+      Referrer-Policy &
+      X-Content-Type-Options &
+      X-Frame-Options &
+      CSP frame-anc. &
+      Permissions-Policy \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/headers/security_headers_presence.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    pct_referrer_policy_present=\PRef,
+    pct_x_content_type_options_present=\PXcto,
+    pct_x_frame_options_present=\PXfo,
+    pct_csp_frame_ancestors_present=\PCsp,
+    pct_permissions_policy_present=\PPerm
+  }{%
+    \Dataset & \Sector &
+    \PRef & \PXcto & \PXfo & \PCsp & \PPerm
+  }
+\end{table}
+
+% Cookie security flags (among cookie-setting sites)
+\begin{table}[t]
+  \centering
+  \caption{Cookie usage and security flags, by country and sector.
+  ``Sites with cookies'' is the percentage of all sites in the dataset that
+  set any cookie on the landing page. The remaining columns are percentages
+  computed among those cookie-setting sites.}
+  \csvreader[
+    tabular=llrrrrr,
+    table head=\toprule Dataset & Sector &
+      Sites with cookies &
+      Secure &
+      HttpOnly &
+      SameSite $\geq$ Lax &
+      Rec./Suff. cookie \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    pct_sites_with_cookies=\PCSites,
+    pct_secure_among_cookie_sites=\PSec,
+    pct_httponly_among_cookie_sites=\PHO,
+    pct_samesite_ge_lax_among_cookie_sites=\PSS,
+    pct_rec_suff_among_cookie_sites=\PRec
+  }{%
+    \Dataset & \Sector &
+    \PCSites & \PSec & \PHO & \PSS & \PRec
+  }
+\end{table}
+
+
 \subsection{Summary of Results}
 % Summary planning:
 % - One paragraph per main theme:
