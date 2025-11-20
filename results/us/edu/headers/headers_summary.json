@@ -1,0 +1,139 @@
+{
+  "baseline_overview": {
+    "baseline_enabled_histogram": {
+      "0": 4,
+      "1-2": 28,
+      "3-4": 18,
+      "5_all": 1
+    },
+    "n_sites_with_all_baseline": 1,
+    "n_sites_with_any_baseline": 47,
+    "pct_sites_with_all_baseline": 1.9607843137254901,
+    "pct_sites_with_any_baseline": 92.15686274509804,
+    "posture_counts": {
+      "mixed": 46,
+      "strong": 1,
+      "weak": 4
+    },
+    "security_rules": [
+      "referrer_policy",
+      "csp_frame_ancestors",
+      "x_frame_options",
+      "x_content_type_options",
+      "permissions_policy"
+    ]
+  },
+  "cookies": {
+    "flag_counts": {
+      "has_lifetime": 8,
+      "httponly": 11,
+      "samesite_missing_or_other": 9,
+      "samesite_none": 7,
+      "secure": 10
+    },
+    "n_sites_with_cookies": 16,
+    "pct_sites_with_cookies": 31.372549019607842,
+    "rating_counts": {
+      "insecure": 16
+    }
+  },
+  "meta": {
+    "n_sites": 51
+  },
+  "metric_definitions": {
+    "baseline_overview.baseline_enabled_histogram": "Histogram of how many core security headers each site enabled with a rating of either 'recommended' or 'sufficient'. Bucket '0' counts sites with no such headers; '1-2' counts sites with one or two; '3-4' counts sites with three or four; '5_all' counts sites where all five baseline headers were rated 'recommended' or 'sufficient'.",
+    "baseline_overview.n_sites_with_all_baseline": "Number of sites where all five baseline headers were classified as either 'recommended' or 'sufficient'.",
+    "baseline_overview.n_sites_with_any_baseline": "Number of sites that enabled at least one core security header with rating 'recommended' or 'sufficient' (i.e., not in the 0 bucket).",
+    "baseline_overview.pct_sites_with_all_baseline": "Percentage of sites where all five baseline headers were classified as either 'recommended' or 'sufficient'.",
+    "baseline_overview.pct_sites_with_any_baseline": "Percentage of sites that enabled at least one core security header with rating 'recommended' or 'sufficient'.",
+    "baseline_overview.posture_counts": "Counts of sites in each coarse-grained posture bucket: 'strong' = three or more baseline headers rated recommended/sufficient and none rated insecure/obsolete; 'mixed' = at least one baseline header enabled but some headers rated insecure/obsolete; 'weak' = no baseline headers rated recommended/sufficient.",
+    "baseline_overview.security_rules": "List of core browser-side security header rules considered in the baseline: referrer policy, CSP frame-ancestors, X-Frame-Options, X-Content-Type-Options, and Permissions-Policy. Cookies are handled separately.",
+    "cookies.flag_counts": "For cookie-setting sites only, counts of how many sites had each attribute flagged on the sample Set-Cookie header: 'secure', 'httponly', 'samesite_strict', 'samesite_lax', 'samesite_none', 'samesite_missing_or_other', and 'has_lifetime' (true if either Max-Age or Expires was present).",
+    "cookies.n_sites_with_cookies": "Number of sites where at least one Set-Cookie header was seen on the final response (present=True for the 'cookies' rule).",
+    "cookies.pct_sites_with_cookies": "Percentage of sites that set at least one cookie, relative to meta.n_sites.",
+    "cookies.rating_counts": "Counts of cookie-setting sites for each classifier outcome on the sample Set-Cookie header: 'recommended' (Secure+HttpOnly+SameSite=Strict), 'sufficient' (Secure+HttpOnly+SameSite=Lax), or 'insecure'/other.",
+    "meta.n_sites": "Number of input URLs for which the headers module produced results. Each entry corresponds to one final HTTP response after redirects.",
+    "revealing_headers.count_distribution": "Distribution over sites of the number of distinct revealing headers that were present at all. Bucket '0' counts sites with none of these headers; '1' with exactly one; '2' with two; '3+' with three or more.",
+    "revealing_headers.n_sites_with_any_revealing": "Number of sites where at least one OWASP 'revealing' header (for example, Server, X-Powered-By, X-Generator) was present in the final response.",
+    "revealing_headers.pct_sites_with_any_revealing": "Percentage of sites where at least one revealing header was present, relative to meta.n_sites.",
+    "revealing_headers.presence_counts": "For each revealing header display name (for example, 'server', 'x_powered_by'), the number of sites whose final response included that header.",
+    "revealing_headers.top_revealing": "List of the TOP_N_REVEALING most common revealing headers, represented as [header_name, site_count] pairs. This is used to identify which banners (for example, Server or X-Powered-By) appear most frequently.",
+    "security_rules": "For each core security rule, an object containing a ratings histogram and the number of sites that explicitly sent that header.",
+    "security_rules.<rule>.n_present": "Number of sites where the corresponding header name was explicitly present in the HTTP response (present=True). Missing headers still have a rating via on_missing_class, but are not counted here.",
+    "security_rules.<rule>.ratings": "For a given rule (e.g., 'referrer_policy', 'x_content_type_options'), counts of sites whose final response was classified with that rating: 'recommended', 'sufficient', 'insecure', 'obsolete', or 'unknown'. Ratings are computed by the per-header classifier in headers.py."
+  },
+  "revealing_headers": {
+    "count_distribution": {
+      "0": 7,
+      "1": 33,
+      "2": 7,
+      "3+": 4
+    },
+    "n_sites_with_any_revealing": 44,
+    "pct_sites_with_any_revealing": 86.27450980392157,
+    "presence_counts": {
+      "server": 39,
+      "x_aspnet_version": 3,
+      "x_generator": 8,
+      "x_powered_by": 9
+    },
+    "top_revealing": [
+      [
+        "server",
+        39
+      ],
+      [
+        "x_powered_by",
+        9
+      ],
+      [
+        "x_generator",
+        8
+      ],
+      [
+        "x_aspnet_version",
+        3
+      ]
+    ]
+  },
+  "security_rules": {
+    "csp_frame_ancestors": {
+      "n_present": 13,
+      "ratings": {
+        "insecure": 37,
+        "recommended": 1,
+        "sufficient": 8,
+        "unknown": 2
+      }
+    },
+    "permissions_policy": {
+      "n_present": 4,
+      "ratings": {
+        "insecure": 44,
+        "recommended": 4
+      }
+    },
+    "referrer_policy": {
+      "n_present": 10,
+      "ratings": {
+        "insecure": 1,
+        "recommended": 47
+      }
+    },
+    "x_content_type_options": {
+      "n_present": 21,
+      "ratings": {
+        "insecure": 27,
+        "recommended": 21
+      }
+    },
+    "x_frame_options": {
+      "n_present": 24,
+      "ratings": {
+        "obsolete": 1,
+        "sufficient": 23,
+        "unknown": 24
+      }
+    }
+  }
+}

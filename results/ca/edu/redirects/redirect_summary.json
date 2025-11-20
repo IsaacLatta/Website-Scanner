@@ -1,0 +1,96 @@
+{
+  "inputs": {
+    "n_all_origins": 103,
+    "n_entry_origins": 95,
+    "n_final_only_origins": 8,
+    "n_final_origins": 89,
+    "n_input_origins": 95,
+    "n_input_uris": 96,
+    "uris_per_entry_origin": {
+      "count": 95,
+      "max": 2,
+      "mean": 1.0105263157894737,
+      "median": 1,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 7
+    },
+    "http_timeout_buckets": {
+      "0": 83,
+      "1": 25,
+      "3_plus": 2
+    },
+    "n_origins": 110,
+    "n_origins_all_inputs_unreachable": 5,
+    "n_origins_any_timeout": 28,
+    "n_origins_http_dead": 2,
+    "n_origins_http_forbidden": 7,
+    "n_origins_tls_dead": 0,
+    "origins_all_inputs_unreachable": [
+      "brocku.ca",
+      "www.etsmtl.ca",
+      "www.royalroads.ca",
+      "www.smu.ca",
+      "www.uqat.ca"
+    ],
+    "tls_timeout_buckets": {
+      "0": 108,
+      "1": 2
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 76,
+      "301": 12,
+      "302": 3
+    },
+    "entry_status_family_counts": {
+      "2xx": 76,
+      "3xx": 15
+    },
+    "final_status_counts": {
+      "200": 91
+    },
+    "final_status_family_counts": {
+      "2xx": 91
+    },
+    "hop_buckets_all_success": {
+      "0": 76,
+      "1": 11,
+      "2": 3,
+      "3_plus": 1
+    },
+    "hop_buckets_success_non_block": {
+      "0": 76,
+      "1": 11,
+      "2": 3,
+      "3_plus": 1
+    },
+    "hop_counts_all_success": {
+      "count": 91,
+      "max": 4,
+      "mean": 0.23076923076923078,
+      "median": 0,
+      "p95": 1
+    },
+    "hop_counts_success_non_block": {
+      "count": 91,
+      "max": 4,
+      "mean": 0.23076923076923078,
+      "median": 0,
+      "p95": 1
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 96,
+    "n_timeout_error": 0,
+    "outcome_counts": {
+      "ok_final_2xx": 91,
+      "other_error": 5
+    },
+    "timeout_error_fraction": 0.0
+  }
+}

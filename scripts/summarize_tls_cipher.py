@@ -277,12 +277,13 @@ def plot_tls12_cipher_categories(t12_block: dict, out_path: Path) -> None:
     cc = t12_block.get("category_counts", {})
     if not cc:
         return
-    labels = ["recommended", "sufficient", "insecure", "unknown"]
+    labels = ["recommended", "sufficient", "insecure", "unknown", "phase_out"]
     values = [
         cc.get("recommended", 0),
         cc.get("sufficient", 0),
         cc.get("insecure", 0),
         cc.get("unknown", 0),
+        cc.get("phase_out", 0)
     ]
 
     x = range(len(labels))
