@@ -53,7 +53,6 @@ def classify_resolution(res: dict) -> str:
     entry_status = res.get("entry_status")
     final_status = res.get("final_status")
 
-    # WAF-like block: any 403/503 in the resolution stage (entry or final)
     has_block_status = False
     for status in (entry_status, final_status):
         if status in (403, 503):
@@ -67,12 +66,10 @@ def classify_resolution(res: dict) -> str:
             return "redirect_error"
         return "other_error"
 
-    # No error recorded: treat by status codes.
     if has_block_status:
         return "blocked_403_503"
 
     if final_status is None:
-        # Should be rare; treat as other_error-like
         return "other_error"
 
     if 200 <= final_status < 300:
@@ -97,7 +94,6 @@ def compute_inputs_block(results: dict) -> dict:
     final_origins = origin_targets.get("final_origins", [])
     all_origins = origin_targets.get("all_origins", [])
 
-    # URIs per entry origin mapping
     origin_to_uri_count = Counter()
     resolutions = results.get("resolutions", {})
     for url, res in resolutions.items():
@@ -131,16 +127,13 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
     entry_status_counter = Counter()
     final_status_counter = Counter()
 
-    # Map URL -> outcome for later origin summary
     url_outcomes = {}
 
     for url, res in resolutions.items():
-        # Resolutions are dicts already (from JSON)
         hops = res.get("hops") or []
         entry_status = res.get("entry_status")
         final_status = res.get("final_status")
 
-        # Count entry / final status buckets
         if entry_status is not None:
             entry_status_counter[entry_status] += 1
         if final_status is not None:
@@ -155,20 +148,16 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
             status in (403, 503) for status in (entry_status, final_status)
         )
 
-        # Hop stats: only include resolutions with no error and a final URL.
         has_final = res.get("final_url") is not None
         if error is None and has_final:
             hop_count = len(hops)
             hop_counts_all_success.append(hop_count)
-            # Second set of stats: successful resolutions that did NOT end in 403/503
             if not has_block_status:
                 hop_counts_success_non_block.append(hop_count)
 
-    # Derive hop stats
     hop_stats_all = describe_numeric(hop_counts_all_success)
     hop_stats_non_block = describe_numeric(hop_counts_success_non_block)
 
-    # Bucketed hop counts for quick inspection
     def bucket_hops(values):
         buckets = Counter()
         for h in values:
@@ -185,7 +174,6 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
     hop_buckets_all = bucket_hops(hop_counts_all_success)
     hop_buckets_non_block = bucket_hops(hop_counts_success_non_block)
 
-    # Plot hop distributions
     if hop_counts_all_success:
         plt.figure()
         plt.hist(
@@ -212,7 +200,6 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
         plt.savefig(out_dir / "hop_distribution_non_block.png")
         plt.close()
 
-    # Plot resolution outcome categories
     if outcome_counter:
         plt.figure()
         labels = list(outcome_counter.keys())
@@ -225,7 +212,6 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
         plt.savefig(out_dir / "resolution_outcomes.png")
         plt.close()
 
-    # Entry/final status distributions
     def plot_status_counter(counter: Counter, title: str, filename: str):
         if not counter:
             return
@@ -251,14 +237,12 @@ def compute_redirect_block(results: dict, out_dir: Path) -> dict:
         "final_status_distribution.png",
     )
 
-    # Compute derived stats for blocked/timeouts etc.
     n_blocked = outcome_counter.get("blocked_403_503", 0)
     n_timeout_err = outcome_counter.get("timeout_error", 0)
 
     blocked_fraction = safe_pct(n_blocked, n_resolutions)
     timeout_fraction = safe_pct(n_timeout_err, n_resolutions)
 
-    # Status family buckets (2xx,3xx,4xx,5xx) for entry/final
     def family_buckets(counter: Counter):
         fam = Counter()
         for code, count in counter.items():
@@ -298,14 +282,12 @@ def compute_origin_health_block(results: dict, url_outcomes: dict, out_dir: Path
     origin_health = results.get("origin_health", {})
     resolutions = results.get("resolutions", {})
 
-    # Per-origin aggregation of URL outcomes
     origin_to_urls = defaultdict(list)
     for url, res in resolutions.items():
         origin = res.get("entry_origin")
         if origin:
             origin_to_urls[origin].append(url)
 
-    # Resolution outcomes we consider "unreachable" at the resolution stage
     unreachable_labels = {
         "blocked_403_503",
         "timeout_error",
@@ -322,7 +304,6 @@ def compute_origin_health_block(results: dict, url_outcomes: dict, out_dir: Path
         if all(url_outcomes.get(u) in unreachable_labels for u in urls):
             origins_all_unreachable.append(origin)
 
-    # Aggregate origin health fields
     http_forbidden_count = 0
     http_dead_count = 0
     tls_dead_count = 0
@@ -377,7 +358,6 @@ def compute_origin_health_block(results: dict, url_outcomes: dict, out_dir: Path
         else:
             tls_timeout_buckets["2_plus"] += 1
 
-    # Plot timeout buckets
     if http_timeout_buckets:
         plt.figure()
         labels = ["0", "1", "2", "3_plus"]
@@ -402,7 +382,6 @@ def compute_origin_health_block(results: dict, url_outcomes: dict, out_dir: Path
         plt.savefig(out_dir / "origin_tls_timeout_buckets.png")
         plt.close()
 
-    # Plot http_forbidden status distribution
     if http_statuses_for_forbidden:
         plt.figure()
         labels = list(http_statuses_for_forbidden.keys())   # [403, 503, "other"]

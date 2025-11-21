@@ -672,6 +672,47 @@ secure, partially configured and clearly misconfigured sites. We then compared t
 \section{Results}\label{sec:result}
 \subsection{Facts Only, No Interpretation}
 
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Redirect resolution outcomes by country and sector. We show the
+  number of input URIs, distinct final URIs and final origins after following
+  redirects, and the percentage of inputs that ended in a successful 2xx
+  response, a final 4xx/5xx response, or no final URL, plus the percentage
+  of origins whose inputs were all unreachable from our vantage point.}
+  \csvreader[
+    tabular=llrrrrrrrr,
+    table head=\toprule
+      Dataset & Sector &
+      $n$ URIs &
+      $n$ final URIs &
+      $n$ input origins &
+      $n$ final origins &
+      Final 2xx (\%) &
+      Final 4xx/5xx (\%) &
+      No final URL (\%) &
+      Origins all unreachable (\%) \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/redirects/redirects_summary.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    n_input_uris=\Nuris,
+    n_final_uris=\Nfuri,
+    n_input_origins=\Niorig,
+    n_final_origins=\Nforig,
+    pct_final_2xx=\P2xx,
+    pct_final_4xx_5xx=\Perr,
+    pct_no_final=\Pno,
+    pct_origins_all_unreachable=\PorigDead
+  }{%
+    \Dataset & \Sector &
+    \Nuris & \Nfuri & \Niorig & \Nforig &
+    \P2xx & \Perr & \Pno & \PorigDead
+  }
+\end{table}
+
+
 
 % HSTS and HTTPS Captions:
 
@@ -1346,6 +1387,40 @@ in a strongly locked-down way versus partially protected or weakly configured.}
   }
 \end{table}
 
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Deployment of \texttt{security.txt} by country and sector.
+  For each dataset we show the number of scanned origins, the number and
+  percentage that expose a usable \texttt{security.txt} file, and, among
+  those files, the percentage with a Contact field, an Expires field, and
+  the percentage of Expires timestamps that were still valid.}
+  \csvreader[
+    tabular=llrrrrrr,
+    table head=\toprule
+      Dataset & Sector &
+      $n$ & 
+      $n_{\text{sec.txt}}$ &
+      Sites w.\ sec.txt (\%) &
+      Contact (\%) &
+      Expires (\%) &
+      Valid exp.\ (\%) \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    n_origins=\Norig,
+    n_with_securitytxt=\Nsec,
+    pct_sites_with_securitytxt=\PAny,
+    pct_with_contact_among_present=\PContact,
+    pct_with_expires_among_present=\PExp,
+    pct_valid_expires_among_expires=\PValid
+  }{%
+    \Dataset & \Sector &
+    \Norig & \Nsec & \PAny & \PContact & \PExp & \PValid
+  }
+\end{table}
 
 
 \subsection{Summary of Results}
