@@ -1317,6 +1317,36 @@ in a strongly locked-down way versus partially protected or weakly configured.}
   }
 \end{table}
 
+\begin{table}[t]
+  \centering
+  \caption{Error-page information leaks by country and sector. 
+  For each dataset, we report the number of scanned origins and the percentage 
+  that leaked any recognizable technology name, an explicit technology/version 
+  string, or a full stack trace when probed with a non-existent path.}
+  \csvreader[
+    tabular=llrrrr,
+    table head=\toprule
+      Dataset & Sector &
+      $n$ scanned &
+      Any tech leak &
+      Version leak &
+      Stack trace \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
+    dataset_label=\Dataset,
+    sector_label=\Sector,
+    n_scanned_origins=\Nscan,
+    pct_any_tech_leak=\PAny,
+    pct_version_leak=\PVer,
+    pct_stacktrace=\PStack
+  }{%
+    \Dataset & \Sector &
+    \Nscan & \PAny & \PVer & \PStack
+  }
+\end{table}
+
+
 
 \subsection{Summary of Results}
 % Summary planning:
