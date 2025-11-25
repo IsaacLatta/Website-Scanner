@@ -1,0 +1,4 @@
+variant,n_with_version,tls13_negotiated,tls13_negotiated_pct,tls12_negotiated,tls12_negotiated_pct,other_negotiated,other_negotiated_pct
+CA Auth,356,246,69.1,110,30.9,0,0.0
+CA Energy,208,180,86.5,28,13.5,0,0.0
+US Energy,139,111,79.9,28,20.1,0,0.0

@@ -1,0 +1,5 @@
+variant,n_tls12_forced_attempted,recommended,recommended_pct,sufficient,sufficient_pct,phase_out,phase_out_pct,insecure,insecure_pct,unknown,unknown_pct
+CA Auth,354,265,74.9,6,1.7,12,3.4,0,0.0,71,20.1
+CA Education,102,82,80.4,1,1.0,0,0.0,0,0.0,19,18.6
+US Education,53,35,66.0,0,0.0,1,1.9,0,0.0,17,32.1
+UK Education,399,270,67.7,3,0.8,3,0.8,0,0.0,123,30.8

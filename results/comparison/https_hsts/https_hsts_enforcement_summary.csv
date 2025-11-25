@@ -1,0 +1,12 @@
+dataset_label,sector_label,n_origins,pct_https_success,pct_https_unreachable,pct_http_probe_ok,pct_http_redirect_to_https,pct_http_no_redirect
+CA Authorities,Authorities,375,76.00,21.33,91.20,90.06,6.43
+CA Education,Education,103,95.15,4.85,100.00,96.12,1.94
+CA Finance,Finance,177,94.35,5.08,97.18,97.09,1.74
+CA Energy,Energy,214,90.65,8.41,98.60,93.84,3.79
+US Authorities,Authorities,373,73.46,26.27,94.10,94.59,4.84
+US Education,Education,53,94.34,5.66,98.11,98.08,1.92
+US Finance,Finance,107,83.18,15.89,96.26,95.15,3.88
+US Energy,Energy,141,84.40,15.60,99.29,89.29,5.71
+UK Authorities,Authorities,4,100.00,0.00,100.00,100.00,0.00
+UK Education,Education,417,89.21,10.07,94.48,95.69,2.28
+UK Finance,Finance,165,89.09,9.70,94.55,91.03,8.33

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 from typing import Dict, Tuple, List
@@ -286,15 +287,170 @@ def plot_tls12_categories_sector(
     plt.close()
 
 
+def generate_csv_summary(all_variants: Dict[str, Dict[str, Dict]], out_path: Path) -> None:
+    """
+    Generate a CSV summary of TLS support, negotiated versions, and TLS 1.2 categories
+    for all sector variants.
+    
+    Args:
+        all_variants: Dict mapping sector_code -> (variant_name -> summary_dict)
+        out_path: Output path for CSV file
+    """
+    rows = []
+    
+    for sector_code, variants in all_variants.items():
+        _, sector_label = SECTORS[sector_code]
+        
+        for variant_name in sorted(variants.keys()):
+            summary = variants[variant_name]
+            
+            # Parse variant_name to extract country and sector
+            # E.g., "CA Auth" -> ("CA", "Authorities")
+            parts = variant_name.split(maxsplit=1)
+            country = parts[0] if len(parts) > 0 else ""
+            sector = parts[1] if len(parts) > 1 else ""
+            
+            # TLS Overview (support)
+            tls_overview = summary.get("tls_overview", {})
+            n_origins = tls_overview.get("n_origins", 0)
+            support_counts = tls_overview.get("support_counts", {})
+            
+            pct_tls13_support = safe_pct(support_counts.get("tls1_3", 0), n_origins)
+            pct_tls12_support = safe_pct(support_counts.get("tls1_2", 0), n_origins)
+            pct_tls11_support = safe_pct(support_counts.get("tls1_1", 0), n_origins)
+            pct_tls10_support = safe_pct(support_counts.get("tls1_0", 0), n_origins)
+            
+            # Negotiated versions
+            neg_block = summary.get("negotiated_versions", {})
+            n_with_version = neg_block.get("n_with_version", 0)
+            version_counts = neg_block.get("version_counts", {})
+            
+            v13_neg = version_counts.get("TLSv1.3", 0)
+            v12_neg = version_counts.get("TLSv1.2", 0)
+            other_neg = max(0, n_with_version - v13_neg - v12_neg)
+            
+            pct_tls13_neg = safe_pct(v13_neg, n_with_version)
+            pct_tls12_neg = safe_pct(v12_neg, n_with_version)
+            pct_other_neg = safe_pct(other_neg, n_with_version)
+            
+            # TLS 1.2 cipher categories
+            tls12_block = summary.get("tls12_cipher_categories", {})
+            n_tls12 = tls12_block.get("n_tls12_forced_attempted", 0)
+            category_counts = tls12_block.get("category_counts", {})
+            
+            pct_recommended = safe_pct(category_counts.get("recommended", 0), n_tls12)
+            pct_sufficient = safe_pct(category_counts.get("sufficient", 0), n_tls12)
+            pct_phase_out = safe_pct(category_counts.get("phase_out", 0), n_tls12)
+            pct_insecure = safe_pct(category_counts.get("insecure", 0), n_tls12)
+            pct_unknown = safe_pct(category_counts.get("unknown", 0), n_tls12)
+            
+            rows.append({
+                "country": country,
+                "sector": sector,
+                "n_origins": n_origins,
+                "pct_tls13_support": f"{pct_tls13_support:.1f}",
+                "pct_tls12_support": f"{pct_tls12_support:.1f}",
+                "pct_tls11_support": f"{pct_tls11_support:.1f}",
+                "pct_tls10_support": f"{pct_tls10_support:.1f}",
+                "n_with_version": n_with_version,
+                "pct_tls13_neg": f"{pct_tls13_neg:.1f}",
+                "pct_tls12_neg": f"{pct_tls12_neg:.1f}",
+                "pct_other_neg": f"{pct_other_neg:.1f}",
+                "n_tls12_forced": n_tls12,
+                "pct_recommended": f"{pct_recommended:.1f}",
+                "pct_sufficient": f"{pct_sufficient:.1f}",
+                "pct_phase_out": f"{pct_phase_out:.1f}",
+                "pct_insecure": f"{pct_insecure:.1f}",
+                "pct_unknown": f"{pct_unknown:.1f}",
+            })
+    
+    ensure_outdir(out_path)
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        fieldnames = [
+            "country", "sector", "n_origins",
+            "pct_tls13_support", "pct_tls12_support", "pct_tls11_support", "pct_tls10_support",
+            "n_with_version", "pct_tls13_neg", "pct_tls12_neg", "pct_other_neg",
+            "n_tls12_forced", "pct_recommended", "pct_sufficient", "pct_phase_out",
+            "pct_insecure", "pct_unknown",
+        ]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def generate_latex_table(csv_path: Path, out_path: Path) -> None:
+    """
+    Generate a LaTeX table using csvsimple that reads from the CSV file.
+    
+    Args:
+        csv_path: Path to the CSV file
+        out_path: Output path for the .tex file
+    """
+    latex_content = r"""\begin{inlinecap}
+\captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
+\label{tab:tls_cipher_summary}
+\centering
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\resizebox{\textwidth}{!}{%
+  \csvreader[
+    tabular=llrrrrrrrrrrrrrr,
+    table head=\toprule
+      Country & Sector & $n$ origins &
+      \multicolumn{4}{c}{TLS Support (\%)} &
+      \multicolumn{3}{c}{Negotiated (\%)} &
+      \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
+      \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
+      & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{""" + str(csv_path.relative_to(csv_path.parent.parent.parent)) + r"""}{%
+    country=\Country,
+    sector=\Sector,
+    n_origins=\Norigins,
+    pct_tls13_support=\TLSa,
+    pct_tls12_support=\TLSb,
+    pct_tls11_support=\TLSc,
+    pct_tls10_support=\TLSd,
+    n_with_version=\Nwv,
+    pct_tls13_neg=\Nega,
+    pct_tls12_neg=\Negb,
+    pct_other_neg=\Negc,
+    n_tls12_forced=\Ntf,
+    pct_recommended=\Crec,
+    pct_sufficient=\Csuf,
+    pct_phase_out=\Cphs,
+    pct_insecure=\Cins,
+    pct_unknown=\Cunk
+  }{%
+    \Country & \Sector & \Norigins &
+    \TLSa & \TLSb & \TLSc & \TLSd &
+    \Nega & \Negb & \Negc &
+    \Crec & \Csuf & \Cphs & \Cins & \Cunk
+  }%
+}%
+\end{inlinecap}
+"""
+    
+    ensure_outdir(out_path)
+    with out_path.open("w", encoding="utf-8") as f:
+        f.write(latex_content)
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     _ = load_summary(BASELINE_COUNTRY, BASELINE_SECTOR)
 
+    # Collect all variants for CSV generation
+    all_variants: Dict[str, Dict[str, Dict]] = {}
+
     for sector_code in SECTORS.keys():
         variants = build_sector_variants(sector_code)
         if len(variants) < 2:
             continue
+
+        all_variants[sector_code] = variants
 
         _, sector_label = SECTORS[sector_code]
         sector_slug = sector_label.lower().replace(" ", "_")
@@ -307,6 +463,16 @@ def main() -> None:
 
         out_tls12 = OUT_DIR / f"tls12_categories_vs_ca_auth_{sector_slug}.png"
         plot_tls12_categories_sector(sector_code, variants, out_tls12)
+
+    # Generate CSV summary
+    csv_path = OUT_DIR / "tls_cipher_summary.csv"
+    generate_csv_summary(all_variants, csv_path)
+    print(f"Generated CSV: {csv_path}")
+
+    # Generate LaTeX table
+    tex_path = OUT_DIR / "tls_cipher_summary_table.tex"
+    generate_latex_table(csv_path, tex_path)
+    print(f"Generated LaTeX: {tex_path}")
 
 
 if __name__ == "__main__":

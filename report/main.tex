@@ -672,12 +672,15 @@ secure, partially configured and clearly misconfigured sites. We then compared t
 \section{Results}\label{sec:result}
 \subsection{Facts Only, No Interpretation}
 
-\begin{inlinecap}  % no argument; default is \textwidth
-\captionof{table}{Redirect resolution outcomes by country and sector. We show the
+
+The table below illustrates the outcome of our initial resolution stage. The columns represent the
 number of input URIs, distinct final URIs and final origins after following
 redirects, and the percentage of inputs that ended in a successful 2xx
-response, a final 4xx/5xx response, or no final URL, plus the percentage
-of origins whose inputs were all unreachable from our vantage point.}
+response, a final 4xx/5xx response, or no final URL. Plus the percentage
+of origins whose inputs were all unreachable from the scanner's vantage point. 
+
+\begin{inlinecap}  % no argument; default is \textwidth
+\captionof{table}{Redirect resolution outcomes by country and sector.}
 \label{tab:redirect_summary}
 \centering
 \scriptsize
@@ -717,498 +720,207 @@ of origins whose inputs were all unreachable from our vantage point.}
 \end{inlinecap}
 
 
+Following this, we outline the results of our HTTPS redirection, and HSTS probes. We
+compare each sector of each country against the Canadian authority sites. Across the 373 Canadian authority origins, roughly three quarters (73\%) successfully served a page over 
+HTTPS from our vantage point, while about one quarter returned HTTPS errors or were unreachable. 
+Over HTTP, almost all origins responded (94\%), and nearly nine in ten  ($\approx89\%$) redirected users to 
+HTTPS, with only a small minority either serving a non-redirecting HTTP page or redirecting somewhere other than HTTPS. 
+Among HTTPS-capable sites, almost nine in ten deployed HSTS at all, and about two-thirds of those used a ``strong'' policy 
+(at least one-year max-age with includeSubDomains), often with the preload flag set, indicating that many 
+authorities have adopted not just HTTPS but relatively robust transport hardening.
+
+\begin{inlinecap}
+  \captionof{table}{HTTP/HTTPS connectivity outcomes by country and sector.
+  Values are the percentage of origins in each dataset that successfully served HTTPS,
+  were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS,
+  or served HTTP without redirecting.}
+  \label{tab:https_connectivity}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.5pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llrrrrrr,
+      table head=\toprule Dataset & Sector &
+        $n$ origins &
+        HTTPS ok (\%) &
+        HTTPS unreachable (\%) &
+        HTTP probe ok (\%) &
+        HTTP$\to$HTTPS redirect (\%) &
+        HTTP no redirect (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
+      dataset_label=\Dataset,
+      sector_label=\Sector,
+      n_origins=\Norigins,
+      pct_https_success=\PHttpsOk,
+      pct_https_unreachable=\PUnreach,
+      pct_http_probe_ok=\PHttpOk,
+      pct_http_redirect_to_https=\PRedir,
+      pct_http_no_redirect=\PNoRedir
+    }{%
+      \Dataset & \Sector &
+      \Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
+    }%
+  }%
+  \end{inlinecap}
 
 
+  \begin{inlinecap}
+    \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
+    For each dataset we report the number of origins that successfully served HTTPS and, among
+    those, the share that enabled HSTS at all, used a strong HSTS policy, and included
+    a long max-age, subdomain coverage, and the preload flag.}
+    \label{tab:https_hsts_quality}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{2.5pt}
+    \resizebox{\textwidth}{!}{%
+      \csvreader[
+        tabular=llrrrrrrr,
+        table head=\toprule Dataset & Sector &
+          $n$ HTTPS ok &
+          $n$ with HSTS &
+          Any HSTS (\% of HTTPS ok) &
+          Strong HSTS (\% of HSTS) &
+          HSTS max-age $\geq$ 1y (\% of HSTS) &
+          HSTS incl.\ subdom.\ (\% of HSTS) &
+          HSTS preload flag (\% of HSTS) \\\midrule,
+        late after line=\\,
+        late after last line=\\\bottomrule
+      ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
+        dataset_label=\Dataset,
+        sector_label=\Sector,
+        n_https_ok=\NHttpsOk,
+        n_has_hsts=\NHasHsts,
+        pct_has_hsts_among_https_ok=\PAnyHsts,
+        pct_hsts_strong_among_hsts=\PStrong,
+        pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
+        pct_hsts_include_subdomains_among_hsts=\PSubs,
+        pct_hsts_preload_among_hsts=\PPreload
+      }{%
+        \Dataset & \Sector &
+        \NHttpsOk & \NHasHsts &
+        \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
+      }%
+    }%
+    \end{inlinecap}
 
-% HSTS and HTTPS Captions:
-
-% Enforcement overview
-% Distribution of HTTPS enforcement outcomes for Canadian public authorities in our scan. Each origin is placed into exactly one of five buckets: HTTPS unreachable (our scanner could not obtain any HTTPS response at all, due to DNS failures, timeouts, TLS handshake or certificate errors, or connections being dropped/blocked), HTTP no redirect (HTTP responded but did not issue an HTTP→HTTPS redirect), Redirect→HTTPS, no HSTS (HTTP redirected to HTTPS but the HTTPS response did not set any Strict-Transport-Security header), Redirect→HTTPS, weak HSTS (HTTP redirected to HTTPS and HSTS was present but did not meet our “strong” criteria), and Redirect→HTTPS, strong HSTS (HTTP redirected to HTTPS and HSTS was configured with max-age ≥ 1 year and includeSubDomains). From our measurement vantage point, sites in the “HTTPS unreachable” bucket effectively do not offer usable HTTPS at the transport layer to a generic client (regardless of whether this is due to a null route, a misconfiguration, or active blocking), whereas the remaining buckets represent progressively stronger enforcement of HTTPS and HSTS.
-
-% HSTS config quality
-% HSTS configuration quality among Canadian public authorities that successfully served HTTPS and set any Strict-Transport-Security header. Bars show, as a percentage of HSTS-enabled origins, the share that configured max-age ≥ 1 year, the share that included the includeSubDomains directive, the share that set the preload flag, and the share that met our definition of strong HSTS (both max-age ≥ 1 year and includeSubDomains). This figure distinguishes authorities that merely enable HSTS from those that follow stronger, long-lived policies intended to prevent downgrade and stripping attacks across the whole origin.
-
-\subsubsection{Canada}
-\miniheader{Authorities}
-
-% \paragraph{Redirection \& Initial Origin Resolution}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/hop_distribution_all_success.png}
-% \captionof{figure}{This figure shows how many redirects the scanner had to follow from the initial input URL to reach a final response (of any status) for URLs that completed the redirect resolution without errors. A bar at 0 indicates URLs that returned a final response immediately without redirecting; a bar at 1 indicates URLs that performed exactly one redirect, and so on. This distribution gives a sense of how \emph{deep} typical redirect chains are in the studied population.
-% }
-% \label{fig:ca:auth:hop_all_success}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/resolution_outcomes.png}
-% \captionof{figure}{Each bar corresponds to one high-level outcome category for the redirect resolution stage. ``ok\_final\_2xx'' indicates URLs where the scanner successfully followed redirects and obtained a 2xx response. ``blocked\_403\_503'' indicates URLs where at least one response in the resolution chain returned HTTP 403 or 503, suggesting the presence of a WAF or access control that blocked the scanner. ``timeout\_error'', ``redirect\_error'', and ``other\_error'' capture various error conditions. The relative bar heights show how often each outcome occurred.}
-% \label{fig:ca:auth:resolution_outcomes}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/entry_status_distribution.png}
-% \captionof{figure}{
-% This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
-% }
-% \label{fig:ca:auth:entry_status}
-% \end{minipage}
-% \end{center}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/final_status_distribution.png}
-% \captionof{figure}{
-% This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error. }
-% \label{fig:ca:auth:final_status}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/origin_http_timeout_buckets.png}
-% \captionof{figure}{This figure shows, for each origin, how many HTTP-level timeouts the scanner experienced during the entire scan, aggregated into buckets. Origins in the ``0'' bucket never timed out; those in``3\_plus'' produced three or more HTTP timeouts, indicating sites that were repeatedly unreachable or unreliable during the scan window.}
-% \label{fig:ca:auth:http_timeout}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/origin_tls_timeout_buckets.png}
-% \captionof{figure}{This figure shows how many TLS handshake timeouts the scanner encountered per origin, bucketed into 0, 1, and 2-or-more timeouts. Origins in the ``2\_plus'' bucket systematically failed to complete the TLS handshake, which may correspond to misconfigured servers, aggressive WAF behaviour, or transient network issues.}
-% \label{fig:ca:auth:tls_timeout}
-% \end{minipage}
-% \end{center}
+    \begin{inlinecap}
+      \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
+      \label{tab:tls_cipher_summary}
+      \centering
+      \tiny
+      \setlength{\tabcolsep}{1.5pt}
+      \resizebox{\textwidth}{!}{%
+        \csvreader[
+          tabular=llrrrrrrrrrrrrrr,
+          table head=\toprule
+            Country & Sector & $n$ origins &
+            \multicolumn{4}{c}{TLS Support (\%)} &
+            \multicolumn{3}{c}{Negotiated (\%)} &
+            \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
+            \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
+            & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
+          late after line=\\,
+          late after last line=\\\bottomrule
+        ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
+          country=\Country,
+          sector=\Sector,
+          n_origins=\Norigins,
+          pct_tls13_support=\TLSa,
+          pct_tls12_support=\TLSb,
+          pct_tls11_support=\TLSc,
+          pct_tls10_support=\TLSd,
+          n_with_version=\Nwv,
+          pct_tls13_neg=\Nega,
+          pct_tls12_neg=\Negb,
+          pct_other_neg=\Negc,
+          n_tls12_forced=\Ntf,
+          pct_recommended=\Crec,
+          pct_sufficient=\Csuf,
+          pct_phase_out=\Cphs,
+          pct_insecure=\Cins,
+          pct_unknown=\Cunk
+        }{%
+          \Country & \Sector & \Norigins &
+          \TLSa & \TLSb & \TLSc & \TLSd &
+          \Nega & \Negb & \Negc &
+          \Crec & \Csuf & \Cphs & \Cins & \Cunk
+        }%
+      }%
+      \end{inlinecap}
+      
+% Security.txt Summary Table
+\begin{inlinecap}
+  \captionof{table}{Security.txt adoption and field completeness by country and sector.}
+  \label{tab:securitytxt_summary}
+  \centering
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llllrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ origins &
+        $n$ with security.txt &
+        Sites w/ security.txt (\%) &
+        Contact field (\%) &
+        Expires field (\%) &
+        Valid expires (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_origins=\Norigins,
+      n_with_securitytxt=\Nwith,
+      pct_sites_with_securitytxt=\Psites,
+      pct_with_contact_among_present=\Pcontact,
+      pct_with_expires_among_present=\Pexpires,
+      pct_valid_expires_among_expires=\Pvalid
+    }{%
+      \Dataset & \Country & \Sector &
+      \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
+    }%
+  }%
+  \end{inlinecap}
   
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/redirects/origin_http_forbidden_statuses.png}
-% \captionof{figure}{This figure shows which HTTP status codes are associated with origins that the scanner marked as http\_forbidden. For each origin where the scanner concluded that HTTP access was forbidden, we recorded any HTTP status codes returned (typically 403 or 503). The bars indicate how many origins produced 403 Forbidden responses, how many produced 503 Service Unavailable responses, and how many produced other status codes. This helps characterise the kinds of blocking or WAF behaviour we encountered at the origin level.}
-% \label{fig:ca:auth:forbidden_status}
-% \end{minipage}
-% \end{center}
-
-
-% \paragraph*{HTTPS/HSTS Connectivity \& Redirection}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/hsts_https/https_enforcement_overview.png}
-% \captionof{figure}{Overview of HTTPS enforcement outcomes per origin. For each origin we combine the \texttt{https\_connectivity} and HSTS module results and count: (i) \emph{https\_unreachable}, where neither module recorded a successful HTTPS response; (ii) \emph{no\_redirect}, where the HTTP probe to \texttt{http://origin/} returned a non--3xx status code and therefore did not redirect to HTTPS; (iii) \emph{redirect\_to\_https}, where the HTTP probe returned a 3xx status and the Location header pointed to an HTTPS URL; and the three nested subsets \emph{redirect\_to\_https\_no\_hsts}, \emph{redirect\_to\_https\_hsts\_weak}, and \emph{redirect\_to\_https\_hsts\_strong}, which further restrict \emph{redirect\_to\_https} to sites whose HTTPS response respectively (a) omits HSTS entirely, (b) sets HSTS but with max-age $<$ 1 year or without \texttt{includeSubDomains}, or (c) sets ``strong'' HSTS with max-age~$\geq$~1~year and \texttt{includeSubDomains}.}
-% \label{fig:ca:auth:https_enforcement_overview}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/hsts_https/https_reachability.png}
-% \captionof{figure}{HTTPS reachability as reported by the \texttt{https\_connectivity} module. Each origin is classified as \emph{https\_success} if the module completed the request with \texttt{success{=}True} and a final HTTPS scheme; \emph{https\_error} if HTTPS was attempted but the row contains a non-empty error string (for example, timeout or client error) and \texttt{success{=}False}; or \emph{https\_non\_https\_final} if the request completed without an explicit error but the recorded final scheme was not HTTPS. Bar heights represent the number of origins in each category.}
-% \label{fig:ca:auth:https_reachable}
-% \end{minipage}
-% \end{center}
-
-
-% \begin{center}
-%   \begin{minipage}{\plotwidth}
-%   \centering
-%   \includegraphics[width=\linewidth]{../results/ca/auth/hsts_https/http_to_https_behaviour.png}
-%   \captionof{figure}{Behaviour of \texttt{http://origin/} requests as observed by the HSTS module. For each origin we count: \emph{redirect\_to\_https}, where the HTTP probe returned a 3xx status code and the Location header pointed to an HTTPS URL; \emph{redirect\_3xx\_other}, where the status code was 3xx but the redirect target was not HTTPS; \emph{no\_redirect}, where the HTTP probe succeeded but returned a non--3xx status code (for example, a 200 or 4xx served over HTTP); and \emph{http\_probe\_error}, where no HTTP status code was recorded because the probe failed or timed out before any response.}
-%   \label{fig:ca:auth:http_to_https_behaviour}
-%   \end{minipage}
-%   \end{center}
-  
-% \begin{center}
-%   \begin{minipage}{\plotwidth}
-%   \centering
-%   \includegraphics[width=\linewidth]{../results/ca/auth/hsts_https/hsts_flags_among_hsts_sites.png}
-%   \captionof{figure}{Configuration of HSTS flags among origins that set any HSTS header. We first restrict to origins where the HSTS module marked \texttt{https\_ok{=}True} and \texttt{has\_hsts{=}True}. Among this HSTS-enabled subset we count how many also configured (i) a \texttt{max-age} directive of at least one year (\texttt{max\_age\_ge\_1yr}), (ii) the \texttt{includeSubDomains} directive, and (iii) the \texttt{preload} directive. Bar heights therefore represent how often each strengthening flag appears among sites that already deploy HSTS.}
-%   \label{fig:ca:auth:hsts_flags}
-%   \end{minipage}
-%   \end{center}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/hsts_https/hsts_presence_and_strength.png}
-% \captionof{figure}{HSTS presence and strength among origins whose HTTPS response succeeded. We first restrict to origins where the HSTS module recorded \texttt{https\_ok{=}True}. Within this set, \emph{no\_hsts} counts sites that did not send a Strict-Transport-Security header; \emph{hsts\_any} counts all sites that did; and \emph{hsts\_strong} counts the subset that configured both \texttt{max-age}~$\geq$~1~year and \texttt{includeSubDomains} (our ``strong HSTS'' baseline).}
-% \label{fig:ca:auth:hsts_presence}
-% \end{minipage}
-% \end{center}
-
-% \paragraph*{TLS \& Cipher Suites}
-
-% \begin{center}
-%   \begin{minipage}{\plotwidth}
-%   \centering
-%   \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/tls_protocol_support.png}
-%   \captionof{figure}{Support for individual TLS protocol versions. Using the TLS module, we attempt separate handshakes at TLS~1.3, TLS~1.2, TLS~1.1, TLS~1.0, and SSLv3. For each version, the bar height shows how many origins completed a handshake at that exact version (the corresponding field \texttt{tls13}, \texttt{tls12}, \texttt{tls11}, \texttt{tls10}, or \texttt{ssl\_legacy} was \texttt{True}).}
-%   \label{fig:ca:auth:tls_protocol_support}
-%   \end{minipage}
-%   \end{center}
-
-%  % This chart is redundant
-%   % \begin{center}
-%   %   \begin{minipage}{\plotwidth}
-%   %   \centering
-%   %   \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/legacy_protocol_exposure.png}
-%   %   \captionof{figure}{Legacy TLS protocol exposure. For each origin we check whether any legacy protocol (TLS~1.1, TLS~1.0, or SSLv3) was successfully negotiated. Origins that support none of these are counted as \emph{no\_legacy\_protocols}; origins that support at least one are counted as \emph{any\_legacy\_protocols}. This highlights how many sites have fully disabled deprecated versions versus still accepting them.}
-%   %   \label{fig:ca:auth:htsts_flags}
-%   %   \end{minipage}
-%   %   \end{center}
-  
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/negotiated_tls_versions.png}
-% \captionof{figure}{Negotiated TLS versions for the natural client handshake. The cipher module records the \texttt{negotiated\_version} reported by the TLS library when connecting without forcing a specific protocol version. Bars show how many origins negotiated TLS~1.3, TLS~1.2, or another/unspecified version (\emph{other}) under this normal connection profile.}
-% \label{fig:ca:auth:natural_tls_version}
-% \end{minipage}
-% \end{center}
-
-% % This chart also might be redundant, I think nearly all TLS 1.3 cipher suites are are "recommended". 
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/tls13_cipher_categories.png}
-% \captionof{figure}{Cipher suite categories for forced TLS~1.3 handshakes. For each origin where a TLS~1.3 handshake succeeded, the cipher module records the chosen cipher suite and assigns a category: \emph{recommended} if it appears in the CCCS recommended TLS~1.3 list, \emph{sufficient} if it appears in a secondary acceptable list, and \emph{unknown} otherwise. Bar heights indicate how many origins fell into each category.}
-% \label{fig:ca:auth:tls13_cipher_categories}
-% \end{minipage}
-% \end{center}
-    
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/tls12_cipher_categories.png}
-% \captionof{figure}{Cipher suite categories for forced TLS~1.2 handshakes. For origins where a TLS~1.2 handshake succeeded, the cipher module classifies the negotiated cipher suite as \emph{recommended} (modern AEAD/ECDHE suites), \emph{sufficient}, \emph{insecure} (RC4, 3DES, SHA--1, or other legacy families), or \emph{unknown}. Bars show how many origins negotiated a cipher in each category when TLS~1.2 was forced.}
-% \label{fig:ca:auth:tls12_cipher_categories}
-% \end{minipage}
-% \end{center}
-  
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/tls_cipher/tls12_weak_features.png}
-% \captionof{figure}{Acceptance of weak TLS~1.2 cipher features. Using targeted probes, the cipher module tests whether a server will negotiate (i) any cipher from an explicitly insecure bundle sourced from the NSA, (ii) SHA--1 based cipher suites only (\texttt{allows\_sha1\_tls12}), or (iii) CBC-mode cipher suites only (\texttt{allows\_cbc\_tls12}). Each bar counts the number of origins for which the corresponding probe succeeded (\texttt{True}), indicating that the server is still willing to accept that class of weak TLS~1.2 configuration.}
-% \label{fig:ca:auth:tls12_weak_features}
-% \end{minipage}
-% \end{center}
-
-% \paragraph*{Security.txt}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/securitytxt/securitytxt_presence.png}
-% \captionof{figure}{Deployment of \texttt{security.txt} per origin. The scanner records three outcomes: \emph{has\_securitytxt}, where at least one usable \texttt{security.txt} file was found at \texttt{/.well-known/security.txt} or \texttt{/security.txt} and contained a \texttt{Contact} or \texttt{Expires} field; \emph{missing\_securitytxt}, where the origin was reachable but no such file was found; and \emph{origin\_offline}, where the origin was marked offline and the module did not probe for \texttt{security.txt}. Bar heights show the number of origins in each category.}
-% \label{fig:ca:auth:securitytxt_presence}
-% \end{minipage}
-% \end{center}
-  
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/securitytxt/securitytxt_field_combinations.png}
-% \captionof{figure}{Field combinations observed in deployed \texttt{security.txt} files. Among origins where \texttt{security.txt} was present, we classify each file as \emph{contact\_only} (at least one \texttt{Contact} field but no \texttt{Expires}), \emph{expires\_only} (an \texttt{Expires} field but no \texttt{Contact}), or \emph{contact\_and\_expires} (both fields present). Counts are per origin, not per file, and show how often each minimal disclosure combination appears.}
-% \label{fig:ca:auth:securitytxt_field}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/securitytxt/securitytxt_expires_validity.png}
-% \captionof{figure}{Coverage and freshness of the \texttt{Expires} field in \texttt{security.txt}. For origins with \texttt{security.txt} present, we separate files into three groups: \emph{valid\_expires}, where a syntactically valid \texttt{Expires} value was parsed and remained in the future at scan time; \emph{expired\_expires}, where \texttt{Expires} was present but already in the past; and \emph{no\_expires}, where the file contained no \texttt{Expires} field at all.}
-% \label{fig:ca:auth:securitytxt_expires}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/securitytxt/securitytxt_locations.png}
-% \captionof{figure}{Locations used for \texttt{security.txt}. Among origins that deployed a usable \texttt{security.txt} file, we count how many placed it at the RFC~9116-recommended path \texttt{/.well-known/security.txt} versus the legacy fallback \texttt{/security.txt}. Each bar corresponds to one path and reports the number of origins using it.}
-% \label{fig:ca:auth:securitytxt_location}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/securitytxt/securitytxt_contact_canonical.png}
-% \captionof{figure}{Contact and canonical information advertised via \texttt{security.txt}. Among origins with a present \texttt{security.txt} file, the \emph{has\_contact} bar counts files that expose at least one \texttt{Contact} field (for example, an email address or URL for reporting vulnerabilities), while the \emph{has\_canonical} bar counts files that include at least one \texttt{Canonical} URL pointing to the authoritative copy of their disclosure policy. Bars are counts of origins, not individual fields.}
-% \label{fig:ca:auth:securitytxt_contact}
-% \end{minipage}
-% \end{center}
-
-% \paragraph*{Error Leaks}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/error_leak/error_leak_tech_topN_all.png}
-% \captionof{figure}{Top technologies disclosed by error pages. For each origin, the scanner sends a request to a randomly generated non-existent path and inspects the resulting error page for framework, database, and cloud-platform signatures using regular expressions. After filtering out technologies in an explicit ignore list (for example, \texttt{Next.js}, which produced many false positives), we count how many origins leak each \texttt{tech\_name}. Bars show the top $N$ technologies by number of origins, including major platforms such as WordPress, Cloudflare, and Drupal.}
-% \label{fig:ca:auth:error_leak_top_N_all}
-% \end{minipage}
-% \end{center}
-  
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/error_leak/error_leak_tech_topN_no_wp_cf_drupal.png}
-% \captionof{figure}{Second-tier technologies leaked by error pages (excluding WordPress, Cloudflare, and Drupal). Using the same detection method as in the previous figure, we remove the three most common platform signatures and re-rank the remaining technologies. Each bar reports how many origins had error pages that mentioned the corresponding framework or component at least once. This highlights less prominent but still widely deployed stacks exposed through error handling.}
-% \label{fig:ca:auth:error_leak_top_N_wo_big_guys}
-% \end{minipage}
-% \end{center}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/error_leak/error_leak_category_distribution.png}
-% \captionof{figure}{Error-page leaks by technology category. Each \texttt{error\_leak} match is labelled with a high-level category (for example, framework, database, cloud platform). For every category, we count how many distinct origins leaked at least one technology in that group. Bars therefore represent the number of sites whose error pages reveal something about their application framework, backing database, hosting platform, or other internal components.}
-% \label{fig:ca:auth:error_leak_cat_distribution}
-% \end{minipage}
-% \end{center}
-
-% \paragraph*{Headers: Security \& Revealing}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_baseline_coverage.png}
-% \captionof{figure}{
-% Distribution of how many core browser-side security headers each site enabled.
-% For every origin, the scanner's \texttt{headers} module inspects the final HTTP
-% response and classifies five ``baseline'' protections: \texttt{Referrer-Policy},
-% CSP \texttt{frame-ancestors}, \texttt{X-Frame-Options}, \texttt{X-Content-Type-Options},
-% and \texttt{Permissions-Policy}. A header is counted as ``enabled'' if its rating
-% is either \emph{recommended} or \emph{sufficient} according to OWASP/MDN-inspired
-% rules in the classifier. Each site is placed into one of four buckets based on how
-% many of these five protections are enabled (0, 1--2, 3--4, or all 5). The height
-% of each bar shows how many sites fall into that bucket, so taller bars indicate
-% that configuration pattern is more common.}
-% \label{fig:ca:auth:headers_baseline}
-% \end{minipage}
-% \end{center}
-  
-
-% \begin{center}
-%   \begin{minipage}{\plotwidth}
-%   \centering
-%   \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_posture_bucket.png}
-%   \captionof{figure}{
-% Overall security-header posture of each site. Using the same five baseline
-% headers as in Figure~\ref{fig:headers_baseline}, the scanner counts how
-% many are rated \emph{recommended} or \emph{sufficient} and also notes whether
-% any are rated \emph{insecure} or \emph{obsolete}. A site is labelled
-% \emph{strong} if at least three baseline headers are recommended or sufficient
-% and none are insecure/obsolete, \emph{weak} if none of the five are
-% recommended/sufficient, and \emph{mixed} otherwise (some protections present,
-% but at least one header misconfigured or missing). Each bar reports how many
-% sites fall into each posture category. Reading from left to right therefore
-% shows how many sites have broadly good, partial, or weak browser-side header
-% configurations.}
-%   \label{fig:ca:auth:headers_posture_bucket}
-%   \end{minipage}
-%   \end{center}
-  
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_security_rule_ratings.png}
-% \captionof{figure}{
-% Rating outcomes for each core security header rule. For every site and every
-% rule (\texttt{referrer\_policy}, CSP \texttt{frame\_ancestors},
-% \texttt{X-Frame-Options}, \texttt{X-Content-Type-Options}, and
-% \texttt{Permissions-Policy}), the \texttt{headers} module applies a rule-specific
-% classifier and assigns one of five ratings: \emph{recommended}, \emph{sufficient},
-% \emph{insecure}, \emph{obsolete}, or \emph{unknown}. For each rule, we then count
-% how many sites received each rating and stack those counts into a single bar.
-% Within each bar, the height of each coloured segment shows the number of sites
-% with that outcome, and the total bar height equals the number of sites analysed.
-% Bars dominated by blue/orange segments indicate that the corresponding header is
-% usually configured well; bars dominated by green/red show headers that are
-% typically missing or misconfigured.}
-% \label{fig:ca:auth:headers_ratings}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_security_header_presence.png}
-% \captionof{figure}{
-% Explicit use of each core security header. For each site and each baseline
-% header rule, the scanner records whether the corresponding HTTP header is
-% actually present in the final response (\texttt{present = True}). This figure
-% counts, for each rule, the number of sites that explicitly send that header,
-% regardless of how it is configured. Missing headers may still receive a rating
-% via the classifier's \texttt{on\_missing\_class} default, but are not counted in
-% these bars. The horizontal axis shows how many sites send each header, so longer
-% bars indicate protections that are explicitly configured by most sites, while
-% shorter bars highlight headers that are rarely used in practice.}
-% \label{fig:ca:auth:headers_security_presence}
-% \end{minipage}
-% \end{center}
-  
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_revealing_any.png}
-% \captionof{figure}{
-% Presence of OWASP ``revealing'' headers per site. The \texttt{headers} module
-% checks each final response for a list of information-leaking headers (for
-% example \texttt{Server}, \texttt{X-Powered-By}, \texttt{X-Generator} and similar
-% banners identified by OWASP as candidates for removal). A site is placed in the
-% ``At least one revealing header'' group if any of these headers are present,
-% otherwise it is placed in the ``No revealing headers'' group. Each bar shows how
-% many sites fall into each category. Reading this figure indicates what fraction
-% of sites expose at least one stack-identifying header versus those that suppress
-% such banners entirely.}
-% \label{fig:ca:auth:headers_revealing_any}
-% \end{minipage}
-% \end{center}
-  
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_revealing_topN.png}
-% \captionof{figure}{
-% Most common revealing headers across all sites. For every site that exposes at
-% least one OWASP ``revealing'' header, the scanner records which header names
-% were present (for example, \texttt{server}, \texttt{x\_powered\_by},
-% \texttt{x\_generator}). This figure selects the top $N$ header names by the
-% number of sites that use them and plots those counts as horizontal bars. The
-% length of each bar shows how many sites include that particular header in their
-% final response. Reading from top to bottom reveals which banners---such as
-% generic \texttt{Server} strings or specific framework identifiers---are most
-% widely exposed to the internet.}
-% \label{fig:ca:auth:headers_revealing_topN}
-% \end{minipage}
-% \end{center}
-    
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_revealing_count_distribution.png}
-% \captionof{figure}{
-% Number of distinct revealing headers exposed per site. For each origin, the
-% scanner counts how many different revealing header types (from the OWASP list)
-% are present in the final response. Sites are then grouped into buckets with 0,
-% 1, 2, or 3-or-more such headers. The height of each bar shows how many sites
-% fall into that bucket. This chart therefore indicates not only whether sites
-% leak stack information via headers at all, but also how verbose their banners
-% are---for example, whether they expose multiple overlapping identifiers (such as
-% \texttt{Server} plus \texttt{X-Powered-By} plus \texttt{X-Generator}) or none.}
-% \label{fig:ca:auth:headers_revealing_count_distribution}
-% \end{minipage}
-% \end{center}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_cookies_flags.png}
-% \captionof{figure}{
-% Cookie flag usage on sites that set cookies. The \texttt{headers} module
-% aggregates information from the final response's \texttt{Set-Cookie} headers and
-% classifies a sample cookie per site. This figure considers only sites that set
-% at least one cookie and, for that sample cookie, counts how many sites used each
-% flag: \texttt{Secure}, \texttt{HttpOnly}, which \texttt{SameSite} value
-% (\texttt{Strict}, \texttt{Lax}, \texttt{None}, or missing/other), and whether a
-% lifetime was explicitly specified via \texttt{Max-Age} or \texttt{Expires}. Each
-% bar shows the number of cookie-setting sites where the corresponding attribute
-% was present. Reading across the bars reveals how common it is for session
-% cookies to be protected against network theft (Secure), script access
-% (HttpOnly), cross-site attacks (SameSite), and long-lived persistence
-% (explicit lifetime).}
-% \label{fig:ca:auth:headers_cookies_flags}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/auth/headers/headers_cookies_ratings.png}
-% \captionof{figure}{
-% Classifier outcomes for sample cookies on cookie-setting sites. For every site
-% that sends at least one \texttt{Set-Cookie} header, the scanner applies a
-% rule-based classifier to a sample cookie and assigns one of several ratings:
-% \emph{recommended} (Secure + HttpOnly + SameSite=Strict),
-% \emph{sufficient} (Secure + HttpOnly + SameSite=Lax), \emph{insecure} (missing
-% one or more of these protections), or other categories such as \emph{unknown}.
-% This figure counts how many cookie-setting sites fall into each rating. The
-% height of each bar therefore indicates how often session cookies are configured
-% in a strongly locked-down way versus partially protected or weakly configured.}
-% \label{fig:ca:auth:headers_cookies_ratings}
-% \end{minipage}
-% \end{center}
-
-% CA authorities had no stack traces
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/authorities/error_leak/error_leak_stacktrace_topN.png}
-% \captionof{figure}{Top stack-trace language families exposed on error pages. The scanner searches error responses for language-specific stack-trace patterns (for example, Python \texttt{Traceback}, Java \texttt{Exception in thread}, PHP \texttt{Stack trace:}, or JavaScript \texttt{Error:} frames). After applying an explicit ignore list (currently empty), we count how many origins leaked at least one stack trace for each language family (displayed as \texttt{display\_name}, such as ``JavaScript / Node.js'' or ``C\# / .NET''). Bars show the top $N$ language families by number of affected origins.}
-% \label{fig:ca:auth:error_leak_cat_distribution}
-% \end{minipage}
-% \end{center}
-  
-
-% \textbf{Educational Institutions}
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/hop_distribution_all_success.png}
-% \captionof{figure}{This figure shows how many redirects the scanner had to follow from the initial input URL to reach a final response (of any status) for URLs that completed the redirect resolution without errors. A bar at 0 indicates URLs that returned a final response immediately without redirecting; a bar at 1 indicates URLs that performed exactly one redirect, and so on. This distribution gives a sense of how \emph{deep} typical redirect chains are in the studied population.
-% }
-% \label{fig:ca:edu:hop_all_success}
-% \end{minipage}
-% \end{center}
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
-% \captionof{figure}{Each bar corresponds to one high-level outcome category for the redirect resolution stage. ``ok\_final\_2xx'' indicates URLs where the scanner successfully followed redirects and obtained a 2xx response. ``blocked\_403\_503'' indicates URLs where at least one response in the resolution chain returned HTTP 403 or 503, suggesting the presence of a WAF or access control that blocked the scanner. ``timeout\_error'', ``redirect\_error'', and ``other\_error'' capture various error conditions. The relative bar heights show how often each outcome occurred.}
-% \label{fig:ca:edu:resolution_outcomes}
-% \end{minipage}
-% \end{center}
-
-
-% \begin{center}
-% \begin{minipage}{\plotwidth}
-% \centering
-% \includegraphics[width=\linewidth]{../results/ca/edu/redirects/resolution_outcomes.png}
-% \captionof{figure}{
-% This figure shows the distribution of HTTP status codes for the final responses that the scanner received after resolving any redirects. It summarises how often sites eventually returned a success code (2xx), a redirect (3xx), a client error (4xx) such as 404 or 403, or a server error (5xx) such as 500 or 503. In combination with the entry status distribution, it reveals how often a URL ultimately succeeds even if the first response is a redirect or a soft error.
-% }
-% \label{fig:ca:edu:resolution_outcomes}
-% \end{minipage}
-% \end{center}
+  % Error Leaks Summary Table
+  \begin{inlinecap}
+  \captionof{table}{Information leakage in HTTP error responses by country and sector.}
+  \label{tab:error_leaks_summary}
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llllrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ origins &
+        Any tech leak (\%) &
+        Version leak (\%) &
+        Stack trace (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_scanned_origins=\Norigins,
+      pct_any_tech_leak=\Ptech,
+      pct_version_leak=\Pversion,
+      pct_stacktrace=\Pstack
+    }{%
+      \Dataset & \Country & \Sector &
+      \Norigins & \Ptech & \Pversion & \Pstack
+    }%
+  }%
+  \end{inlinecap}
 
 % results from each module. Should also not CA gov standards as an explicity section, then move onto the bonus stuff (e.g., MDN, OWASP)
 
@@ -1280,30 +992,35 @@ of origins whose inputs were all unreachable from our vantage point.}
 
 \section{Discussion}\label{sec3}
 
+Across all groups, the vast majority of government and public-sector sites supported modern TLS. Among Canadian authorities, 
+94\% of sites supported TLS 1.2 and 66\% supported TLS 1.3, and roughly 84\% were configured with ``modern-only'' TLS 
+(TLS 1.2 or 1.3 enabled with all legacy versions disabled). 
+The Canadian education, finance, and energy sectors showed similar or better protocol hygiene: for example, 94–96 \% of finance 
+and energy sites used modern-only TLS, and TLS 1.3 was available on 78\% (education), 94\% (finance), and 84\% (energy) of sites. 
+US authorities performed comparably well at the protocol level, with 99\% supporting TLS 1.2, 84\% supporting TLS 1.3, and about 97 % of sites configured without legacy protocol support. UK authorities in our sample (n = 4) all supported TLS 1.2 and 1.3 and had no legacy protocols enabled, but the sample is too small to generalise.
 
-
-% Revealing headers per site (0 / 1 / 2 / 3+)
-\begin{table}[t]
-  \centering
-  \caption{Revealing headers per site, by country and sector. 
-  Values are the percentage of sites in each dataset that expose 
-  0, 1, 2, or 3+ OWASP ``revealing'' headers (e.g., Server, X-Powered-By).}
-  \csvreader[
-    tabular=llrrrr,
-    table head=\toprule Dataset & Sector & 0 & 1 & 2 & 3+ \\\midrule,
-    late after line=\\,
-    late after last line=\\\bottomrule
-  ]{../results/comparison/headers/revealing_headers_summary.csv}{%
-    dataset_label=\Dataset,
-    sector_label=\Sector,
-    pct_revealing_0=\PZero,
-    pct_revealing_1=\POne,
-    pct_revealing_2=\PTwo,
-    pct_revealing_3_plus=\PThreePlus
-  }{%
-    \Dataset & \Sector & \PZero & \POne & \PTwo & \PThreePlus
-  }
-\end{table}
+% % Revealing headers per site (0 / 1 / 2 / 3+)
+% \begin{table}[t]
+%   \centering
+%   \caption{Revealing headers per site, by country and sector. 
+%   Values are the percentage of sites in each dataset that expose 
+%   0, 1, 2, or 3+ OWASP ``revealing'' headers (e.g., Server, X-Powered-By).}
+%   \csvreader[
+%     tabular=llrrrr,
+%     table head=\toprule Dataset & Sector & 0 & 1 & 2 & 3+ \\\midrule,
+%     late after line=\\,
+%     late after last line=\\\bottomrule
+%   ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+%     dataset_label=\Dataset,
+%     sector_label=\Sector,
+%     pct_revealing_0=\PZero,
+%     pct_revealing_1=\POne,
+%     pct_revealing_2=\PTwo,
+%     pct_revealing_3_plus=\PThreePlus
+%   }{%
+%     \Dataset & \Sector & \PZero & \POne & \PTwo & \PThreePlus
+%   }
+% \end{table}
 
 % Presence of core security headers
 
@@ -1341,101 +1058,118 @@ at least once on the landing page.}
 }%
 \end{inlinecap}
 
-
-% Cookie security flags (among cookie-setting sites)
-\begin{table}[t]
+% Security Headers Presence Table
+\begin{inlinecap}
+  \captionof{table}{Security header adoption by country and sector.}
+  \label{tab:security_headers_presence}
   \centering
-  \caption{Cookie usage and security flags, by country and sector.
-  ``Sites with cookies'' is the percentage of all sites in the dataset that
-  set any cookie on the landing page. The remaining columns are percentages
-  computed among those cookie-setting sites.}
-  \csvreader[
-    tabular=llrrrrr,
-    table head=\toprule Dataset & Sector &
-      Sites with cookies &
-      Secure &
-      HttpOnly &
-      SameSite $\geq$ Lax &
-      Rec./Suff. cookie \\\midrule,
-    late after line=\\,
-    late after last line=\\\bottomrule
-  ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
-    dataset_label=\Dataset,
-    sector_label=\Sector,
-    pct_sites_with_cookies=\PCSites,
-    pct_secure_among_cookie_sites=\PSec,
-    pct_httponly_among_cookie_sites=\PHO,
-    pct_samesite_ge_lax_among_cookie_sites=\PSS,
-    pct_rec_suff_among_cookie_sites=\PRec
-  }{%
-    \Dataset & \Sector &
-    \PCSites & \PSec & \PHO & \PSS & \PRec
-  }
-\end{table}
-
-\begin{table}[t]
-  \centering
-  \caption{Error-page information leaks by country and sector. 
-  For each dataset, we report the number of scanned origins and the percentage 
-  that leaked any recognizable technology name, an explicit technology/version 
-  string, or a full stack trace when probed with a non-existent path.}
-  \csvreader[
-    tabular=llrrrr,
-    table head=\toprule
-      Dataset & Sector &
-      $n$ scanned &
-      Any tech leak &
-      Version leak &
-      Stack trace \\\midrule,
-    late after line=\\,
-    late after last line=\\\bottomrule
-  ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
-    dataset_label=\Dataset,
-    sector_label=\Sector,
-    n_scanned_origins=\Nscan,
-    pct_any_tech_leak=\PAny,
-    pct_version_leak=\PVer,
-    pct_stacktrace=\PStack
-  }{%
-    \Dataset & \Sector &
-    \Nscan & \PAny & \PVer & \PStack
-  }
-\end{table}
-
-\begin{table}[t]
+  \tiny
+  \setlength{\tabcolsep}{2pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llllrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        Referrer-Policy (\%) &
+        X-Content-Type-Options (\%) &
+        X-Frame-Options (\%) &
+        CSP frame-ancestors (\%) &
+        Permissions-Policy (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/security_headers_presence.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_referrer_policy_present=\Pref,
+      pct_x_content_type_options_present=\Pxcto,
+      pct_x_frame_options_present=\Pxfo,
+      pct_csp_frame_ancestors_present=\Pcsp,
+      pct_permissions_policy_present=\Pperm
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
+    }%
+  }%
+  \end{inlinecap}
+  
+  % Revealing Headers Summary Table
+  \begin{inlinecap}
+  \captionof{table}{Distribution of technology-revealing headers by country and sector.}
+  \label{tab:revealing_headers_summary}
   \centering
   \small
-  \caption{Deployment of \texttt{security.txt} by country and sector.
-  For each dataset we show the number of scanned origins, the number and
-  percentage that expose a usable \texttt{security.txt} file, and, among
-  those files, the percentage with a Contact field, an Expires field, and
-  the percentage of Expires timestamps that were still valid.}
-  \csvreader[
-    tabular=llrrrrrr,
-    table head=\toprule
-      Dataset & Sector &
-      $n$ & 
-      $n_{\text{sec.txt}}$ &
-      Sites w.\ sec.txt (\%) &
-      Contact (\%) &
-      Expires (\%) &
-      Valid exp.\ (\%) \\\midrule,
-    late after line=\\,
-    late after last line=\\\bottomrule
-  ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
-    dataset_label=\Dataset,
-    sector_label=\Sector,
-    n_origins=\Norig,
-    n_with_securitytxt=\Nsec,
-    pct_sites_with_securitytxt=\PAny,
-    pct_with_contact_among_present=\PContact,
-    pct_with_expires_among_present=\PExp,
-    pct_valid_expires_among_expires=\PValid
-  }{%
-    \Dataset & \Sector &
-    \Norig & \Nsec & \PAny & \PContact & \PExp & \PValid
-  }
-\end{table}
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llllrrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        0 headers (\%) &
+        1 header (\%) &
+        2 headers (\%) &
+        3+ headers (\%) &
+        Any revealing (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_revealing_0=\Pzero,
+      pct_revealing_1=\Pone,
+      pct_revealing_2=\Ptwo,
+      pct_revealing_3_plus=\Pthree,
+      pct_with_any_revealing=\Pany
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
+    }%
+  }%
+  \end{inlinecap}
+  
+  % Cookie Security Flags Summary Table
+  \begin{inlinecap}
+  \captionof{table}{Cookie security flag adoption by country and sector.}
+  \label{tab:cookie_security_flags}
+  \centering
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=llllrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        Sites w/ cookies (\%) &
+        Secure flag (\%) &
+        HttpOnly flag (\%) &
+        SameSite$\ge$Lax (\%) &
+        Rec./Suff. (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_sites_with_cookies=\Pcookies,
+      pct_secure_among_cookie_sites=\Psecure,
+      pct_httponly_among_cookie_sites=\Phttp,
+      pct_samesite_ge_lax_among_cookie_sites=\Psame,
+      pct_rec_suff_among_cookie_sites=\Prec
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
+    }%
+  }%
+  \end{inlinecap}  
+  
+
 
 
 \subsection{Summary of Results}
