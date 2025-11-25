@@ -1,12 +1,12 @@
 dataset_label,country,sector_code,sector_label,n_sites,pct_revealing_0,pct_revealing_1,pct_revealing_2,pct_revealing_3_plus,pct_with_any_revealing
-CA Authorities,CA,auth,Authorities,572,30.6,37.4,24.3,7.7,69.4
-CA Education,CA,edu,Education,96,21.9,35.4,38.5,4.2,78.1
-CA Finance,CA,fin,Finance,156,51.3,35.3,12.2,1.3,48.7
-CA Energy,CA,energy,Energy,229,20.5,44.5,27.1,7.9,79.5
-US Authorities,US,auth,Authorities,434,41.2,27.0,21.7,10.1,58.8
-US Education,US,edu,Education,51,13.7,64.7,13.7,7.8,86.3
-US Finance,US,fin,Finance,94,40.4,42.6,13.8,3.2,59.6
-US Energy,US,energy,Energy,141,45.4,14.9,31.2,8.5,54.6
-UK Authorities,UK,auth,Authorities,349,0.0,99.4,0.6,0.0,100.0
-UK Education,UK,edu,Education,354,26.6,40.4,29.9,3.1,73.4
-UK Finance,UK,fin,Finance,141,39.0,42.6,17.7,0.7,61.0
+CA Authorities,CA,auth,Authorities,408,5.6,51.2,32.4,10.8,94.4
+CA Education,CA,edu,Education,91,17.6,37.4,40.7,4.4,82.4
+CA Finance,CA,fin,Finance,142,46.5,38.7,13.4,1.4,53.5
+CA Energy,CA,energy,Energy,207,14.5,48.8,28.5,8.2,85.5
+US Authorities,US,auth,Authorities,314,19.4,36.9,29.6,14.0,80.6
+US Education,US,edu,Education,48,8.3,68.8,14.6,8.3,91.7
+US Finance,US,fin,Finance,77,27.3,51.9,16.9,3.9,72.7
+US Energy,US,energy,Energy,120,35.8,17.5,36.7,10.0,64.2
+UK Authorities,UK,auth,Authorities,348,0.0,99.4,0.6,0.0,100.0
+UK Education,UK,edu,Education,303,14.2,47.2,35.0,3.6,85.8
+UK Finance,UK,fin,Finance,125,31.2,48.0,20.0,0.8,68.8
