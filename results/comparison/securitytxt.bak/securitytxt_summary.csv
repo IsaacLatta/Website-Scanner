@@ -1,0 +1,12 @@
+dataset_label,country,sector_code,sector_label,n_origins,n_with_securitytxt,pct_sites_with_securitytxt,pct_with_contact_among_present,pct_with_expires_among_present,pct_valid_expires_among_expires
+CA Authorities,CA,auth,Authorities,375,4,1.1,100.0,100.0,25.0
+CA Education,CA,edu,Education,103,4,3.9,100.0,100.0,100.0
+CA Finance,CA,fin,Finance,177,1,0.6,100.0,0.0,0.0
+CA Energy,CA,energy,Energy,214,9,4.2,100.0,66.7,100.0
+US Authorities,US,auth,Authorities,373,13,3.5,100.0,92.3,83.3
+US Education,US,edu,Education,53,3,5.7,100.0,33.3,100.0
+US Finance,US,fin,Finance,107,3,2.8,100.0,66.7,100.0
+US Energy,US,energy,Energy,141,1,0.7,100.0,100.0,0.0
+UK Authorities,UK,auth,Authorities,4,0,0.0,0.0,0.0,0.0
+UK Education,UK,edu,Education,417,24,5.8,100.0,75.0,83.3
+UK Finance,UK,fin,Finance,165,20,12.1,100.0,50.0,60.0

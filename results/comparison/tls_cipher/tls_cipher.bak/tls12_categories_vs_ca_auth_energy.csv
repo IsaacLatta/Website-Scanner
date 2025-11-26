@@ -1,0 +1,4 @@
+variant,n_tls12_forced_attempted,recommended,recommended_pct,sufficient,sufficient_pct,phase_out,phase_out_pct,insecure,insecure_pct,unknown,unknown_pct
+CA Auth,354,265,74.9,6,1.7,12,3.4,0,0.0,71,20.1
+CA Energy,204,139,68.1,2,1.0,2,1.0,0,0.0,61,29.9
+US Energy,139,99,71.2,0,0.0,3,2.2,0,0.0,37,26.6
