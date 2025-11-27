@@ -1,5 +1,12 @@
 % !TeX root = main.tex
 
+
+% TODO:
+% Align it with the CSA guidlines
+% Remove verbosness from methodology
+% Write remaining sections
+% Proof read and reword for more storyness 
+
 \documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
 % \documentclass{IEEEtran}
 
@@ -102,11 +109,14 @@ Initiative}
 \affil[1]{\orgdiv{Dept. Software Engineering}, \orgname{Thompson Rivers University},
 \state{BC}, \country{Canada}}
 
-\abstract{}
 
+\abstract{}
 \keywords{}
 
 \maketitle
+
+\newpage
+\section{Acknowledgments}
 
 \section{Introduction}\label{sec:intro}
 
@@ -147,7 +157,7 @@ vulnerabilities, leading to risks remaining unpatched and unaddressed for extend
 % for Canadian governmental websites. Supporting the call for new, standards---backed trust in
 % digital public services, and their authorities.
 
-\subsection{Main Questions Posed}
+% \subsection{Main Questions Posed}
 
 % Candidate RQs:
 % RQ1: To what extent do Canadian public-sector and critical web services currently implement key web security controls recommended by national (CCCS, PIPEDA) and international guidance (TLS 1.2/1.3, HSTS, secure cookies, anti-fingerprinting headers, etc.)?
@@ -159,29 +169,9 @@ vulnerabilities, leading to risks remaining unpatched and unaddressed for extend
  %    RQ3: What is the current website security situation of the Canadian authorities' websites?
  %    RQ4: How can the findings of this assessment be effectively communicated to Canadian web authorities to encourage improvements where necessary?
 
-\vspace{1em}In this report we answer the following research questions: 
+% \subsection{Previous Literature}
 
-\begin{itemize}
-    \vspace{0.4em} \item \textbf{RQ1}: To what extent do Canadian public-sector and critical web services 
-    currently implement key web security controls recommended by the CCCS, web security authorities and international guidance.
-    \vspace{0.4em} \item \textbf{RQ2}: How does the adoption of these controls vary by sector (government authorities, 
-    finance, education, critical energy infrastructure) and by jurisdiction (Canada vs. US vs. UK authorities/financial/educational sites)?
-    \vspace{0.4em} \item \textbf{RQ3}: What are the key web security features and standards needed for securing Canadian websites 
-    and their visitors?
-\end{itemize}
 
-\subsection{Previous Literature}
-
-% borrow from application
-    % rephrase + augment
-
-% Previous literature ideas:
-% - Measurement work on HTTPS/TLS/HSTS adoption (e.g., USENIX work like "Measuring HTTPS adoption", Mozilla Observatory, prior internet-wide scans) and what they focused on (mostly US/global, not Canada-specific, often less standards-specific).
-% - Standards/guidance side: CCCS ITSP.40.062, ITSM.60.005; IETF RFCs on TLS, HSTS, security.txt; OWASP and MDN best-practice docs. (Position them as normative baselines, not "literature" per se.) 
-% - The Swedish automated tool paper you are extending (focus, scope, limitations—e.g., fewer bespoke crypto checks, different jurisdiction/standards focus).
-% - The Swedish tool also some implementation flaws, and performance concerns. 
-% - Note the gap: no large-scale, standards-based scan focused on Canadian public authorities, nor cross-country sectoral comparison aligned with Canadian standards.
-    
 \vspace{1em}While no specific study has focused on Canadian authorities' websites, several efforts have 
 examined the security of government websites globally.     
 Dunbar et al. assessed the security of US governmental domains (i.e. domains ending in .us, 
@@ -204,6 +194,18 @@ and scalability required for continuous monitoring and evaluation. Additionally,
  \cite{felt2017measuring}. 
 Often, when researchers discover security vulnerabilities, proper reporting channels are lacking,
  leading to vulnerabilities remaining unreported.
+
+
+ \vspace{1em}In this report we answer the following research questions: 
+
+ \begin{itemize}
+     \vspace{0.4em} \item \textbf{RQ1}: To what extent do Canadian public-sector and critical web services 
+     currently implement key web security controls recommended by the CCCS, web security authorities and international guidance.
+     \vspace{0.4em} \item \textbf{RQ2}: How does the adoption of these controls vary by sector (government authorities, 
+     finance, education, critical energy infrastructure) and by jurisdiction (Canada vs. US vs. UK authorities/financial/educational sites)?
+     \vspace{0.4em} \item \textbf{RQ3}: What are the key web security features and standards needed for securing Canadian websites 
+     and their visitors?
+ \end{itemize}
 
 
 % \subsection{Reasons for Choosing Method}
@@ -235,14 +237,14 @@ Often, when researchers discover security vulnerabilities, proper reporting chan
 %   - Comparing similar sectors across jurisdictions helps reveal whether gaps are uniquely Canadian or part of a broader pattern.
 
 
-\subsection{What Is New With This Paper?}
+% \subsection{What Is New With This Paper?}
 
 % never been done for canada
 % no existing tool perform checks adhering to canadian standards
 % tool also performs bespoke crypto graphic checks
 
 
-\vspace{1em}In this work, we develop an automated scanning tool that incorporates the most 
+\vspace{1em}To answer these questions, we develop an automated scanning tool that incorporates the most 
 recent Canadian specific security guidelines and best practices to evaluate the security 
 readiness of Canadian web authorities. To address the aforemntioned challenges and gaps, this research 
 performs the aggregation and evaluation of Canadian authorities websites against Canadian specific webs secuirty 
@@ -301,7 +303,7 @@ to that of our allies and public sector neighbors.
 % Going forward, the terms \textit{Scheme} is used synonymously with \textit{Protocol}. \textit{Endpoint} is used synonymously with \textit{Resource}
 % and \textit{Path}. 
 
-\subsection{Overview - Factual guide}
+% \subsection{Overview - Factual guide}
 % Overview ideas:
 % - Dataset construction:
 %   * How many sites per sector/jurisdiction.
@@ -322,13 +324,15 @@ to that of our allies and public sector neighbors.
 %   * Per-origin failure tracking and temporary blacklisting when WAFs/CDNs respond with repeated 403/503 or effectively null-route traffic.
 %   * Global timeouts and connection limits to avoid overwhelming endpoints and to prevent the scanner from hanging.
 
-To perform our evaluation of Canada's cybersecurity readiness we compiled a list of Canadian authority URIs. 
-In addition to the authority websites, we also compiled lists of public sector domains meant to represent the infrastructure 
-Canadians interact with and depend on daily. To provide a refrence points 
-for Canada's security posture, we perform a similar aggregation of sites representing both the United Kingdom (UK) and
-Unites States (US). 
+% We conducted a cross-sectional assesment of authority and public infrasture websites accross Canada. To perform this
+% evaluationwe compiled a list of Canadian authority websites. 
+% In provide a frame of reference for Canada's web security readiness, 
+% we also evaluated a set of authority websites from both the United Kingdom and United States. In addition to authority sites,
+% we evaluated three public sectors: educational institutions, financial institutions, and energy providers. 
+% All assessments were performed via custom automated scanning tool aligned with standards sourced from 
+% Canadian and International Cyber Authorities. 
 
-\subsection{Simulation? Experimental? Subjects?}
+% \subsection{Simulation? Experimental? Subjects?}
 % "Subjects" framing:
 % - Not human subjects; "subjects" are production websites belonging to:
 %   * Canadian authorities, financial institutions, universities, energy companies.
@@ -340,125 +344,128 @@ Unites States (US).
 
 % \subsubsection{Canada}
 
-We have 4 \emph{buckets} of websites we performed evaluation on for each country. \emph{Authorities}, consist of government 
+
+
+\subsection{Website Selection \& Sources}
+
+We have 4 sectors of websites we performed evaluation on for each country. \emph{Authorities}, consist of government 
 institutions, departments, crown corporations, and aiport/health/maritime authorities. 
 \emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
 includes banks and credit unions of the parent country. 
-Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing \emph{critical infrastructure}.  
+Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing 
+critical infrastructure.  
 
-\vspace{1em}The Canadian endpoints evaluated were sourced directly from publicly facing registries hosted by the Canadian Government. 
-Our list of Candian Domains consists of and was sourced from, the following; 
-Government Departments \cite{canada_depts}, Government Institutions \cite{canada_institutions}, Crown Corporations \cite{crown_corps}, 
-Airport Authorities \cite{ca_airports}, Maritime Port Authorities \cite{maritime_ports}, Security Commissioners \cite{ca_securities_admins},
-Provincial Courts \cite{canada_courts_list} and Emergency Management \cite{ca_emergency_management}. 
-In addition to the above the lists, we sourced domains for Canada's election agencies by manually looking up each province's election agency. 
-Similarly, we looked up each province's privacy commissioner. Each province also maintains a list of health authorities, 
-we looked up each province's healthcare authorities manually as most provinces only have a handful of healthcare authorities. 
-However, we omitted sourcing healthcare authorities from both Quebec and Ontario as there seemed to be numeruous, 
-with no authoritative lists.
+\subsubsection{Canadian Datasets}
 
-\vspace{1em}Canadian Financial Institutions were composed of both banks, and credit unions. Canadian banks were 
-sourced from the Canadian Banks Association (CBA) list of schedule I and II banks \cite{cba_member_banks_2024}. As schedule I and II represent banks
-found in Canada. Due to the plethora of credit unions available in each Canadian province, 
-we only selected credit unions from provinces with holistic lists readily available. 
-The list of credit unions covers Ontario, British Columbia (BC), Saskatchewan and New Brunswick. 
-Ontario's credit union URIs 
-were derived from the Financial Services Regulatory Authority of Ontario (FSRA) \cite{ontario-credit-unions-fsra}. BC's credit unions were
-sourced from the BC Financial Services Authority (BCFSA) \cite{bc-credit-unions}. 
-Saskatchewan's credit unions were derived from SaskCentral, 
-Saskatchewan's liquity manager which is owned by the Credit Unions of Saskatchewan \cite{sask-credit-unions}. 
-Lastly, New Brunswick's credit unions
-were compiled from the New Brunswick Credit Union Deposit Insurance Corporation's list of protected institutions \cite{nb-credit-unions}. In total this list
-provided 115 credit unions URIs, and 43 bank URIs.  
-Canadian Educational Institutions were sourced directly from Universities Canada's list of universities \cite{ca_unis_list}.
+Canadian authority URIs were compiled from official government registries: federal departments 
+\cite{canada_depts}, institutions \cite{canada_institutions}, Crown corporations \cite{crown_corps}, 
+airport authorities \cite{ca_airports}, maritime port authorities \cite{maritime_ports}, securities 
+commissioners \cite{ca_securities_admins}, provincial courts \cite{canada_courts_list}, and emergency 
+management organizations \cite{ca_emergency_management}. Provincial election agencies, privacy commissioners, 
+and health authorities were identified through manual lookup of each province's official listings, 
+excluding Quebec and Ontario health authorities due to the absence of authoritative consolidated lists.
 
-\vspace{1em}Canadian Energy providers were derived from a handful of authoritative sources. Electrical companies 
-were sourced from Electricity Canada's list of members \cite{electric_canada_members}. Natural Gas companies were obtained from the 
-Canadian Gas Association (CGA)'s industry links page \cite{cga_industry_links}. Canadian pipelines were collected from the Canadian Energy Regulator (CER). 
-The CER maintains a list of pipelines whom they regulate \cite{cer_pipeline_companies}. Finally, Canadian nuclear powerplants were extracted the Canadian 
-Nuclear Safety Comission (CSNC) list of nuclear facilities \cite{cnsc_nuclear_facilities}. 
+\vspace{1em}Financial institutions sites are comprised of Schedule I and II banks from the Canadian Bankers 
+Association \cite{cba_member_banks_2024}. Credit unions are sourced from provincial regulatory authorities in 
+Ontario \cite{ontario-credit-unions-fsra}, British Columbia \cite{bc-credit-unions}, 
+Saskatchewan \cite{sask-credit-unions}, and New Brunswick \cite{nb-credit-unions}, yielding 43 bank and 
+115 credit union URIs. Educational institutions were sourced from Universities Canada \cite{ca_unis_list}. 
+Energy providers were compiled from Electricity Canada \cite{electric_canada_members}, the Canadian Gas 
+Association \cite{cga_industry_links}, the Canadian Energy Regulator's pipeline list \cite{cer_pipeline_companies}, 
+and the Canadian Nuclear Safety Commission \cite{cnsc_nuclear_facilities}.
 
-% \subsubsection{USA}
 
-We compiled a very similar set of URIs for American authorities, financial and education institutions, and energy companies. The United States Government hosts an index into
-all of their agencies webpages \cite{usa-agency-index}. From this index we gather our american authority URIs.
+% \subsubsection{Canada}
 
-\vspace{1em}American Financial Institutions were gathered from the US Government Federal Deposit Insurance Corporation (FDIC) public ``BankFind'' API \cite{fdic-bankfind-api}. Given that there are a 
-myriad of banks in the United States, we took the top 10 states according to US Population statistics \cite{us-population-stats}, then took the top 10 banks by assets undermanagement
-for each of these states. These states included; California, Texas, Florida, New York, Pennsylvania, Illinois, Ohio, Georgia, Noth Carolina, and Michigan. 
-USA education institutions were retrieved from the US Department of Education's ``College Scorecard'' API \cite{us-college-scorecard-docs}. We once again took the top 10 states by population, then used queried the API
-for the top 5 education institutions by population. For US Energy, we leveraged Edision Electric's list of 
+% \vspace{1em}The Canadian endpoints evaluated were sourced directly from publicly facing registries hosted by the Canadian Government. 
+% Our list of Candian Domains consists of and was sourced from, the following; 
+% Government Departments \cite{canada_depts}, Government Institutions \cite{canada_institutions}, Crown Corporations \cite{crown_corps}, 
+% Airport Authorities \cite{ca_airports}, Maritime Port Authorities \cite{maritime_ports}, Security Commissioners \cite{ca_securities_admins},
+% Provincial Courts \cite{canada_courts_list} and Emergency Management \cite{ca_emergency_management}. 
+% In addition to the above the lists, we sourced domains for Canada's election agencies by manually looking up each province's election agency. 
+% Similarly, we looked up each province's privacy commissioner. Each province also maintains a list of health authorities, 
+% we looked up each province's healthcare authorities manually as most provinces only have a handful of healthcare authorities. 
+% However, we omitted sourcing healthcare authorities from both Quebec and Ontario as there seemed to be numeruous, 
+% with no authoritative lists.
+
+% \vspace{1em}Canadian Financial Institutions were composed of both banks, and credit unions. Canadian banks were 
+% sourced from the Canadian Banks Association (CBA) list of schedule I and II banks \cite{cba_member_banks_2024}. As schedule I and II represent banks
+% found in Canada. Due to the plethora of credit unions available in each Canadian province, 
+% we only selected credit unions from provinces with holistic lists readily available. 
+% The list of credit unions covers Ontario, British Columbia (BC), Saskatchewan and New Brunswick. 
+% Ontario's credit union URIs 
+% were derived from the Financial Services Regulatory Authority of Ontario (FSRA) \cite{ontario-credit-unions-fsra}. BC's credit unions were
+% sourced from the BC Financial Services Authority (BCFSA) \cite{bc-credit-unions}. 
+% Saskatchewan's credit unions were derived from SaskCentral, 
+% Saskatchewan's liquity manager which is owned by the Credit Unions of Saskatchewan \cite{sask-credit-unions}. 
+% Lastly, New Brunswick's credit unions
+% were compiled from the New Brunswick Credit Union Deposit Insurance Corporation's list of protected institutions \cite{nb-credit-unions}. In total this list
+% provided 115 credit unions URIs, and 43 bank URIs.  
+% Canadian Educational Institutions were sourced directly from Universities Canada's list of universities \cite{ca_unis_list}.
+
+% \vspace{1em}Canadian Energy providers were derived from a handful of authoritative sources. Electrical companies 
+% were sourced from Electricity Canada's list of members \cite{electric_canada_members}. Natural Gas companies were obtained from the 
+% Canadian Gas Association (CGA)'s industry links page \cite{cga_industry_links}. Canadian pipelines were collected from the Canadian Energy Regulator (CER). 
+% The CER maintains a list of pipelines whom they regulate \cite{cer_pipeline_companies}. Finally, Canadian nuclear powerplants were extracted the Canadian 
+% Nuclear Safety Comission (CSNC) list of nuclear facilities \cite{cnsc_nuclear_facilities}. 
+
+\subsubsection{Comparator Datasets}
+
+American authority sites were derived from the federal agency index \cite{usa-agency-index}. 
+American Financial Institutions were gathered from the US Government Federal Deposit Insurance 
+Corporation (FDIC) public ``BankFind'' API \cite{fdic-bankfind-api}. Given that there are a 
+myriad of banks in the United States, we took the top 10 states according to US Population statistics 
+\cite{us-population-stats}, then took the top 10 banks by assets undermanagement
+for each of these states. These states included; California, Texas, Florida, New York, Pennsylvania, Illinois, 
+Ohio, Georgia, Noth Carolina, and Michigan. USA education institutions were retrieved from the US Department of 
+Education's ``College Scorecard'' API \cite{us-college-scorecard-docs}. We once again took the top 10 states 
+by population, then queried the API for the top 5 education institutions by population. 
+For US Energy, we leveraged Edision Electric's list of 
 member companies websites \cite{edison-electric-member-sites}.
 
-% \subsubsection{United Kingdom}
+\vspace{1em}United Kingdom authority URIs were extracted from the GOV.UK Collections API 
+\cite{uk-gov-collections-api-docs,uk-gov-collections-api}, filtering for organizations marked ``live''. 
+Financial institutions were identified by cross-referencing the Bank of England PRA regulated banks list 
+\cite{uk-pra-creditunions-list} against the FCA FSDeveloper API \cite{uk-fca-api-docs}. Educational 
+institutions were obtained from the Discover Uni dataset \cite{hesa_discoveruni_2024}. UK energy 
+providers were excluded due to the absence of an authoritative source with usable URIs. As such leave 
+our energy site comparison between Canada and the US.
 
-The UK maintains a authoritative of list of their government organizations \cite{uk-gov-organisations}, 
-this list is also served via the UK Government's ``Collections API'' \cite{uk-gov-collections-api-docs}.
-We used this Collections API as our source for UK government URIs. We pulled all pages from the collections endpoint 
-\cite{uk-gov-collections-api}, 
-then extracted all organizations marked ``live'', to avoid tainting our scan by any deprecated organizations.
 
-\vspace{1em}UK Financial Institutions were derived using the union of two sources; the Bank of England Prudential Regulation Authority's (PRA) list of regulated bank's FRNs \cite{uk-pra-creditunions-list}, and 
-the UK Financial Conduct Authority (FCA) ``FSDeveloper API'' \cite{uk-fca-api-docs}. The list of FRNs sourced from the FSDeveloper API was cross referenced against
-the list of regulated banks FRNs from the PRA list. This was done as the PRA list is a subset of the FCA API's list, cross referencing 
-ensured our list was composed 
-of \emph{only} UK banks, not the surplus of financial institutions present in the FCA API. Educational Institutions of the 
-UK were collected from the Government's ``Discover Uni'' dataset \cite{hesa_discoveruni_2024}. This dataset hosts the 
-names and URLs of each university in the United Kingdom. Lastly, no UK energy companies were 
-included in this scan. Unfortunately, we were unable to find a well-backed and authoritative list that contained useable 
-links for our scanner. As such, we chose to omit this sector from the UK, and instead leave our energy site comparison between Canada and the US.
+\subsection{URL \& Origin Normalization}
 
-\subsection{Experimental Procedure/Paradigm}
-% Procedure outline:
-% 1. Domain collection:
-%    - Fetch raw lists from each authoritative source/API.
-%    - Normalise to canonical hostnames (strip query params, normalise schemes).
-%    - Deduplicate within and across sector/jurisdiction lists.
-% 2. Target selection:
-%    - For each logical "entity", choose primary web origin (e.g., main www.* or bare domain).
-%    - Document how you handled entities without a clearly resolvable website.
-% 3. Scanning pipeline:
-%    - Step 1: HTTPS capability test and TLS handshake (finds supported protocol versions and negotiated cipher suites).
-%    - Step 2: HTTP->HTTPS redirect test (start at http://, follow 3xx up to a depth limit).
-%    - Step 3: Header & cookie capture on the final landing page (2xx/3xx), including CSP, Permissions-Policy, Referrer-Policy, X-Frame-Options, X-Content-Type-Options, Set-Cookie.
-%    - Step 4: Error-page test:
-%        * GET a definitely-nonexistent path (e.g., /__scan__/<uuid>).
-%        * Record status, headers, and truncated body; run stack-trace regexes (JS, Python, PHP, C#, Java, etc.).
-%    - Step 5: security.txt test:
-%        * Check /.well-known/security.txt and /security.txt over HTTPS.
-% 4. WAF/CDN handling:
-%    - Record specific categories of failure (immediate 403/503, connection drops/timeouts, "browser integrity" pages, CAPTCHAs).
-%    - Apply per-origin backoff: after N hard failures within a window, skip further tests for that origin.
-% 5. Manual verification:
-%    - For a sample of sites in each category, manually load pages in a browser to verify scanner interpretations (e.g., confirm soft-404 vs normal 200, check that a CSP is actually enforcing).
-
-After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs without a scheme were given HTTPS as a default (e.g, e.g., \texttt{example.gov} was rewritten as
+After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs 
+without a scheme were given HTTPS as a default (e.g., \texttt{example.gov} was rewritten as
 \texttt{https://example.gov/}), and all host names with were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
 unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). 
 The second set consisted of a list of 
 normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass.
- Where the scanner sends a \texttt{GET} request and examines the response.
+The scanner sends a \texttt{GET} request and examines the response.
 Any non 3xx status code (e.g., 200 OK, 403 Forbidden) was treated as the final response. For 3xx responses with
- the \texttt{Location} header, the scanner followed the header's value. For
-each hop the scanner records the HTTP status and target URL. After performing this resolution, we cached the final and
- entry headers. If the redirect chain exceeded 8 hops, 
+the \texttt{Location} header, the scanner followed the header's value. For
+each hop the scanner records the HTTP status and target URL. After performing this resolution, we 
+cached the final and
+entry headers. If the redirect chain exceeded 8 hops, 
 or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as
- an error rather than continuing indefinitely. This resolution 
+an error rather than continuing indefinitely. This resolution 
 yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. In the results, we
- discuss our set of analysis modules in terms of their scope, 
+discuss our set of analysis modules in terms of their scope, 
 i.e. whether they target an origin or the request URI. All of our tests origin-targeting tests (e.g., cryptographic tests) 
 were performed on both the final and entry origin. 
 All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
 
-\vspace{1em}For each target in our normalized and resolved list. We then performed a series of \emph{tests} on each target. 
-As mentioned earlier some tests target origins, 
-while others target URIs. Because different information becomes available at different stages of the network stack, some checks must
- occur at the origin level while others 
-occur at the URI level. Cryptographic properties are negotiated before any HTTP data is sent, whereas headers and
- resource-specific behavior can only be evaluated after the 
-connection is established and the full request URI is revealed.
+\subsection{Website Security Evaluation}
 
-\vspace{1em}The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS 
+For each target in our normalized and resolved list, the scanner performs a series of \emph{tests}. 
+As mentioned earlier some tests target origins, while others target URIs, since security measures may operate at
+different levels of the network stack. Each test operationalizes guidance from the Canadian Centre for 
+Cyber Security (CCCS), OWASP, Mozilla Developer Network (MDN), and relevant RFCs. Where necessary, each test's specifications are further
+consolodated by internation authorities and browser engines. For example: the National Security Agency (NSA), 
+US Chief Information Officers Council (CIO), or Chromium and Firefox.
+
+\subsubsection{Transport Security}
+
+The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS 
 in line with modern guidance. This is is an origin-scoped test, as HTTPS/HTTP operate at the transport layer. 
 The CCCS outlines in
 ITSP.40.062 \cite{cccs-itsp-40062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, but also implement HTTP Strict Transport 
@@ -472,6 +479,8 @@ should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second dire
 Thirdy, were extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
 Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
 it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
+
+% \subsection{TLS Configuration}
 
 % NOTE: Need to consider removing CBC from any plots and discussions, as much of the CCCS sufficient cipher suites contain CBC algorithms.
 \vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
@@ -492,14 +501,16 @@ been formally deprecated due to known weaknesses and downgrade risks.
 
 \vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
 The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', '``sufficient'', ``phase out''. Augmenting this, we
-reference the NSA ``obsolete'' cipher suite list to further consolodate these groups. We also explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
-in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. Each TLS handshake's outcome is crossferenced
-against these lists to provide additional insights beyond simply the version.  
+reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
+in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
+Each TLS handshake's outcome is crossferenced against these lists to provide additional insights beyond simply the version.  
+
+\subsubsection{Vulnerability Disclosure (security.txt)}
 
 \vspace{1em} Next, we probe each origin for the presence of \texttt{security.txt}, ``A File Format to Aid in Security Vulnerability Disclosure'' \cite{rfc9116}.
 \texttt{Security.txt} is a simple 
-specifications that provides a means of open vulnerability disclosure and management. America's Cybersecurity and Infrastructure Agency (CISA) advocates that all 
-organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value}n and that each domain and subdomain within an agency's network. 
+specification that provides a means of open vulnerability disclosure and management. America's Cybersecurity and Infrastructure Agency (CISA) advocates that all 
+organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value} and that each domain and subdomain within an agency's network. 
 This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
 
 \begin{center}
@@ -518,50 +529,58 @@ A response is considered a candidate \texttt{security.txt} file if the server re
 syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. This evaluation
 is scoped at the origin, as each server may contain the \texttt{security.txt} resources at different URIs.
 
+\subsubsection{Security Headers \& Cookies}
+
 \vspace{1em}Additionally, our scanner also performs a series of presence and evalution checks on set of security headers. These checks are performed on 
-each of the final URIs (URI-scoped). The first header we probe for is \texttt{Referrer-Policy}.
-The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent along when a browser navigates to another site or loads third-party content.
-Without an explicit policy, browsers may send the full URL, including path and query parameters, to analytics, embedded widgets, or links to external services. 
-On public-sector and financial sites, these URLs can easily contain case identifiers or other sensitive tokens. We derive this header's evaluation from the guidance
-of OWASP and MDN. OWASP recommends setting the header to \texttt{Referrer-Policy: strict-origin-when-cross-origin} 
-\cite{owasp_http_security_response_headers}. This directive
-indicates the browser should only send the origin, path, and query string when making a same-origin request, only send the origin
-in cross-origin requests when protocol security remains the same (e.g., HTTPS to HTTPS), and finally never send the \texttt{Referer} header to less secure destinations (e.g., HTTPS to HTTPS). 
-MDN advocates for setting the strictest \texttt{Referrer-Policy} comptable with th server. MDN lists the following derictives as the only \emph{client-protecting} directives in
-decreasing order of protection; \texttt{no-referrer}, \texttt{no-origin}, \texttt{strict-origin}, \texttt{strict-origin-when-cross-origin} 
-\cite{mdn_referrer_policy_config}. 
-Following OWASP and MDN guidance, we treat policies that never send full paths to third-party origins (for example \texttt{strict-origin-when-cross-origin}, 
-\texttt{strict-origin}, \texttt{same-origin}, or \texttt{no-referrer}) as recommended defaults 
-. Policies that still expose full URLs across sites (such as \texttt{unsafe-url} or \texttt{origin-when-cross-origin}) are classified as weak. Absense of the policy
-is also treated as recommended, since MDN states the default is \texttt{strict-origin-when-cross-origin}.
+each of the final URIs (URI-scoped). First we record the presence of the \texttt{Referrer-Policy} header.
+The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent 
+along when a browser navigates to another site or loads third-party content.
+Without an explicit policy, browsers may send the full URL, including path and query parameters, 
+to external services. 
+On public-sector and financial sites, these URLs can easily contain case identifiers or other sensitive information. 
+We derive this header's evaluation from the guidance
+of OWASP and MDN. 
 
-\vspace{1em}Attackers can sometimes load a legitimate government or banking page inside a hidden 
-\texttt{<iframe>} and trick a user into clicking on real buttons (for example ``Approve payment'' or ``Submit application'') 
-while believing they are interacting with a harmless overlay. To counter this ``clickjacking'' risk, modern guidance recommends
-using either the \texttt{frame-ancestors} directive in Content-Security-Policy (CSP) or the legacy \texttt{X-Frame-Options} header, or 
-both \cite{owasp_clickjacking_defense}. For each site, we check whether it sends a CSP that restricts 
-framing (for example \texttt{frame-ancestors 'none'} or \texttt{frame-ancestors 'self'}) and whether it sets \texttt{X-Frame-Options}
-to \texttt{DENY} or \texttt{SAMEORIGIN}. Configurations that completely forbid framing (\texttt{'none'} or \texttt{DENY}) are treated
-as recommended; policies that only allow the site's own pages to frame themselves (\texttt{'self'} or \texttt{SAMEORIGIN}) are treated 
-as acceptable but weaker. Sites that omit both controls, or explicitly allow any domain to frame them, are classified as lacking clickjacking protection.
+% OWASP recommends setting the header to \texttt{Referrer-Policy: strict-origin-when-cross-origin} 
+% \cite{owasp_http_security_response_headers}. This directive
+% indicates the browser should only send the origin, path, and query string when making a same-origin request, only send the origin
+% in cross-origin requests when protocol security remains the same (e.g., HTTPS to HTTPS), and finally never send the \texttt{Referer} header to less secure destinations (e.g., HTTPS to HTTPS). 
+% MDN advocates for setting the strictest \texttt{Referrer-Policy} comptable with th server. MDN lists the following derictives as the only \emph{client-protecting} directives in
+% decreasing order of protection; \texttt{no-referrer}, \texttt{no-origin}, \texttt{strict-origin}, \texttt{strict-origin-when-cross-origin} 
+% \cite{mdn_referrer_policy_config}. 
+% Following OWASP and MDN guidance, we treat policies that never send full paths to third-party origins (for example \texttt{strict-origin-when-cross-origin}, 
+% \texttt{strict-origin}, \texttt{same-origin}, or \texttt{no-referrer}) as recommended defaults 
+% . Policies that still expose full URLs across sites (such as \texttt{unsafe-url} or \texttt{origin-when-cross-origin}) are classified as weak. Absense of the policy
+% is also treated as recommended, since MDN states the default is \texttt{strict-origin-when-cross-origin}.
 
+
+% \vspace{1em}Attackers can sometimes load a legitimate government or banking page inside a hidden 
+% \texttt{<iframe>} and trick a user into clicking on real buttons (for example ``Approve payment'' or 
+% ``Submit application'') 
+% while believing they are interacting with a harmless overlay. 
+% To counter this ``clickjacking'' risk, modern guidance recommends
+% setting the \texttt{X-Frame-Options} header. In line with this guidance, the 
+% scanner records the presence of the {X-Frame-Options} header.
+
+% that restricts 
+% framing (for example \texttt{frame-ancestors 'none'} or \texttt{frame-ancestors 'self'}) and 
+%whether it sets \texttt{X-Frame-Options}
+% to \texttt{DENY} or \texttt{SAMEORIGIN}. Configurations that completely forbid framing 
+%(\texttt{'none'} or \texttt{DENY}) are treated
+% as recommended; policies that only allow the site's own pages to frame themselves (\texttt{'self'} or 
+%\texttt{SAMEORIGIN}) are treated 
+% as acceptable but weaker. Sites that omit both controls, or explicitly allow any domain to frame
+% them, are classified as lacking clickjacking protection.
 
 \vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the attack surface
 of cross-site scripting (XSS) and other content-injection attacks by restricting which sources of scripts, images, and 
 other resources the browser may load. Consider the following illustrative example of an XSS attack: a bad actor discovers a 
-vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that attempts to steal session
+vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that 
+attempts to steal session
 cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
 With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding even if an 
 injection point exists. The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an explicit CSP 
-\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}. CSP is a powerful but application specific measure, 
-we therefore interpret our CSP results narrowly, focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
-This directive provides defence against an attack known as ``clickjacking''. Clickjacking refers to when a malicious website
-embeds another website inside an invisible \texttt{<iframe>}. Thus tricking the user into taking potentially harmful actions
-unknowlingly. OWASP recommends setting the \texttt{frame-ancestors} derective to control exactly which other origins are 
-allowed to embed this origin's content inside an \texttt{<iframe>} \cite{owasp_clickjacking_defense}. 
-As such, we record whether a response includes a 
-\texttt{Content-Security-Policy} header and, if so, 
-extract and classify its \texttt{frame-ancestors} directive. Policies that explicitly forbid all framing 
+\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}.  Policies that explicitly forbid all framing 
 (e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
 site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
 https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
@@ -570,20 +589,61 @@ as \emph{insecure} for the purpose of clickjacking protection. Any other pattern
 \emph{unknown} rather than over-interpreted. This aims to answer the question: 
 ``Are sites explicitly controlling who can embed their content?''.
 
-\vspace{1em}
-An older security header that aims to reduce the risk of clickjacking is 
-\texttt{X-Frame-Options} (XFO). Although largely superseded by the 
-\texttt{frame-ancestors} directive in CSP, many sites still rely on XFO
-for backwards compatability. Similar to the CSP's \texttt{frame-ancestors} derective, XFO instructs the 
-browser whether the page may be 
-displayed inside a \texttt{<frame>} or \texttt{<iframe>} element. The header 
-supports three directives: \texttt{DENY} (never permit framing), 
-\texttt{SAMEORIGIN} (allow framing only by pages from the same site), and 
-\texttt{ALLOW-FROM <origin>}. Our scanner attempts to retrieve the raw XFO header. If the header is present and set to 
-\texttt{DENY}, we classify the site as \emph{recommended}. If set to 
-\texttt{SAMEORIGIN}, we classify it as \emph{sufficient}, since the site at 
-least restricts framing to itself. If the site sets XFO to \texttt{ALLOW-FROM}, we record this as \emph{obsolete}---as this directive is now deprecated. 
-If the header is missing entirely, contains unknown syntax, or is malformed we treat it as \emph{unknown}.
+
+\vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the 
+attack surface of cross-site scripting (XSS) and other content-injection attacks by restricting which 
+sources of scripts, images, and 
+other resources the browser may load. Providing additional security over the aforemntioned 
+\texttt{X-Frame-Options}.
+The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an 
+explicit CSP 
+\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites, owasp_clickjacking_defense} with 
+the \texttt{frame-ancestors} derective. This directive controls exactly which other origins are 
+allowed to embed this origin's content inside an \texttt{<iframe>} 
+CSP is a powerful but application specific measure, we therefore interpret our CSP results narrowly, 
+focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
+The scanner records whether a response includes a \texttt{Content-Security-Policy} header and, if so, 
+whether it contains \texttt{frame-ancestors} directive.
+
+% we therefore interpret our CSP results narrowly, focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
+% This directive provides defence against an attack known as ``clickjacking''. Clickjacking refers to when a malicious website
+% embeds another website inside an invisible \texttt{<iframe>}. Thus tricking the user into taking potentially harmful actions
+% unknowlingly. OWASP recommends setting the \texttt{frame-ancestors} derective to control exactly which other origins are 
+% allowed to embed this origin's content inside an \texttt{<iframe>} \cite{owasp_clickjacking_defense}. 
+% As such, we record whether a response includes a 
+% \texttt{Content-Security-Policy} header and, if so, 
+% extract and classify its \texttt{frame-ancestors} directive. Policies that explicitly forbid all framing 
+% (e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
+% site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
+% https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
+% define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
+% as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
+% \emph{unknown} rather than over-interpreted. This aims to answer the question: 
+% ``Are sites explicitly controlling who can embed their content?''.
+
+% Consider the following illustrative example of an XSS attack: a bad actor 
+% discovers a 
+% vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that attempts 
+% to steal session
+% cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
+% With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding 
+% even if an 
+% injection point exists. 
+
+% \vspace{1em}
+% An older security header that aims to reduce the risk of clickjacking is 
+% \texttt{X-Frame-Options} (XFO). Although largely superseded by the 
+% \texttt{frame-ancestors} directive in CSP, many sites still rely on XFO
+% for backwards compatability. Similar to the CSP's \texttt{frame-ancestors} derective, XFO instructs the 
+% browser whether the page may be 
+% displayed inside a \texttt{<frame>} or \texttt{<iframe>} element. The header 
+% supports three directives: \texttt{DENY} (never permit framing), 
+% \texttt{SAMEORIGIN} (allow framing only by pages from the same site), and 
+% \texttt{ALLOW-FROM <origin>}. Our scanner attempts to retrieve the raw XFO header. If the header is present and set to 
+% \texttt{DENY}, we classify the site as \emph{recommended}. If set to 
+% \texttt{SAMEORIGIN}, we classify it as \emph{sufficient}, since the site at 
+% least restricts framing to itself. If the site sets XFO to \texttt{ALLOW-FROM}, we record this as \emph{obsolete}---as this directive is now deprecated. 
+% If the header is missing entirely, contains unknown syntax, or is malformed we treat it as \emph{unknown}.
 
 \vspace{1em}The \texttt{X-Content-Type-Options} header is a simple but important control. This header eliminates 
 ``MIME Sniffing'', where a browser may \emph{guess} the MIME (Multipurpose Internet Mail Extension) type of a 
@@ -591,22 +651,29 @@ resource and act accordingly. This behaviour can be abused in so-called MIME con
 attacks, where user-supplied or third-party content is interpreted as active HTML or JavaScript instead of 
 static data. OWASP recommends administrators to set the \texttt{X-Content-Type-Options} to \texttt{nosniff}, instructing
 the browser to \emph{always} follow the content type found in the \texttt{Content-Type} header
-\cite{owasp_http_security_response_headers, mdn_mime_types_guide}. In line with this guidance, our scanner performs a simple
-check as to whether the endpoint has the \texttt{X-Content-Type-Options} header present, and whether it's value is set
-to \texttt{nosniff}.
+\cite{owasp_http_security_response_headers, mdn_mime_types_guide}. In line with OWASP's guidance, the scanner records
+the presence of \texttt{X-Content-Type-Options} in the response of the final resolved URI.
 
-\vspace{1em}The next header the scanner evaluates is the \texttt{Permissions-Policy} (formerly \texttt{Feature-Policy}). This header allows a site
+% In line with this guidance, 
+% our scanner performs a simple
+% check as to whether the endpoint has the \texttt{X-Content-Type-Options} header present, and 
+% whether it's value is set
+% to \texttt{nosniff}.
+
+\vspace{1em}The next header the scanner records is the \texttt{Permissions-Policy} (formerly \texttt{Feature-Policy}). This header allows a site
 to declare which powerful browser features are enabled on a page and which embedded origins, if any, may use them. Examples include 
 access to the camera, microphone, geolocation, clipboard and more. 
 In the absence of an explicit policy, browsers generally assume that these features are available to the top-level origin and depending on the feature, 
 embedded third-party content. Both OWASP and Google Chrome both recommend web administrators explicitly set the \texttt{Permissions-Policy} 
 \cite{owasp_http_security_response_headers, chrome_permissions_policy}, 
-disabling what isn't in use. The scanner checks for this response header, and 
-evaluates whether this endpoint is explicitly controlling certain features via structured directives of the form \texttt{feature = sources}
-(e.g., \texttt{camera=()})
+disabling what isn't in use. 
+
+% The scanner checks for this response header, and 
+% evaluates whether this endpoint is explicitly controlling certain features via structured directives of the form 
+% \texttt{feature = sources}(e.g., \texttt{camera=()})
 
 \vspace{1em}Cookies are a common mechanism for tracking sessions and user state on the web. 
-Even ostensibly ``public'' pages often set cookies for language preferences, analytics, anti-CSRF tokens, or short-lived 
+Even ostensibly ``public'' pages often set cookies for language preferences, analytics, or short-lived 
 session identifiers. Due to cookies being sent automatically to a site with each request, weak cookie settings can expose
 users to eavesdropping, cross-site request forgery (CSRF), or theft of authentication tokens. The CCCS 
 explicitly recommends the use of cookie security flags as part of secure session
@@ -619,54 +686,72 @@ In particular, three attributes are widely recognized as baseline protections:
   \item \textbf{\texttt{SameSite}} limits when cookies are sent on cross-site requests. Strict or lax settings here can significantly reduce CSRF state changes by omitting cookies from certain cross-origin operations.
 \end{itemize}
 
-To evaluate how these protections are used in practice, our scanner inspects the \texttt{Set-Cookie} header on the final landing page and parses any attributes attached to each cookie name–value pair. We record whether the \texttt{Secure} and \texttt{HttpOnly} flags are present, the value of the \texttt{SameSite} attribute (if any), and whether the cookie appears to have an explicit lifetime via \texttt{Max-Age} or \texttt{Expires}. Because some informational sites do not set 
-cookies at all, we only apply this check when at least one \texttt{Set-Cookie} header is observed on the landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a strict same-site policy are classified as \emph{recommended}, 
-reflecting CCCS, MDN and OWASP guidance for session management. Cookies that are \texttt{Secure} and \texttt{HttpOnly} but use a more permissive same-site setting (e.g., \texttt{SameSite=Lax}) are treated as \emph{sufficient}, 
+To evaluate how these protections are used in practice, our scanner inspects the \texttt{Set-Cookie} header on the final 
+landing page and parses any attributes attached to each cookie name–value pair. We record whether the \texttt{Secure} and 
+\texttt{HttpOnly} flags are present, the value of the \texttt{SameSite} attribute (if any), and whether
+ the cookie appears to have an explicit lifetime via \texttt{Max-Age} or \texttt{Expires}. 
+Because some informational sites do not set 
+cookies at all, we only apply this check when at least one \texttt{Set-Cookie} header is observed on the 
+landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a strict
+same-site policy are classified as \emph{recommended}, 
+reflecting CCCS, MDN and OWASP guidance for session management. 
+Cookies that are \texttt{Secure} and \texttt{HttpOnly} but use a more permissive same-site setting 
+(e.g., \texttt{SameSite=Lax}) are treated as \emph{sufficient}, 
 since they still provide substantial protection against token theft and many cross-site attacks. 
 Cookies that lack any of these flags, particularly those that are neither \texttt{Secure} nor \texttt{HttpOnly} 
 or that omit a same-site policy entirely, are classified as \emph{insecure}. 
 
+\subsubsection{Information Leakage}
 
-\vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked unnecessary implementation details through so--called 
+\vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked 
+unnecessary implementation details through so--called 
 ``revealing'' HTTP response headers. This check once again targets the final URI. 
-These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP HTTP Security Response Headers
-Cheat Sheet and the OWASP Secure Headers Project explicitly recommends removing or genericising headers such as \texttt{Server}, \texttt{X-Powered-By}, 
-and framework version banners because they ease fingerprinting and targeted exploitation of known vulnerabilities \cite{owasp_secure_headers_project, owasp_http_security_response_headers}. 
+These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP 
+HTTP Security Response Headers
+Cheat Sheet and the OWASP Secure Headers Project explicitly recommends removing or genericising headers such as 
+\texttt{Server}, \texttt{X-Powered-By}, 
+and framework version banners because they ease fingerprinting and targeted exploitation of known vulnerabilities 
+\cite{owasp_secure_headers_project, owasp_http_security_response_headers}. 
 More generally, government and national guidance on secure configuration, including CCCS ITSG--33 and related profiles, emphasises limiting information leakage from public services, 
-which includes avoiding unnecessary disclosure of software and version details. To operationalize this, our scanner imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owasp_secure_headers_remove_json}. 
+which includes avoiding unnecessary disclosure of software and version details. To operationalize this, our scanner 
+imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owasp_secure_headers_remove_json}. 
 For each origin's final response, the scanner recorded whether any response header name matched the OWASP list 
 (e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks. Table~\ref{tab:revealing-headers-examples} 
 illustrates typical examples of revealing headers that our scanner tracked.
 
-\begin{table}[h]
-  \centering
-  \begin{tabular}{p{3cm}p{4.5cm}p{6.5cm}}
-    \hline
-    \textbf{Header} & \textbf{Example value} & \textbf{Why it is revealing} \\
-    \hline
-    \texttt{Server} &
-    \texttt{Apache/2.4.49 (Unix)} &
-    Discloses the exact web server product and version; attackers can search for this version when a remote code execution or path traversal CVE is published. \\
-    \texttt{X-Powered-By} &
-    \texttt{PHP/7.4.33} or \texttt{Express} &
-    Reveals the application platform or framework in use (PHP, Node.js, etc.), again often with a specific version number. \\
-    \texttt{X-Generator} &
-    \texttt{Drupal 9.4.1}, \texttt{PrestaShop} &
-    Discloses the CMS product and version, facilitating targeted CMS exploitation. \\
-    \hline
-  \end{tabular}
-  \caption{Examples of ``revealing'' HTTP headers tracked by our scanner. These headers are not required for end-user functionality but expose details about the server's software stack and versions. Our analysis focuses on how many public-sector sites retain such headers versus those that follow OWASP guidance and remove or genericise them.}
-  \label{tab:revealing-headers-examples}
-\end{table}
+% \begin{table}[h]
+%   \centering
+%   \begin{tabular}{p{3cm}p{4.5cm}p{6.5cm}}
+%     \hline
+%     \textbf{Header} & \textbf{Example value} & \textbf{Why it is revealing} \\
+%     \hline
+%     \texttt{Server} &
+%     \texttt{Apache/2.4.49 (Unix)} &
+%     Discloses the exact web server product and version; attackers can search for this version when a remote code execution or path traversal CVE is published. \\
+%     \texttt{X-Powered-By} &
+%     \texttt{PHP/7.4.33} or \texttt{Express} &
+%     Reveals the application platform or framework in use (PHP, Node.js, etc.), again often with a specific version number. \\
+%     \texttt{X-Generator} &
+%     \texttt{Drupal 9.4.1}, \texttt{PrestaShop} &
+%     Discloses the CMS product and version, facilitating targeted CMS exploitation. \\
+%     \hline
+%   \end{tabular}
+%   \caption{Examples of ``revealing'' HTTP headers tracked by our scanner. These headers are not required for end-user functionality but expose details about the server's software stack and versions. Our analysis focuses on how many public-sector sites retain such headers versus those that follow OWASP guidance and remove or genericise them.}
+%   \label{tab:revealing-headers-examples}
+% \end{table}
 
-% NOTE: Should maybe cite OWASP here.
-Misconfigured error pages are another common source of unintended information disclosure. These error pages can reveal the exact framework, cloud provider, or 
+
+\vspace{1em}Misconfigured error pages are another common source of unintended information disclosure 
+\cite{owasp_a05_2021,owasp_error_handling,cwe_209}. These error pages can reveal the exact framework, cloud provider, or 
 database in use, and in the worst case they display full stack traces to unauthenticated users. Since leaks occur at the web application level, we perform this evaluation
 on the final origins. To assess this risk in a safe and consistent way, we carried out a
 single, non-invasive probe of each origin's error handling. For every origin, the scanner issued one HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
-\texttt{https://\textit{origin}/\_\_scanner\_404\_\_\textit{token}/}, where\textit{token} is a random 16-character string chosen per origin. This is
-intended to trigger the site's standard 404/4xx error handler without sending any exploit payloads. Responses were only analysed further if the \texttt{Content-Type} header indicated textual 
-content. Otherwise, the origin was treated as not exposing any interpretable error page. The body of each textual error page was then scanned for two classes of
+\texttt{https://\textit{origin}/\_\_scanner\_404\_\_\textit{token}/}, where \textit{token} is a 
+random 16-character string chosen per origin. This is
+intended to trigger the site's standard 404/4xx error handler without sending any exploit payloads. 
+Responses were only analysed further if the \texttt{Content-Type} header indicated textual 
+content. 
+Otherwise, the origin was treated as not exposing any interpretable error page. The body of each textual error page was then scanned for two classes of
 information leaks. First, we looked for technology banners using a curated set of signatures for common web frameworks, cloud platforms, and databases. These signatures
 were derived from the most widely used web technologies in the 2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}. 
 Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
@@ -679,34 +764,43 @@ that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent
 When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
 the leaked language is recorded. Results were limited to at most one trace per language per origin.
 
-\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured number of total and per-origin number of simultaneous connections. 
-For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 3 connections to each origin at a time. For the other sectors (finance, education, energy) 
+\subsection{Scanner Implementation \& Validation}
+
+\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured 
+total and per-origin simultaneous connection limit. 
+For the authority sites, we allowed a conservative 15 total concurrent connections, with at most 
+3 connections to each origin at a time. For the other sectors (finance, education, energy) 
 we allowed 20 total concurrent connections with 5 concurrent per origin. Each request was bounded by a client-side timeout of 3 seconds. The scanner also maintains per-origin timeout counters.
 Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, and no further HTTP/TLS modules were run against them.
 This allowed us to distinguish genuinely unreachable sites, while also reducing the risk of overloading web infrastructure or triggering any defense mechanisms.
 
-\vspace{1em}Because our conclusions depend on automated classification, we invested effort in testing the scanner itself
-before running it at scale. The goal of these tests was not to prove the scanner is perfect, but to ensure that, for a wide range of realistic inputs, the implementation behaves in a way that matches the methodology described above.
-First, we built automated tests for individual modules such as target parsing, HTTPS/TLS connectivity, security.txt discovery and 
+\vspace{1em}Because our conclusions depend on automated classification, we invested effort in testing the scanner 
+itself
+before running it at scale. The goal of these tests was not to prove the scanner is perfect, but to ensure that, 
+for a wide range of realistic inputs, the implementation behaves in a way that matches the methodology described above.
+First, we built automated tests for individual modules such as target parsing, HTTPS/TLS connectivity, security.txt 
+discovery and 
 header classification. For these tests we spun up small local web servers on \texttt{localhost} with controlled behaviour
  (e.g., specific redirects, header combinations, or security.txt contents) and ran the scanner against them. This 
-allowed us to verify that each module correctly interpreted well-formed responses, handled missing or malformed fields gracefully, 
-and produced the expected ratings for headers such as \texttt{Content-Security-Policy}, \texttt{Referrer-Policy}, 
-\texttt{X-Content-Type-Options}, \texttt{Permissions-Policy} and cookie flags. TLS-related tests were performed against local HTTPS endpoints using self-signed certificates. 
-We confirmed that the scanner correctly distinguished between successful and failed HTTPS connections by varying certificate 
-properties and connection parameters on the local web servers. handled certificate validation failures in a controlled way, and 
-reported TLS outcomes consistent with the methodology. 
+allowed us to verify that each module correctly interpreted well-formed responses, handled missing or malformed fields 
+gracefully, 
+and produced the expected results for the securityy headers and cookie flags. 
+TLS-related tests were performed against local HTTPS endpoints using self-signed certificates. 
+We confirmed that the scanner correctly distinguished between successful and failed HTTPS connections by 
+varying certificate properties and connection parameters on the local web servers. 
 
-\vspace{1em}To validate the scanner's error leak detection, we first tested the regular-expression approach offline 
-using hand-crafted examples. For each web language in our signature set, we intentionally executed failing code to 
+\vspace{1em}To validate the scanner's error leak detection, we first tested the regular-expression approach offline. 
+For each web language, we intentionally executed failing code to 
 generate genuine stack traces and error pages in that language's default format. These raw error messages were 
-fed directly into the parser to confirm that the scanner reliably detected the expected language/technology and extracted the 
+fed directly into the parser to confirm that the scanner reliably detected the expected language/technology and 
+extracted the 
 correct label. In parallel, we ran the same detector over leak-free HTML and JSON data drawn from real web endpoints. Asserting that 
 no stack traces or banners were reported, thus guarding against false positives. Similar to our tests, we then configured small local web servers return known responses on specific paths, including pages that 
 contained the captured error messages or only normal content. The scanner then scanned these local endpoints, and our tests 
 asserted the same results were recorded over HTTP. 
 
-\vspace{1em}Finally, we ran end-to-end tests in which all modules were exercised together, imitating a small scan from input list to
+\vspace{1em}Finally, we ran end-to-end tests in which all modules were exercised together, imitating a small scan 
+from input list to
 aggregated results. In these scenarios, the scanner was pointed at a collection of local test servers designed to emulate a mix of 
 secure, partially configured and clearly misconfigured sites. We then compared the resulting findings against an expected 
 ``ground truth'' for each test target. 
@@ -749,110 +843,13 @@ secure, partially configured and clearly misconfigured sites. We then compared t
 
 \section{Results}\label{sec:result}
 
-% results from each module. Should also not CA gov standards as an explicity section, then move onto the bonus stuff (e.g., MDN, OWASP)
-
-% Break down the following results per domain (gov, 
-    % error_leak
-        % - NOTE: Ignore next.js here, lots of false positives
-        % what fraction of error pages leaked info
-        % what fraction of error pages leaked info about non cloudflare/wordpress/drupal
-            % e.g frameworks vs cloud vs servers
-        % what fraction had versions 
-            % - NOTE: drupal had versions in nearly all of them but the scanner missed drupal specifically
-    % hsts/https (CA gov)
-        % what percentage redirected http -> https
-        % what fraction accepted an http request
-        % what fraction actually implemented sts header
-    % headers
-        % what fraction actually followed best practices (recommended)
-        % what fraction contained revealing headers
-        % what header's recommendation was most/least abided by.
-    % cipher suite/tls (CA gov)
-    % any WAF/CDN behaviour observed
-
-% Results structure ideas (facts only):
-% - Subsection 1: HTTPS, HSTS, TLS, cipher suites
-%   * For CA authorities / CA finance / CA education / CA energy:
-%       - % of sites that:
-%           · Redirect HTTP→HTTPS for root.
-%           · Maintain HTTPS-only (no HTTP listener or always redirect).
-%           · Set HSTS, and fraction with "strong" policy (>= 1 year, includeSubDomains).
-%       - TLS versions observed: % supporting 1.3, 1.2, % still willing to negotiate 1.0/1.1 (if any).
-%       - Cipher posture: % with only modern AEAD suites; % where legacy/weak suites appear in negotiation.
-%   * Repeat summary for US and UK comparators by sector.
-%
-% - Subsection 2: Headers & cookies
-%   * Referrer-Policy: fraction with strong defaults vs weaker vs missing.
-%   * Clickjacking: % with CSP frame-ancestors and/or X-Frame-Options; note overlaps.
-%   * X-Content-Type-Options: nosniff prevalence.
-%   * Cookies:
-%       - Among sites that set cookies: % using Secure, HttpOnly, and SameSite; count of sites with apparently "session-like" cookies missing flags.
-%
-% - Subsection 3: CSP, Permissions-Policy, security.txt
-%   * CSP: % of sites with any CSP; % with a baseline-protective policy vs extremely permissive (e.g., script-src '*', 'unsafe-inline').
-%   * Permissions-Policy: % that set it at all; % with non-trivial deny-lists for powerful features.
-%   * security.txt: % with a valid file under /.well-known or /; note common fields present/absent.
-%
-% - Subsection 4: Error-page behaviour (error_leak module)
-%   * For the synthetic missing path:
-%       - Status codes: fraction using proper 404/410 vs soft-404 2xx.
-%       - Header parity: fraction of sites where error pages "drop" important headers relative to 200s.
-%       - Leak patterns: counts for framework banners, full stack traces, file paths, SQL/ORM messages, directory listings.
-%   * Note methodological caveat: ignore known Next.js false positives where the "dev style" error pages are benign or mis-classified.
-%
-% - Subsection 5: WAF/CDN behaviour
-%   * Count sites where:
-%       - Scanner received immediate 403/503 or "browser check" pages.
-%       - Connections consistently timed out / null-routed for all tests.
-%   * Report them by sector/jurisdiction as a separate category (not merged into failures).
-
-\subsection{Facts Only, No Interpretation}
+\subsection{URL \& Origin Normalization}
 
 The table below illustrates the outcome of our initial resolution stage. The columns represent the
 number of input URIs, distinct final URIs and final origins after following
 redirects, and the percentage of inputs that ended in a successful 2xx
 response, a final 4xx/5xx response, or no final URL. Plus the percentage
 of origins whose inputs were all unreachable from the scanner's vantage point. 
-
-% \begin{inlinecap}  % no argument; default is \textwidth
-% \captionof{table}{Redirect resolution outcomes by country and sector.}
-% \label{tab:redirect_summary}
-% \centering
-% \scriptsize
-% \setlength{\tabcolsep}{2.5pt}
-% \resizebox{\textwidth}{!}{%
-%   \csvreader[
-%     tabular=llrrrrrrrr,
-%     table head=\toprule
-%       Dataset & Sector &
-%       $n$ URIs &
-%       $n$ final URIs &
-%       $n$ input origins &
-%       $n$ final origins &
-%       Final 2xx (\%) &
-%       Final 4xx/5xx (\%) &
-%       No final URL (\%) &
-%       Origins all unreachable (\%) \\\midrule,
-%     late after line=\\,
-%     late after last line=\\\bottomrule
-%   ]{../results/comparison/redirects/redirects_summary.csv}{%
-%     dataset_label=\Dataset,
-%     sector_label=\Sector,
-%     n_input_uris=\Nuris,
-%     n_final_uris=\Nfuri,
-%     n_input_origins=\Niorig,
-%     n_final_origins=\Nforig,
-%     pct_final_2xx=\P2xx,
-%     pct_final_4xx_5xx=\Perr,
-%     pct_no_final=\Pno,
-%     pct_origins_all_unreachable=\PorigDead
-%   }{%
-%     \Dataset & \Sector &
-%     \Nuris & \Nfuri & \Niorig & \Nforig &
-%     \P2xx & \Perr & \Pno & \PorigDead
-%   }%
-% }%
-% \end{inlinecap}
 
 \begin{inlinecap}  % no argument; default is \textwidth
   \captionof{table}{Redirect resolution outcomes by country and sector.}
@@ -916,22 +913,20 @@ with 72.4\% success, 27.2\% no final URL, and 21.7\% completely unreachable orig
 UK authorities achieved 88.0\% successful resolution but represent only 3 input origins 
 expanding to 3 final origins.
 
-\vspace{1em}Canadian sectors demonstrated substantially better reachability than authorities, 
-with education achieving 94.8\% success and only 4.5\% unreachable origins, finance at 
-89.1\% success with 6.8\% unreachable, and energy at 92.6\% success with 7.1\% 
-unreachable. US and UK sectors followed similar patterns, with education and energy 
-generally outperforming their respective authority sites. The consistently higher 
-unreachability rates for authority sites across countries suggest infrastructure or 
-configuration challenges specific to government web properties compared to regulated sectors.
+\subsection{Website Security Evaluation}
 
-\vspace{1em}Following this, we outline the results of our HTTPS redirection, and HSTS probes. We
-compare each sector of each country against the Canadian authority sites. Across the 373 Canadian authority origins, roughly three quarters (73\%) successfully served a page over 
+\subsubsection{Transport Security}
+
+\vspace{1em}Following redirect resolution, we outline the results of our HTTPS redirection, and HSTS probes. 
+We compare each sector of each country against the Canadian authority sites. Across the 
+373 Canadian authority origins, roughly three quarters (73\%) successfully served a page over 
 HTTPS from our vantage point, while about one quarter returned HTTPS errors or were unreachable. 
-Over HTTP, almost all origins responded (94\%), and nearly nine in ten  ($\approx89\%$) redirected users to 
-HTTPS, with only a small minority either serving a non-redirecting HTTP page or redirecting somewhere other than HTTPS. 
-Among HTTPS-capable sites, almost nine in ten deployed HSTS at all, and about two-thirds of those used a ``strong'' policy 
-(at least one-year max-age with includeSubDomains), often with the preload flag set, indicating that many 
-authorities have adopted not just HTTPS but relatively robust transport hardening.
+Over HTTP, almost all origins responded (94\%), and nearly nine in ten  ($\approx89\%$) 
+redirected users to HTTPS, with only a small minority either serving a non-redirecting HTTP 
+page or redirecting somewhere other than HTTPS. 
+Among HTTPS-capable sites, almost nine in ten deployed HSTS at all, and about two-thirds of 
+those used a ``strong'' policy (at least one-year max-age with includeSubDomains), 
+often with the preload flag set.
 
 \begin{inlinecap}
 \captionof{table}{HTTP/HTTPS connectivity outcomes by country and sector.
@@ -969,7 +964,6 @@ or served HTTP without redirecting.}
 }%
 }%
 \end{inlinecap}
-
 
 \begin{inlinecap}
 \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
@@ -1017,51 +1011,6 @@ For each origin, we probed which TLS protocol versions (1.0, 1.1, 1.2, 1.3) the 
 version and cipher suite negotiated during a standard handshake, and then performed forced TLS 1.2 handshakes to 
 classify cipher suites into recommended, sufficient, phase-out, insecure, or unknown 
 categories based on CCCS guidance.
-
-% \begin{inlinecap}
-%   \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
-%   \label{tab:tls_cipher_summary}
-%   \centering
-%   \tiny
-%   \setlength{\tabcolsep}{1.5pt}
-%   \resizebox{\textwidth}{!}{%
-%     \csvreader[
-%       tabular=llrrrrrrrrrrrrrr,
-%       table head=\toprule
-%         Country & Sector & $n$ origins &
-%         \multicolumn{4}{c}{TLS Support (\%)} &
-%         \multicolumn{3}{c}{Negotiated (\%)} &
-%         \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
-%         \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
-%         & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
-%       late after line=\\,
-%       late after last line=\\\bottomrule
-%     ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
-%       country=\Country,
-%       sector=\Sector,
-%       n_origins=\Norigins,
-%       pct_tls13_support=\TLSa,
-%       pct_tls12_support=\TLSb,
-%       pct_tls11_support=\TLSc,
-%       pct_tls10_support=\TLSd,
-%       n_with_version=\Nwv,
-%       pct_tls13_neg=\Nega,
-%       pct_tls12_neg=\Negb,
-%       pct_other_neg=\Negc,
-%       n_tls12_forced=\Ntf,
-%       pct_recommended=\Crec,
-%       pct_sufficient=\Csuf,
-%       pct_phase_out=\Cphs,
-%       pct_insecure=\Cins,
-%       pct_unknown=\Cunk
-%     }{%
-%       \Country & \Sector & \Norigins &
-%       \TLSa & \TLSb & \TLSc & \TLSd &
-%       \Nega & \Negb & \Negc &
-%       \Crec & \Csuf & \Cphs & \Cins & \Cunk
-%     }%
-%   }%
-%   \end{inlinecap}
     
 \begin{inlinecap}
   \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
@@ -1114,15 +1063,7 @@ while 11.5\% still accepted TLS 1.1 and 9.6\% accepted TLS 1.0. During natural h
 origins falling back to older protocols. When forced to use TLS 1.2, 74.9\% of Canadian authorities selected recommended cipher suites, 1.7\% selected sufficient ciphers, 
 3.4\% used phase-out ciphers, none used insecure ciphers, and 20.1\% negotiated ciphers not categorized in CCCS guidance.
 
-\vspace{1em}Comparing across sectors, Canadian finance sites showed notably stronger TLS adoption with 94.4\% supporting TLS 1.3 (versus 65.9\% for authorities) and 95.4\% negotiating TLS 
-1.3 in practice (versus 69.1\% for authorities). Canadian finance also demonstrated higher cipher quality, with 89.6\% using recommended TLS 1.2 ciphers compared to 74.9\% for 
-authorities. Canadian education and energy sectors showed intermediate performance between authorities and finance, with education at 77.7\% TLS 1.3 support and 80.4\% 
-recommended ciphers, and energy at 84.1\% TLS 1.3 support and 68.1\% recommended ciphers.
-
-\vspace{1em}Across countries, US authorities outperformed Canadian authorities on TLS 1.3 adoption (83.9\% support versus 65.9\%) and 
-recommended cipher usage (85.1\% versus 74.9\%), while maintaining lower rates of legacy protocol support. UK authorities showed the highest TLS
-1.3 adoption at 100\% based on a small sample of 4 origins. US and UK counterparts in education, finance, and energy sectors generally showed comparable or
-slightly weaker performance than their Canadian equivalents, though US finance lagged behind Canadian finance with only 64.1\% using recommended ciphers versus Canada's 89.6\%.
+\subsubsection{Vulnerability Disclosure}
 
 \vspace{1em}The next table reports security.txt adoption and field completeness by country and sector. For each origin, we probed standard locations 
 (/.well-known/security.txt and /security.txt) for the presence of a security.txt 
@@ -1168,10 +1109,7 @@ pct_valid_expires_among_expires=\Pvalid
 Among Canadian authority origins, only 1.1\% (4 of 375) 
 published a security.txt file. All four files included Contact information and Expires fields, 
 though only 25\% had unexpired dates. US authorities showed higher adoption at 3.5\% (13 of 373), 
-with 92.3\% of those 
-including Expires fields and 83.3\% maintaining valid expiration dates. 
-UK authorities provided no security.txt files in the 
-small sample of 4 origins.
+with 92.3\% of those including Expires fields and 83.3\% maintaining valid expiration dates. 
 
 \vspace{1em}Across Canadian sectors, energy demonstrated the highest adoption at 4.2\% (9 origins), 
 followed by education at 3.9\% 
@@ -1181,17 +1119,13 @@ displayed comparable patterns, with education at
 substantially higher adoption rates of 
 5.8\% and 12.1\% respectively, though field completeness varied with only 75\% of UK education
 files and 50\% of UK finance 
-files including Expires fields. Overall, security.txt adoption remained consistently low 
-across all Canadian datasets, with 
-authorities performing below most other sectors and substantially below international 
-counterparts in comparable sectors.
+files including Expires fields. 
 
-
-\vspace{1em}The following 3 tables present security header adoption, technology-revealing headers, 
-and cookie security flag usage across all datasets. For each successfully reached origin, 
+\vspace{1em}The following 2 tables present security header adoption and 
+cookie security flag usage across all datasets. For each successfully reached origin, 
 we analyzed HTTP response headers to identify the presence of key security headers 
-(Referrer-Policy, X-Content-Type-Options, X-Frame-Options, CSP frame-ancestors, Permissions-Policy), 
-technology-revealing headers (Server, X-Powered-By, X-AspNet-Version, etc.), and 
+(\texttt{Referrer-Policy}, \texttt{X-Content-Type-Options}, 
+\texttt{X-Frame-Options}, \texttt{Content-Security-Policy}, \texttt{Permissions-Policy}) and 
 cookie security attributes (Secure, HttpOnly, SameSite flags).
 
 % Security Headers Presence Table
@@ -1232,63 +1166,16 @@ pct_permissions_policy_present=\Pperm
 \end{inlinecap}
 
 Canadian authorities showed modest security header adoption, with 62.3\% 
-deploying X-Content-Type-Options, 64.5\% using X-Frame-Options, 17.9\% implementing CSP 
-frame-ancestors, 17.4\% setting Referrer-Policy, and only 8.6\% adopting Permissions-Policy. 
-US authorities outperformed across most headers, achieving 78.0\% for X-Content-Type-Options, 
-81.2\% for X-Frame-Options, and 34.7\% for CSP frame-ancestors. UK authorities demonstrated
+deploying X-Content-Type-Options, 64.5\% using \texttt{X-Frame-Options}, 17.9\% implementing CSP 
+frame-ancestors, 17.4\% setting \texttt{Referrer-Policy}, and only 8.6\% adopting \texttt{Permissions-Policy}. 
+US authorities outperformed across most headers, achieving 78.0\% for \texttt{X-Content-Type-Options}, 
+81.2\% for \texttt{X-Frame-Options}, and 34.7\% for CSP frame-ancestors. UK authorities demonstrated
 substantially higher adoption at 87.7\% for X-Content-Type-Options and X-Frame-Options, 
 though this represents a small sample of 348 sites. Among Canadian sectors, education 
 consistently exceeded authorities' performance (60.4\% X-Content-Type-Options, 28.6\% 
 CSP frame-ancestors), while finance and energy showed mixed results with finance achieving 
 the highest Referrer-Policy adoption at 28.0\%.
 
-% Revealing Headers Summary Table
-\begin{inlinecap}
-\captionof{table}{Distribution of technology-revealing headers by country and sector.}
-\label{tab:revealing_headers_summary}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrrrr,
-table head=\toprule
-  Dataset & Country & Sector &
-  $n$ sites &
-  0 headers (\%) &
-  1 header (\%) &
-  2 headers (\%) &
-  3+ headers (\%) &
-  Any revealing (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/headers/revealing_headers_summary.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_sites=\Nsites,
-pct_revealing_0=\Pzero,
-pct_revealing_1=\Pone,
-pct_revealing_2=\Ptwo,
-pct_revealing_3_plus=\Pthree,
-pct_with_any_revealing=\Pany
-}{%
-\Dataset & \Country & \Sector &
-\Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
-}%
-}%
-\end{inlinecap}
-
-Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
-with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
-Canadian finance performed best with only 53.5\% revealing any technology information, 
-while energy (85.5\%) and education (82.4\%) showed lower disclosure rates than authorities. 
-US authorities demonstrated better information hygiene at 80.6\% disclosure, and UK
-authorities revealed technology on all origins (100\%), predominantly exposing exactly one
-header (99.4\%). Only 5.6\% of Canadian authorities exposed no technology-revealing headers,
-compared to 46.5\% of Canadian finance origins.
-
-% Cookie Security Flags Summary Table
 \begin{inlinecap}
 \captionof{table}{Cookie security flag adoption by country and sector.}
 \label{tab:cookie_security_flags}
@@ -1333,6 +1220,54 @@ using HttpOnly, achieving 4.9\% recommended configurations. US authorities showe
 patterns with 51.6\% Secure, 44.0\% HttpOnly, and 3.3\% recommended. While UK authorities' 
 limited cookie-setting origins (0.6\% of 348 sites, or approximately 2 origins) 
 achieved perfect flag implementation but represent insufficient data for meaningful comparison.
+
+\subsubsection{Information Leakage}
+
+% Revealing Headers Summary Table
+\begin{inlinecap}
+\captionof{table}{Distribution of technology-revealing headers by country and sector.}
+\label{tab:revealing_headers_summary}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\csvreader[
+tabular=llllrrrrrr,
+table head=\toprule
+Dataset & Country & Sector &
+$n$ sites &
+0 headers (\%) &
+1 header (\%) &
+2 headers (\%) &
+3+ headers (\%) &
+Any revealing (\%) \\\midrule,
+late after line=\\,
+late after last line=\\\bottomrule
+]{../results/comparison/headers/revealing_headers_summary.csv}{%
+dataset_label=\Dataset,
+country=\Country,
+sector_label=\Sector,
+n_sites=\Nsites,
+pct_revealing_0=\Pzero,
+pct_revealing_1=\Pone,
+pct_revealing_2=\Ptwo,
+pct_revealing_3_plus=\Pthree,
+pct_with_any_revealing=\Pany
+}{%
+\Dataset & \Country & \Sector &
+\Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
+}%
+}%
+\end{inlinecap}
+
+Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
+with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
+Canadian finance performed best with only 53.5\% revealing any technology information, 
+while energy (85.5\%) and education (82.4\%) showed lower disclosure rates than authorities. 
+US authorities demonstrated better information hygiene at 80.6\% disclosure, and UK
+authorities revealed technology on all origins (100\%), predominantly exposing exactly one
+header (99.4\%). Only 5.6\% of Canadian authorities exposed no technology-revealing headers,
+compared to 46.5\% of Canadian finance origins.
 
 \vspace{1em}The table below reports information leakage in HTTP error responses. 
 For each origin, we probed a randomly generated nonexistent path and analyzed the 
@@ -1383,7 +1318,7 @@ indicating effective suppression of detailed debugging output in production envi
 despite widespread framework and platform disclosure through error pages and response 
 headers.
 
-\subsection{Enough to support main questions}
+% \subsection{Enough to support main questions}
 % RQ coverage:
 % - RQ1 (Canadian posture vs baseline):
 %   * Use the CA-only numbers for HTTPS, HSTS, TLS versions, cipher strength, cookies, and basic headers.
@@ -1396,6 +1331,8 @@ headers.
 
 \section{Discussion}\label{sec3}
 
+
+
 % Across all groups, the vast majority of government and public-sector sites supported modern TLS. Among Canadian authorities, 
 % 94\% of sites supported TLS 1.2 and 66\% supported TLS 1.3, and roughly 84\% were configured with ``modern-only'' TLS 
 % (TLS 1.2 or 1.3 enabled with all legacy versions disabled). 
@@ -1403,17 +1340,19 @@ headers.
 % and energy sites used modern-only TLS, and TLS 1.3 was available on 78\% (education), 94\% (finance), and 84\% (energy) of sites. 
 % US authorities performed comparably well at the protocol level, with 99\% supporting TLS 1.2, 84\% supporting TLS 1.3, and about 97 % of sites configured without legacy protocol support. UK authorities in our sample (n = 4) all supported TLS 1.2 and 1.3 and had no legacy protocols enabled, but the sample is too small to generalise.
 
-% \subsection{Summary of Results}
-% % Summary planning:
-% % - One paragraph per main theme:
-% %   * Transport-layer: are most public sites on HTTPS with modern TLS or not? Any notable pockets of legacy?
-% %   * Header/cookie hardening: broadly adopted or patchy? Any sectors standout?
-% %   * Second-line defenses (CSP, Permissions-Policy, security.txt): still niche or common in certain sectors/jurisdictions?
-% %   * WAF/CDN: how often our measurement was actively blocked; note that blocking measurement ≠ insecure, but reduces transparency.
+
+% \vspace{1em}Comparing across sectors, Canadian finance sites showed notably stronger TLS adoption with 94.4\% supporting TLS 1.3 (versus 65.9\% for authorities) and 95.4\% negotiating TLS 
+% 1.3 in practice (versus 69.1\% for authorities). Canadian finance also demonstrated higher cipher quality, with 89.6\% using recommended TLS 1.2 ciphers compared to 74.9\% for 
+% authorities. Canadian education and energy sectors showed intermediate performance between authorities and finance, with education at 77.7\% TLS 1.3 support and 80.4\% 
+% recommended ciphers, and energy at 84.1\% TLS 1.3 support and 68.1\% recommended ciphers.
+
+% \vspace{1em}Across countries, US authorities outperformed Canadian authorities on TLS 1.3 adoption (83.9\% support versus 65.9\%) and 
+% recommended cipher usage (85.1\% versus 74.9\%), while maintaining lower rates of legacy protocol support. UK authorities showed the highest TLS
+% 1.3 adoption at 100\% based on a small sample of 4 origins. US and UK counterparts in education, finance, and energy sectors generally showed comparable or
+% slightly weaker performance than their Canadian equivalents, though US finance lagged behind Canadian finance with only 64.1\% using recommended ciphers versus Canada's 89.6\%.
+
 
 %  \subsection{Restate \& Answer Main Questions}
-
-% \textbf{Goal is to answer these questions}
 
 %  RQ 1
 % What are the key web security features and standards needed for securing Canadian websites 
@@ -1430,56 +1369,16 @@ headers.
 % (Canada vs. US vs. UK authorities/financial/educational sites)?
 
 
-% \paragraph*{TODO: Add this discussion. Basic skeleton below.}
 
-% As outlined by the CCCS, there is a minimal set of requirements a website should have. 
-% A website should have atleast implement HTTP to HTTPS redirection and also implement HSTS.
-% Servers implementing TLS should also adhere to the recommended cipher suites found in the 
-% CCCS ``recommended'' category, and if need for compatability may include those found in ``sufficient'' category.
-% Our results show that ..... something about the canadian authority sites 
-% (how many in each bucket, what was the natural handshake results) ...... then something about 
-% how the CA authorities compared against the other sectors (comparing those same results). 
-% Provide an interpretation here did canada authorities do well or not, where are they lacking, where do they excel.
-
-% Securitytxt, the file format for vulnerability disclosure is another simple, low cost, and effective way for web administrators
-% to harden their websites by allowing security researchers to easily disclose any vulnerabilities they may find. 
-% This file format is recommended by the US CISA and the UK GDS.
-% The results show ...... talk about CA authorities (almost no one is doing it) .... and talk about how the 
-% other sectors performed (also almost no one implemented it). This demonstrates a significant gap in nearly all
-% .... websites within the public and private sectors of the US, UK, and CA .... This sector perfomed the best <insert here> 
-% but still didnt do well.
-
-
-% Furthermore, OWASP and MDN define a set of best practice headers all websites should implement. ...... Talk very briefly
-% (1-2 sentences) about each header issued, who advocates and why, then the results. The CA authority results showed ....
-% reasoonable adherement to this header, ..... not so great adhere ment to that header .... The other sectors showed x y and z .....
-% Canada is lacking here ..... and the other sectors are lacking here and there .... Additionally, the cookie results show gaps here
-% and there for CA authorities, and the other sectors bested the CA authoritiees here and there, we did ok here .... This shows a lack
-% of adherence ....
-
-% Additionally OWASP provides guidlines for removing certain ``revealing headers'', which reveal uneeded 
-% information to attackers. The results show many sites include these headers, most popular being .... likely the Server header.
-% Canadian authority sites had these results, other sector sites had those results .... taken together CA needs to up their game
-% in x y and z, other sectors besting the CA authorities there.
-
-
-% As noted by OWASP, error pages server as another vector of revealing information for attackers. Our results of the error page
-% analysis show that .... no one is leaking stack traces good ..... lots of this error leaks in CA authorities displaying the
-% tech stack with almost 11 percent leaking the version ... this is not good because attackers can use the version to source
-% exploits .... so and so did the best with these results .... canada authorities was ... in the pack with ....
-
-% All in all, Canadian authorities performed ..... they need to work on this and that because of x, y and z. We are beating the other sectors
-% in a, b, and c. And need to improve on d, e, and f.
-
+% \subsection{Restate \& Answer Main Questions}
 
 \subsection{Summary of Results}
 
 This study evaluated 375 Canadian authority origins against web security standards established by the CCCS, 
 OWASP, and international guidance, comparing performance across sectors (education, finance, energy) and 
-jurisdictions (Canada, US, UK). The results reveal both strengths and critical gaps in Canada's public-sector web 
-security posture.
-
-\subsection{Restate \& Answer Main Questions}
+jurisdictions (Canada, US, UK). Overall, the results show that Canada has made meaningful progress on core 
+transport controls, but that public-sector web services remain unevenly protected and frequently lag behind 
+both domestic critical-infrastructure providers and international peers.
 
 \vspace{1em}Based on CCCS guidance (ITSP.40.062, ITSM.60.005, ITSP.40.111), OWASP recommendations, and 
 international best 
@@ -1500,79 +1399,143 @@ enable responsible vulnerability disclosure, remove technology-revealing headers
 \texttt{X-Powered-By}) 
 that facilitate targeted attacks, and configure error pages to suppress stack traces and version information.
 
-\vspace{1em}Canadian authorities demonstrate mixed compliance with these standards. For transport security, 76\% of 
-Canadian authority origins successfully served HTTPS, with 90\% of HTTP-responding origins correctly 
-redirecting to HTTPS. However, only 59.7\% of HTTPS-capable sites deployed HSTS, and of those, merely 46.3\% 
-implemented strong policies meeting the one-year \texttt{max-age} threshold with subdomain coverage. 
-This leaves a substantial portion of authority sites vulnerable to SSL-stripping attacks.
+\vspace{1em}Canadian sectors demonstrated substantially better reachability than authorities, 
+with education achieving 94.8\% success, finance at 
+89.1\% success with 6.8\% unreachable, and energy at 92.6\% success with 7.1\% 
+unreachable (Table~\ref{tab:redirect_summary}). US and UK sectors followed similar patterns, with education and energy 
+generally outperforming their respective authority sites. The consistently higher 
+unreachability rates for authority sites across countries suggest infrastructure or 
+configuration challenges specific to government web properties compared to other sectors. 
+Another more likely contributor, is the presence of stricter 
+Web Application Firewalls (WAFs), CDNs, and network-layer filtering on government domains. 
+Government authorities often deploy more firewall and filtering rules, blocking 
+automated scanners. These defensive configurations can reduce reachability even when the underlying web service is 
+functional.
 
-\vspace{1em}TLS configuration presents additional concerns. While 94.4\% of Canadian authorities support 
-TLS~1.2, only 65.9\% advertise TLS~1.3 support. More troubling, 11.5\% still accept TLS~1.1 and 9.6\% accept 
-TLS~1.0, contrary to CCCS deprecation guidance. In natural handshakes, 69.1\% negotiated TLS~1.3, with 74.9\% 
-using recommended cipher suites when forced to TLS~1.2.
+\vspace{1em}At the connectivity layer, Canadian authorities show clear gaps. Only 76\% of authority origins 
+successfully served HTTPS, yet over 90\% responded to an HTTP probe, and 6.4\% served HTTP without redirecting (Table~\ref{tab:https_connectivity}). 
+In other words, a non-trivial subset of Canadian government sites are more willing to answer over cleartext HTTP 
+than over HTTPS, directly contradicting modern CCCS and browser guidance. A similar, pattern appears for US authorities. 
+Some of this asymmetry may be attributable to the aforementioned aggressive WAFs, 
+CDNs, and bot-mitigation rules on government hosts. However, our scan illustrates no proof of these security measures, 
+and from the scanner's perspective the result is the same. 
+HTTPS coverage is incomplete and occasionally weaker than HTTP reachability.
 
-\vspace{1em}Security header adoption remains inconsistent. Canadian authorities achieved 62.3\% adoption for 
-\texttt{X-Content-Type-Options} and 63.5\% for \texttt{X-Frame-Options}, but only 17.9\% implemented CSP 
-\texttt{frame-ancestors}, 17.4\% set \texttt{Referrer-Policy}, and a mere 8.6\% deployed \texttt{Permissions-Policy}. 
-Cookie security is similarly weak: among the sites setting cookies, only 63.5\% used the \texttt{Secure} 
-flag, 48.7\% used \texttt{HttpOnly}, and just 3.5\% achieved recommended configurations with all three protective 
-attributes.
+\vspace{1em}Among those Canadian authority sites that do support HTTPS, HTTP Strict Transport Security (HSTS) 
+is deployed only partially. 59.7\% of HTTPS-capable authorities enable HSTS, and of these, 46.3\% use strong 
+policies with at least a one-year \texttt{max-age} and subdomain coverage (Table~\ref{tab:https_hsts_quality}). 
+Only around 27\% of authority 
+sites appear on Chrome’s preload list, compared to over half of US authority sites. As a result, a large 
+fraction of Canadian government sites remain susceptible to SSL-stripping attacks and misconfiguration risks, 
+even when HTTPS is nominally available.
 
-\vspace{1em}Vulnerability disclosure mechanisms are nearly absent. Only 1.1\% of Canadian authority origins 
-(4 of 375) published a \texttt{security.txt} file, and of these, only 25\% maintained valid expiration dates. 
-This represents a significant barrier to responsible disclosure of security vulnerabilities.
+\vspace{1em}Transport Layer Security (TLS) configuration tells a similar story. While 94.4\% of Canadian 
+authority origins support TLS~1.2, only 65.9\% offer TLS~1.3, the lowest TLS~1.3 adoption among authority 
+datasets examined. At the same time, 11.5\% still accept TLS~1.1 and 9.6\% accept TLS~1.0, contrary to CCCS 
+deprecation guidance. Natural handshakes negotiated TLS~1.3 in 69.1\% of cases, and when connections were 
+forced down to TLS~1.2, 74.9\% of Canadian authority sites used recommended cipher suites. This suggests that 
+administrators are capable of following specific cipher guidance, but adoption of TLS~1.3 and retirement 
+of legacy protocols has not yet been uniformly enforced. Canadian finance demonstrates what is achievable: 
+94.4\% TLS~1.3 support and 89.6\% recommended cipher usage, substantially outperforming Canadian authorities.
 
-\vspace{1em}Information leakage is pervasive. Technology-revealing headers appeared on 94.4\% of Canadian 
-authority origins, with 51.2\% exposing one header and 32.4\% exposing two. Error page analysis found 47.2\% 
-leaked technology information, with 10.7\% exposing specific version numbers that could facilitate targeted 
-exploitation.
+\vspace{1em}Application-layer controls are even more uneven. Canadian authorities adopt older, ``low-friction'' 
+headers at moderate rates (62.3\% for \texttt{X-Content-Type-Options} and 63.5\% for \texttt{X-Frame-Options}), 
+but lag badly on modern privacy mechanisms. Only 17.4\% set a 
+\texttt{Referrer-Policy}, 17.9\% deploy CSP \texttt{frame-ancestors} directives, and 8.6\% use 
+\texttt{Permissions-Policy} (Table~\ref{tab:security_headers_presence}). Canadian energy and education sectors do slightly better on some of these headers, 
+but Canadian finance is notable for combining strong TLS configuration with some of the weakest basic header 
+adoption (37.3\% \texttt{X-Content-Type-Options}, 39.4\% \texttt{X-Frame-Options}). By contrast, US and UK 
+finance sites tend to deploy both robust TLS and higher rates of protective headers, indicating that more 
+consistent, defence-in-depth configurations are achievable in practice.
 
-\vspace{1em}Cross-sector analysis reveals that Canadian authorities generally underperform relative to 
-other Canadian sectors and international counterparts. Canadian finance leads TLS configuration domestically 
-with 94.4\% TLS~1.3 support and 89.6\% recommended cipher usage, substantially outperforming Canadian 
-authorities (65.9\% and 74.9\%, respectively). Canadian education (77.7\% TLS~1.3, 80.4\% recommended ciphers) and 
-energy (84.1\% TLS~1.3, 68.1\% recommended ciphers) occupy intermediate positions. Internationally, US authorities 
-demonstrate superior TLS~1.3 adoption at 83.9\% compared to Canadian authorities' 65.9\%, with higher recommended 
-cipher usage (85.1\% versus 74.9\%) and lower legacy protocol support.
+\vspace{1em}Among Canadian authority sites that set 
+cookies, 63.5\% use the \texttt{Secure} flag and 48.7\% use \texttt{HttpOnly}, but only 3.5\% of sites achieve 
+a baseline secure configuration with all of \texttt{Secure}, \texttt{HttpOnly}, and a non-default 
+\texttt{SameSite} attribute \ref{tab:cookie_security_flags}. Other sectors and jurisdictions also show very 
+low rates of hardened cookie 
+configurations, suggesting that strong session-cookie configuration remains a global challenge rather than a uniquely 
+Canadian weakness. When combined with the low adoption of \texttt{Referrer-Policy}, however, this leaves many 
+Canadian public-sector sites simultaneously leaking cross-site URLs and not strongly constraining how session 
+cookies are handled by the browser.
 
-\vspace{1em}Canadian authorities' 59.7\% HSTS adoption significantly trails US authorities' 89.7\%. Among 
-Canadian sectors, finance achieves the highest HSTS presence at 78.6\%, though with lower strong policy 
-rates (34.9\%) than authorities (46.3\%). US authorities not only lead in adoption but also in policy quality, 
-with 64.9\% deploying strong configurations.
+\vspace{1em}Operational security controls reveal some of the largest gaps. Vulnerability disclosure mechanisms 
+are almost absent: only 4 of 375 Canadian authority origins publish a \texttt{security.txt} file 
+(Table~\ref{tab:securitytxt_summary}), a 
+lower adoption rate than every other dataset examined. 
+The few Canadian authority \texttt{security.txt} files that do exist are generally valid and 
+unexpired. This suggests that the main issue is adoption rather than implementation quality, similar to the findings in
+the Transport Security results. Our scanner did not 
+follow cross-origin redirects when searching for \texttt{security.txt}, which means some sites that host their 
+disclosure policy on a separate origin (such as the UK central government domain) may be undercounted. Regardless
+the trend remains clear, responsible disclosure channels are not yet standard for Canadian 
+authorities.
 
-\vspace{1em}US authorities consistently outperform Canadian authorities across all header categories: 
-78.0\% versus 62.3\% for \texttt{X-Content-Type-Options}, 81.2\% versus 63.5\% for \texttt{X-Frame-Options}, 
-and 34.7\% versus 17.9\% for CSP \texttt{frame-ancestors}. Canadian energy sites demonstrate the highest domestic 
-\texttt{Referrer-Policy} adoption at 23.7\%, compared to authorities' 17.4\%. UK finance sites lead in 
-\texttt{Permissions-Policy} adoption at 24.0\%.
+\vspace{1em}Information leakage through headers and error pages is pervasive. 
+Technology-revealing headers appear on 94.4\% of Canadian authority origins, with over 40\% 
+exposing two or more such headers (Table~\ref{tab:revealing_headers_summary}). Thus indicating that many sites disclose multiple layers of their tech stack (e.g., web 
+server and application framework). Canadian education and energy sectors also 
+show high rates of 
+revealing headers, while Canadian finance again demonstrates comparatively good hygiene, with only 53.5\% of 
+origins exposing any such header. Error-page analysis paints a similar picture to revealing headers. 
+47.2\% of Canadian authority origins and 45.6\% of Canadian education origins leak technology information on 
+HTTP error responses, with around 10--13\% of Canadian authority and energy sites exposing specific version 
+numbers \ref{tab:error_leaks_summary}. These rates are higher than those observed for most US and UK sectors, 
+increasing the risk of targeted exploitation. On the positive side, no dataset in this study exposed raw stack
+traces in production error pages, indicating that common frameworks are generally configured to suppress the most
+egregious forms of leakage.
 
-\vspace{1em}Security.txt adoption is uniformly poor across all datasets, but Canadian authorities' 
-1.1\% adoption rate falls below US authorities (3.5\%), Canadian energy (4.2\%), Canadian education (3.9\%), 
-UK education (5.8\%), and UK finance (12.1\%). This represents a critical gap in Canada's security posture.
+\vspace{1em}Cross-sector and cross-jurisdiction comparisons therefore show a consistent pattern. Within 
+Canada, finance generally leads on transport-layer security and information security, education and energy 
+are intermediate. Canadian Authorities repeatedly underperform on HTTPS availability, TLS~1.3 adoption, HSTS 
+coverage, modern headers, and operational exposure. Internationally, US authorities outperform Canadian 
+authorities on almost every metric considered, particularly HSTS adoption and security header coverage, while 
+UK finance sets a high bar for both header and \texttt{Permissions-Policy} deployment. These differences 
+demonstrate that the higher security posture envisioned by CCCS and international standards is achievable in 
+practice, but not yet consistently realized on Canadian public-sector web properties.
 
-\vspace{1em}Canadian finance demonstrates the best domestic practice, with only 53.5\% of origins revealing 
-technology information compared to 94.4\% for Canadian authorities. US authorities achieve better information 
-hygiene at 80.6\% disclosure. For error page leakage, Canadian finance again leads domestically at 20.9\% technology
- disclosure versus 47.2\% for authorities.
+\vspace{1em}Taken together, these results suggest that Canada has implemented many of the controls 
+identified in CCCS guidance; HTTPS, modern TLS versions, and some HSTS deployment. Canada still often falls short on the 
+systematic HSTS preloading, full deprecation of legacy TLS, modern security and privacy 
+headers, hardened cookies, minimal technology disclosure, and standardized vulnerability disclosure channels. 
+Addressing these gaps would move Canadian authorities closer to international best practice and provide a more 
+coherent, defence-in-depth web security posture for Canadian users.
 
 \subsection{Limitations}
-% Limitations:
-% - Coverage:
-%   * Dataset limited to sites that appear in public registries and resolve cleanly; some authorities may use portals under third-party domains.
-%   * No deep crawling: results reflect landing pages and a single synthetic error path only.
-% - Measurement:
-%   * Single vantage point (cloud VM); some behaviours may be geo- or ASN-dependent.
-%   * WAF/CDN interference: some results are "unmeasurable" by design.
-%   * TLS/cipher behaviour may differ for other SNI/ALPN combinations (e.g., HTTP/2 vs 1.1).
-% - Semantics:
-%   * Presence of a header does not guarantee correct app-level use (e.g., CSP might be overly permissive).
-%   * Stack-trace regexes may miss exotic frameworks or misclassify some verbose messages.
-% - Standards interpretation:
-%   * "Recommended" vs "required" is a spectrum; you anchored in current guidance but others could choose different thresholds.
 
-% Several limitations constrain interpretation of these findings. First, the scan represents a single point-in-time snapshot; security configurations may change between assessments. Second, some origins were unreachable (18.6\% of Canadian authority origins), potentially biasing results if unreachable sites differ systematically from reachable ones. Third, our scanner evaluates externally observable configurations; internal security controls, incident response capabilities, and organizational security practices remain unmeasured. Fourth, UK authority data comprises only 4 origins due to domain consolidation under \texttt{gov.uk}, limiting cross-jurisdictional comparisons. Finally, classification of cipher suites as ``unknown'' (20.1\% for Canadian authorities) reflects gaps in published guidance rather than necessarily insecure configurations.
+This study has a handful of limitations. First, the presence of a security header, cookie flag, or protocol version 
+does not guarantee a secure implementation. For example, a site may send a 
+\texttt{Referrer-Policy} or \texttt{Content-Security-Policy} header that is overly permissive, or apply 
+\texttt{Secure} and \texttt{HttpOnly} attributes to some cookies but not to the session cookie of interest. 
+Our analysis therefore treats deployment as an approximate indicator, rather than a 
+full proof of security.
+
+\vspace{1em}Second, all measurements were collected from a small number of external locations. 
+Government and critical-infrastructure sites often deploy firewalls and other security measures that may 
+selectively block automated traffic. Thus, skewing some of the results. 
+
+\vspace{1em}Finally, we focus on configuration-level controls visible at the network and HTTP layers. 
+We do not assess underlying software patch levels, authentication and authorization logic, or application-specific 
+vulnerabilities. The results should therefore be interpreted as a snapshot of deployment of widely recommended 
+controls, not as a complete security audit of each site.
+
+
+\subsection{Future Work}
+
+Several extensions of this work would provide a more detailed and representative view of Canadian web security. 
+Firstly, a more granular evaluation of each header and cookie policy. Including directive-level analysis of each header
+inline with the CCCS, OWASP, MDN, and RFC specifications.
+
+\vspace{1em}Secondly, repeating the measurements from additional locations. Including virtual machines in 
+each target country, would help control for geofencing, IP reputation filters, and other location-dependent 
+controls. Integrating full certificate-path validation, Certificate Authority checks, and basic DNS configuration checks 
+would also allow a more holistic assessment each websites deployment. 
+
+\vspace{1em}Lastly, longitudinal scans over multiple years would reveal how quickly Canadian organizations 
+respond to new guidance, deprecations, and emerging best practices. This approach would also illuminate 
+whether gaps between sectors or jurisdictions are widening or closing. 
 
 \subsection{Conclusion}
+
 % Conclusion & recommendations:
 % - For Canadian standards bodies / policymakers:
 %   * Consider codifying a clear minimum web security baseline for public-sector sites (HTTPS-only, HSTS, modern TLS, basic hardening headers, security.txt).
@@ -1629,46 +1592,65 @@ Implementing the measures discussed and evaluated within this report would align
 with international best practices and the standards-based approach advocated by the CSA Group, CCCS, and 
 allied nations' cybersecurity agencies.
 
-\subsection{Future Work}
-% Future work:
-% - DNS and certificate authority checks (CAA records, OCSP/CRL behaviour) that you deliberately excluded from this phase.
-% - Deeper crawling of internal paths and authenticated apps (with appropriate ethics/permissions).
-% - Longitudinal measurements to track improvement or regression over time.
-% - Extending scanning to additional sectors (healthcare as its own sector, municipal websites, NGOs).
-% - Integrating more nuanced WAF detection and collaboration (e.g., whitelisting research scanners).
-% - Open-sourcing the tool and encouraging contributions/replications in other countries.
 
-% Future research should extend this analysis in several directions. Longitudinal studies to track security posture 
-% evolution, deeper investigation of provincial and municipal government sites, assessment of authentication and 
-% access control mechanisms, and development of a Canadian-specific web security scoring framework aligned with 
-% CSA and CCCS standards. Additionally, examining the correlation between security posture and organizational factors 
-% (budget, IT staffing, outsourcing arrangements) would inform policy development.
+\section{Conclusion}
 
-\section{Acknowledgments}\label{sec4}
+This report set out to measure how well Canadian public-sector and critical web services implement key security 
+controls recommended by the Canadian Centre for Cyber Security (CCCS), OWASP, and international guidance, and 
+to compare their posture with peer sectors and jurisdictions. Using an automated scanner, we evaluated HTTPS 
+reachability, HSTS deployment, TLS protocol and cipher selection, security headers, cookie flags, technology 
+disclosure, and vulnerability-disclosure mechanisms for 375 Canadian authority origins and comparable US and UK 
+datasets.
+
+\vspace{1em}Overall, the results show that Canada has made meaningful progress on the most visible transport-layer 
+controls. A majority of Canadian authority sites support HTTPS, many have begun to deploy HSTS, and most 
+TLS~1.2 configurations rely on recommended cipher suites. At the same time, Canadian authorities consistently 
+underperform relative to both domestic critical 
+infrastructure and international peers. HTTPS availability is incomplete, and some authority origins are more 
+reachable over HTTP than HTTPS. TLS~1.3 adoption lags behind US authorities, while legacy protocols such as 
+TLS~1.0 and 1.1 remain enabled in a substantial share of Canadian government sites. Modern header 
+controls are deployed only sporadically. Technology-revealing headers and error 
+pages are widespread, and \texttt{security.txt} adoption among Canadian authorities is lower than in any other 
+dataset examined.
+
+\vspace{1em}Taken together, these patterns suggest that the primary challenge for Canada is not a lack of 
+technical capability, but inconsistent adherence to existing guidance. CCCS already publishes comprehensive, 
+practical recommendations for HTTPS, TLS configuration, HSTS, security headers, and vulnerability disclosure. 
+Where these recommendations have been followed, Canadian sites tend to implement them well. However, web 
+configuration is complex, often distributed across multiple teams and vendors, and web development remains one 
+of the most rapidly changing areas of IT. In this environment, partial deployment and configuration drift are 
+to be expected unless there are clear incentives---such as standardized baselines. From a standards perspective, 
+the findings highlight an opportunity for more formalized and 
+enforceable expectations around web security for Canadian public-sector and critical services. 
+Canadian standards bodies working in concert with CCCS and other web authorities shows promise in translated
+guidance into expected practice.
+
+\vspace{1em}In summary, the gaps identified in this study are surmountable and reflect an adherence and
+governance problem more than a competence problem. Closing these gaps would bring Canadian public-sector web 
+services in line with international best practice. Ultimately, fulfilling the trust Canadians place in the 
+security of online services.
+
 % Acknowledgments ideas:
 % - Funding: CSA Group undergraduate research grant (project name).
 % - Institutional support: TRU supervisors/mentors, lab resources.
 % - Any assistance with infrastructure (cloud credits, security review, etc.).
 
-\subsection{Funding/Equipment}
-\newpage \begin{appendices}\label{app:reproducibility}
-\section{Reproducibility Notes}
-% Reproducibility notes:
-% - Environment:
-%   * Python version; key libraries (requests, ssl/PyOpenSSL, etc.).
-%   * OS and VM specs.
-% - Code:
-%   * Repository structure; which commit/tag corresponds to this paper.
-%   * High-level configuration: rate limits, timeouts, retry/backoff params.
-% - Inputs:
-%   * How to reconstruct site lists from the same public sources (without shipping full lists if they are sensitive).
-% - Outputs:
-%   * What artifacts you can safely share (aggregate stats, per-site anonymised summaries, or full per-site results if approved).
-\end{appendices}
+% \subsection{Funding/Equipment}
+% \newpage \begin{appendices}\label{app:reproducibility}
+% \section{Reproducibility Notes}
+% % Reproducibility notes:
+% % - Environment:
+% %   * Python version; key libraries (requests, ssl/PyOpenSSL, etc.).
+% %   * OS and VM specs.
+% % - Code:
+% %   * Repository structure; which commit/tag corresponds to this paper.
+% %   * High-level configuration: rate limits, timeouts, retry/backoff params.
+% % - Inputs:
+% %   * How to reconstruct site lists from the same public sources (without shipping full lists if they are sensitive).
+% % - Outputs:
+% %   * What artifacts you can safely share (aggregate stats, per-site anonymised summaries, or full per-site results if approved).
+% \end{appendices}
 \newpage 
-% \bibliographystyle{IEEEtranN}
-% \bibliography{sn-bibliography}
-% \bibliographystyle{sn-mathphys-num}
 \bibliography{sn-bibliography}
-% \printbibliography
+
 \end{document}
