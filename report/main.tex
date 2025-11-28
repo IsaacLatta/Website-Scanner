@@ -109,18 +109,47 @@ Initiative}
 \affil[1]{\orgdiv{Dept. Software Engineering}, \orgname{Thompson Rivers University},
 \state{BC}, \country{Canada}}
 
-
-\abstract{}
-\keywords{}
-
 \maketitle
 
-\newpage
+% -------------------------------------------------------------------
+% COPYRIGHT BLOCK — placed at bottom of title page
+% -------------------------------------------------------------------
+\vfill
+\begin{center}
+\small
+\copyright~2025 Isaac Latta and 
+Sina Keshvadi. All Rights Reserved.
+\end{center}
+\clearpage
+
 \section{Acknowledgments}
 We would like to gratefully acknowledge the support of the CSA Group Undergraduate Research Scholarship, 
 whose funding made this work possible. We would also like to express our gratitude 
 to the CSA Group staff for their guidance and accommodation throughout the project.
+
+\section{Summary}
+This report examines the security readiness of Canadian public-sector and critical web 
+services. First, we compile representative datasets of 
+authority, finance, education, and energy websites in Canada, the United States, and the United 
+Kingdom. Second, we evaluate them using an automated scanner grounded in guidance from the Canadian Centre 
+for Cyber Security (CCCS), OWASP, MDN, and international cybersecurity authority guidance. 
+The scanner assesses HTTPS and HSTS 
+deployment, TLS protocol and cipher configuration, key security and privacy headers, cookie
+protections, technology-disclosing headers, and the presence of vulnerability disclosure files. 
+Overall, Canadian sites have adopted foundational 
+transport-layer controls, but advanced protections are uneven and frequently lag behind the other international 
+and domestic sectors. Canadian finance generally demonstrates 
+that strong, standards-aligned configurations are achievable in practice. While authority sites 
+exhibit lower HTTPS coverage, slower TLS~1.3 adoption, weaker headers, and 
+minimal vulnerability-disclosure channels. These findings suggest that Canada’s primary challenge is
+inconsistent adherence to existing guidance rather than a lack of technical ability. 
+The report concludes by outlining opportunities for clearer standards and baselines around web security 
+providing a more secure web for Canadians.
+
+
 \section{Introduction}\label{sec:intro}
+
+
 
 % \subsection{Orientation Paragraph}
 
