@@ -832,7 +832,7 @@ illustrates typical examples of revealing headers that our scanner tracked.
 
 
 \vspace{1em}Misconfigured error pages are another common source of unintended information disclosure 
-\cite{owasp_a05_2021,owasp_error_handling,cwe_209}. These error pages can reveal the exact framework, cloud provider, or 
+\cite{owasp_top10_a05_2021,owasp_error_handling,cwe_209}. These error pages can reveal the exact framework, cloud provider, or 
 database in use, and in the worst case they display full stack traces to unauthenticated users. Since leaks occur at the web application level, we perform this evaluation
 on the final origins. To assess this risk in a safe and consistent way, we carried out a
 single, non-invasive probe of each origin's error handling. For every origin, the scanner issued one HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
@@ -1725,7 +1725,7 @@ Binding Operational Directives (BODs). These are compulsory, legally grounded or
 required to implement \cite{BOD-20-01, GAO-20-133}. BOD~18-01 (``Enhance Email
 and Web Security'') and the earlier OMB ``HTTPS-Only'' memorandum M-15-13 collectively require that public-facing 
 federal services deploy HTTPS by default, disable obsolete protocols, and move toward HSTS-style protections
-\cite{dhs-bod-18-01,omb-m-15-13}. By contrast, 
+\cite{cisa_bod_18_01,omb-m-15-13}. By contrast, 
 Canadian federal practice is guided primarily by the CCCS ITSP series (e.g., ITSP.40.062, ITSP.40.111), 
 which provide detailed but largely recommendatory guidance rather than binding mandates.
 \cite{cccs-itsp-40062,cccs_itsp_40_111} Departments are encouraged to adopt 
