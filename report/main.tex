@@ -166,7 +166,7 @@ websites. However, no single authority is responsible for enforcing modern secur
 Canada, leaving many public websites vulnerable to newly discovered threats. Moreover, because 
 there is no mandatory set of requirements for web security, agencies operate under recommendations 
 rather than enforceable rules. This fragmented approach results in gaps in secure implementations, 
-leaving websites---and their users—vulnerable to cyber threats. Compounding this issue, the process 
+leaving websites and their users vulnerable to cyber threats. Compounding this issue, the process 
 of identifying precisely which websites are under Canadian public authority is itself non-trivial. 
 No centralized entity maintains an exhaustive list of government and public domains, 
 complicating the task of 
@@ -370,8 +370,8 @@ institutions, departments, crown corporations, and airport/health/maritime autho
 \emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
 includes banks and credit unions of the parent country. Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing 
 critical infrastructure. The table below summarizes how we have sourced the website list for each domain. 
-Note that we UK energy providers were excluded due to the absence of an authoritative source 
-with usable URIs. As such leave our energy site comparison between Canada and the US.
+Note that UK energy providers were excluded due to the absence of an authoritative source 
+with usable URIs. As such we leave our energy site comparison between Canada and the US.
 
 \begin{inlinecap}
   \captionof{table}{Overview of website datasets and primary data sources.}
@@ -526,7 +526,7 @@ with usable URIs. As such leave our energy site comparison between Canada and th
 
 After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs 
 without a scheme were given HTTPS as a default (e.g., \texttt{example.gov} was rewritten as
-\texttt{https://example.gov/}), and all host names with were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
+\texttt{https://example.gov/}), and all host names were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
 unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). 
 The second set consisted of a list of 
 normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass.
@@ -550,13 +550,13 @@ For each target in our normalized and resolved list, the scanner performs a seri
 As mentioned earlier some tests target origins, while others target URIs, since security measures may operate at
 different levels of the network stack. Each test operationalizes guidance from the Canadian Centre for 
 Cyber Security (CCCS), OWASP, Mozilla Developer Network (MDN), and relevant RFCs. Where necessary, each test's specifications are further
-consolidated by internation authorities and browser engines. For example: the National Security Agency (NSA), 
+consolidated by international authorities and browser engines. For example: the National Security Agency (NSA), 
 US Chief Information Officers Council (CIO), or Chromium and Firefox.
 
 \subsubsection{Transport Security}
 
 The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS 
-in line with modern guidance. This is is an origin-scoped test, as HTTPS/HTTP operate at the transport layer. 
+in line with modern guidance. This is an origin-scoped test, as HTTPS/HTTP operate at the transport layer. 
 The CCCS outlines in
 ITSP.40.062 \cite{cccs-itsp-40062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, but also implement HTTP Strict Transport 
 Security (HSTS) as outlined in RFC 6797 \cite{rfc6797}. HSTS informs the browser that this origin should \emph{only} be accessed over HTTPS, and any attempts at connecting over HTTP
@@ -566,7 +566,7 @@ and Firefox \cite{apple-http-warning,chrome-always-https,firefox-https-only-mode
 an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required 
 in RFC 6797. If this header is present we extract 3 directives from the header's value. The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser should \emph{remember} that this origin
 should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second directive---\texttt{includeSubDomains}---indicates that this HSTS policy should apply to all subdomains on this origin.
-Thirdy, were extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
+Thirdy, we extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
 Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
 it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
 
@@ -575,7 +575,7 @@ it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seco
 % NOTE: Need to consider removing CBC from any plots and discussions, as much of the CCCS sufficient cipher suites contain CBC algorithms.
 \vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
 underlying Transport Layer Security (TLS) protocols and cipher suites.
-The goal of these checks was two answer practical questions, do public-facing services offer modern TLS versions, 
+The goal of these checks was to answer practical questions, do public-facing services offer modern TLS versions, 
 and are legacy or explicitly deprecated cipher
 suites still enabled. The CCCS provides an explicit recommendation of configuring clients and servers to only 
 use TLS 1.3 in 
@@ -590,10 +590,10 @@ client configuration. This allows us to count how many sites have fully migrated
 been formally deprecated due to known weaknesses and downgrade risks.
 
 \vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
-The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', '``sufficient'', ``phase out''. Augmenting this, we
+The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', ``phase out''. Augmenting this, we
 reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
 in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
-Each TLS handshake's outcome is crossferenced against these lists to provide additional insights beyond simply the version.  
+Each TLS handshake's outcome is cross-referenced against these lists to provide additional insights beyond simply the version.  
 
 \subsubsection{Vulnerability Disclosure (security.txt)}
 
@@ -621,7 +621,7 @@ is scoped at the origin, as each server may contain the \texttt{security.txt} re
 
 \subsubsection{Security Headers \& Cookies}
 
-\vspace{1em}Additionally, our scanner also performs a series of presence and evalution checks on set of security headers. These checks are performed on 
+\vspace{1em}Additionally, our scanner also performs a series of presence and evaluation checks on set of security headers. These checks are performed on 
 each of the final URIs (URI-scoped). First we record the presence of the \texttt{Referrer-Policy} header.
 The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent 
 along when a browser navigates to another site or loads third-party content.
@@ -662,34 +662,33 @@ of OWASP and MDN.
 % as acceptable but weaker. Sites that omit both controls, or explicitly allow any domain to frame
 % them, are classified as lacking clickjacking protection.
 
-\vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the attack surface
-of cross-site scripting (XSS) and other content-injection attacks by restricting which sources of scripts, images, and 
-other resources the browser may load. Consider the following illustrative example of an XSS attack: a bad actor discovers a 
-vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that 
-attempts to steal session
-cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
-With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding even if an 
-injection point exists. The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an explicit CSP 
-\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}.  Policies that explicitly forbid all framing 
-(e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
-site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
-https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
-define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
-as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
-\emph{unknown} rather than over-interpreted. This aims to answer the question: 
-``Are sites explicitly controlling who can embed their content?''.
-
+% \vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the attack surface
+% of cross-site scripting (XSS) and other content-injection attacks by restricting which sources of scripts, images, and 
+% other resources the browser may load. Consider the following illustrative example of an XSS attack: a bad actor discovers a 
+% vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that 
+% attempts to steal session
+% cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
+% With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding even if an 
+% injection point exists. The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an explicit CSP 
+% \cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}.  Policies that explicitly forbid all framing 
+% (e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
+% site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
+% https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
+% define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
+% as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
+% \emph{unknown} rather than over-interpreted. This aims to answer the question: 
+% ``Are sites explicitly controlling who can embed their content?''.
 
 \vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the 
 attack surface of cross-site scripting (XSS) and other content-injection attacks by restricting which 
 sources of scripts, images, and 
-other resources the browser may load. Providing additional security over the aformentioned 
+other resources the browser may load. Providing additional security over the aforementioned 
 \texttt{X-Frame-Options}.
 The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an 
 explicit CSP 
 \cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites, owasp_clickjacking_defense} with 
-the \texttt{frame-ancestors} derective. This directive controls exactly which other origins are 
-allowed to embed this origin's content inside an \texttt{<iframe>} 
+the \texttt{frame-ancestors} directive. This directive controls exactly which other origins are 
+allowed to embed this origin's content inside an \texttt{<iframe>}.
 CSP is a powerful but application specific measure, we therefore interpret our CSP results narrowly, 
 focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
 The scanner records whether a response includes a \texttt{Content-Security-Policy} header and, if so, 
@@ -848,7 +847,7 @@ Each technology's alias was compiled into a case-insensitive regular expression 
 minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
 identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
 
-\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previosuly mentioned Stack Overflow Survey. For
+\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Survey. For
 each language we defined a pair of regular-expression families. These families include header patterns
 that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
 When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
@@ -878,7 +877,7 @@ header classification. For these tests we spun up small local web servers on \te
  (e.g., specific redirects, header combinations, or security.txt contents) and ran the scanner against them. This 
 allowed us to verify that each module correctly interpreted well-formed responses, handled missing or malformed fields 
 gracefully, 
-and produced the expected results for the securityy headers and cookie flags. 
+and produced the expected results for the security headers and cookie flags. 
 TLS-related tests were performed against local HTTPS endpoints using self-signed certificates. 
 We confirmed that the scanner correctly distinguished between successful and failed HTTPS connections by 
 varying certificate properties and connection parameters on the local web servers. 
@@ -889,7 +888,7 @@ generate genuine stack traces and error pages in that language's default format.
 fed directly into the parser to confirm that the scanner reliably detected the expected language/technology and 
 extracted the 
 correct label. In parallel, we ran the same detector over leak-free HTML and JSON data drawn from real web endpoints. Asserting that 
-no stack traces or banners were reported, thus guarding against false positives. Similar to the previous tests, we then configured small local web servers return known responses on specific paths, including pages that 
+no stack traces or banners were reported, thus guarding against false positives. Similar to the previous tests, we then configured small local web servers to return known responses on specific paths, including pages that 
 contained the captured error messages or only normal content. The scanner then scanned these local endpoints, and our tests 
 asserted the same results were recorded over HTTP. 
 
@@ -1625,7 +1624,7 @@ unreachable (Table~\ref{tab:redirect_summary}). US and UK sectors followed simil
 generally outperforming their respective authority sites. The consistently higher 
 unreachability rates for authority sites across countries suggest infrastructure or 
 configuration challenges specific to government web properties compared to other sectors. 
-Another more likely contributor, is the presence of stricter 
+Another more likely contributor is the presence of stricter 
 Web Application Firewalls (WAFs), CDNs, and network-layer filtering on government domains. 
 Government authorities often deploy more firewall and filtering rules, blocking 
 automated scanners. These defensive configurations can reduce reachability even when the underlying web service is 
@@ -1876,7 +1875,7 @@ dataset examined.
 \vspace{1em}Taken together, these patterns suggest that the primary challenge for Canada is not a lack of 
 technical capability, but inconsistent adherence to existing guidance. CCCS already publishes comprehensive, 
 and pragmatic recommendations for securing both the transport and application layer of HTTP. Furthermore, 
-where CCCSA recommendations have been followed, Canadian sites tend to implement them well. However, the contrast 
+where CCCS recommendations have been followed, Canadian sites tend to implement them well. However, the contrast 
 with US federal practice is apparent. There, comparable technical guidance is backed by BODs and OMB 
 memoranda, which make web security mandatory and time-bound. Our cross-country results 
 reflect this difference, with US authorities generally achieving higher and more uniform 
