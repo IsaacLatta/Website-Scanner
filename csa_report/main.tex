@@ -188,6 +188,9 @@ vulnerabilities, leading to risks remaining unpatched and unaddressed for extend
 % TODO(Publication): Move this to Literature section  
 % \subsection{Previous Literature}
 
+\section{Related Work}\label{sec:related-work}
+
+
 \vspace{1em}While no specific study has focused on Canadian authorities' websites, several efforts have 
 examined the security of government websites globally.     
 Dunbar et al. assessed the security of US governmental domains (i.e. domains ending in .us, 
@@ -204,13 +207,7 @@ Swedish authorities' websites \cite{valdaserides2024automated}. The results show
 Most of these studies relied on manual assessments or custom scripts, which lack the automation 
 and scalability required for continuous monitoring and evaluation. Additionally, they
  failed to incorporate the latest security standards into their evaluation frameworks. 
- Mozilla Observatory provides a wide range of security measures, such as 
- checking for redirection or X-Frame options (to mitigate phishing attacks), and ensuring 
- adherence to the latest web security policies like Cross-Origin Resource Sharing (CORS) 
- \cite{felt2017measuring}. 
-Often, when researchers discover security vulnerabilities, proper reporting channels are lacking,
- leading to vulnerabilities remaining unreported.
-
+ And those security standards that were incorportated, were not Canada-oriented. 
 
  \vspace{1em}In this report we answer the following research questions: 
 
@@ -219,10 +216,12 @@ Often, when researchers discover security vulnerabilities, proper reporting chan
      currently implement key web security controls recommended by the CCCS, web security authorities and international guidance.
      \vspace{0.4em} \item \textbf{RQ2}: How does the adoption of these controls vary by sector (government authorities, 
      finance, education, critical energy infrastructure) and by jurisdiction (Canada vs. US vs. UK authorities/financial/educational sites)?
+     
      % TODO(Publication) Drop for paper, maybe add another--still discuss in Discusion
      \vspace{0.4em} \item \textbf{RQ3}: What are the key web security features and standards needed for securing Canadian websites 
      and their visitors?
  \end{itemize}
+
 
 
 % \subsection{Reasons for Choosing Method}
@@ -264,7 +263,7 @@ Often, when researchers discover security vulnerabilities, proper reporting chan
 \vspace{1em}To answer these questions, we develop an automated scanning tool that incorporates the most 
 recent Canadian specific security guidelines and best practices to evaluate the security 
 readiness of Canadian web authorities. To address the aforementioned challenges and gaps, this research 
-performs the aggregation and evaluation of Canadian authorities websites against Canadian specific webs security 
+performs the aggregation and evaluation of Canadian authorities websites against Canadian specific web security 
 standards. These standards are sourced from the Canadian Centre for Cybersecurity, and augmented
 by more modern standards from the Open Worldwide Application Security Project (OWASP) and the 
 Mozilla Developer Network (MDN). 
@@ -538,9 +537,9 @@ cached the final and
 entry headers. If the redirect chain exceeded 8 hops, 
 or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as
 an error rather than continuing indefinitely. This resolution 
-yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. In the results, we
+yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. In the later methodology and results, we
 discuss our set of analysis modules in terms of their scope, 
-i.e. whether they target an origin or the request URI. All of our tests origin-targeting tests (e.g., cryptographic tests) 
+i.e. whether they target an origin or the request URI. All of our origin-targeting tests (e.g., cryptographic tests) 
 were performed on both the final and entry origin. 
 All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
 
@@ -575,11 +574,11 @@ it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seco
 % NOTE: Need to consider removing CBC from any plots and discussions, as much of the CCCS sufficient cipher suites contain CBC algorithms.
 \vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
 underlying Transport Layer Security (TLS) protocols and cipher suites.
-The goal of these checks was to answer practical questions, do public-facing services offer modern TLS versions, 
+The goal of these checks was to answer two practical questions, do public-facing services offer modern TLS versions, 
 and are legacy or explicitly deprecated cipher
 suites still enabled. The CCCS provides an explicit recommendation of configuring clients and servers to only 
 use TLS 1.3 in 
-ITSP.40.062 \cite{cccs-itsap-40016}. In this same ITSP, the CCCS also recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
+ITSAP.40.062 \cite{cccs-itsap-40016}. Similarly in ITSP.40.062 , the CCCS recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
 modern sites should not include TLS versions older than 1.2, or any versions of the Secure Socket Layer (SSL). 
 The desirability of TLS 1.3 and deprecation of older TLS and SSL versions is further corroborated by directives 
 from both the NSA and NIST \cite{nist_800_52r2, nsa_eliminating_obsolete_tls}. Aligned with these recommendations, 
@@ -590,7 +589,7 @@ client configuration. This allows us to count how many sites have fully migrated
 been formally deprecated due to known weaknesses and downgrade risks.
 
 \vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
-The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', ``phase out''. Augmenting this, we
+The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', and ``phase out''. Augmenting this, we
 reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
 in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
 Each TLS handshake's outcome is cross-referenced against these lists to provide additional insights beyond simply the version.  
@@ -781,8 +780,9 @@ landing page and parses any attributes attached to each cookie name–value pair
  the cookie appears to have an explicit lifetime via \texttt{Max-Age} or \texttt{Expires}. 
 Because some informational sites do not set 
 cookies at all, we only apply this check when at least one \texttt{Set-Cookie} header is observed on the 
-landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a strict
-same-site policy are classified as \emph{recommended}, 
+landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a 
+strict
+\texttt{same-site} policy are classified as \emph{recommended}, 
 reflecting CCCS, MDN and OWASP guidance for session management. 
 Cookies that are \texttt{Secure} and \texttt{HttpOnly} but use a more permissive same-site setting 
 (e.g., \texttt{SameSite=Lax}) are treated as \emph{sufficient}, 
@@ -805,8 +805,7 @@ More generally, government and national guidance on secure configuration, includ
 which includes avoiding unnecessary disclosure of software and version details. To operationalize this, our scanner 
 imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owasp_secure_headers_remove_json}. 
 For each origin's final response, the scanner recorded whether any response header name matched the OWASP list 
-(e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks. Table~\ref{tab:revealing-headers-examples} 
-illustrates typical examples of revealing headers that our scanner tracked.
+(e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks.
 
 % \begin{table}[h]
 %   \centering
@@ -833,21 +832,21 @@ illustrates typical examples of revealing headers that our scanner tracked.
 \vspace{1em}Misconfigured error pages are another common source of unintended information disclosure 
 \cite{owasp_top10_a05_2021,owasp_error_handling,cwe_209}. These error pages can reveal the exact framework, cloud provider, or 
 database in use, and in the worst case they display full stack traces to unauthenticated users. Since leaks occur at the web application level, we perform this evaluation
-on the final origins. To assess this risk in a safe and consistent way, we carried out a
+on origins. To assess this risk in a safe and consistent way, we carried out a
 single, non-invasive probe of each origin's error handling. For every origin, the scanner issued one HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
 \texttt{https://\textit{origin}/\_\_scanner\_404\_\_\textit{token}/}, where \textit{token} is a 
 random 16-character string chosen per origin. This is
 intended to trigger the site's standard 404/4xx error handler without sending any exploit payloads. 
 Responses were only analysed further if the \texttt{Content-Type} header indicated textual 
 content. 
-Otherwise, the origin was treated as not exposing any interpretable error page. The body of each textual error page was then scanned for two classes of
+Otherwise, the origin was treated as not exposing any interpretable error page. The body of each error page was then scanned for two classes of
 information leaks. First, we looked for technology banners using a curated set of signatures for common web frameworks, cloud platforms, and databases. These signatures
 were derived from the most widely used web technologies in the 2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}. 
 Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
 minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
 identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
 
-\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Survey. For
+\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Developer Survey. For
 each language we defined a pair of regular-expression families. These families include header patterns
 that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
 When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
@@ -1318,15 +1317,15 @@ published a security.txt file. All four files included Contact information and E
 though only 25\% had unexpired dates. US authorities showed higher adoption at 3.5\% (13 of 373), 
 with 92.3\% of those including Expires fields and 83.3\% maintaining valid expiration dates. 
 
-\vspace{1em}Across Canadian sectors, energy demonstrated the highest adoption at 4.2\% (9 origins), 
-followed by education at 3.9\% 
-(4 origins), while finance showed minimal adoption at 0.6\% (1 origin). US sectors 
-displayed comparable patterns, with education at 
-5.7\%, finance at 2.8\%, and energy at 0.7\%. UK education and finance sectors showed 
-substantially higher adoption rates of 
-5.8\% and 12.1\% respectively, though field completeness varied with only 75\% of UK education
-files and 50\% of UK finance 
-files including Expires fields. 
+% \vspace{1em}Across Canadian sectors, energy demonstrated the highest adoption at 4.2\% (9 origins), 
+% followed by education at 3.9\% 
+% (4 origins), while finance showed minimal adoption at 0.6\% (1 origin). US sectors 
+% displayed comparable patterns, with education at 
+% 5.7\%, finance at 2.8\%, and energy at 0.7\%. UK education and finance sectors showed 
+% substantially higher adoption rates of 
+% 5.8\% and 12.1\% respectively, though field completeness varied with only 75\% of UK education
+% files and 50\% of UK finance 
+% files including Expires fields. 
 
 \vspace{1em}The following 2 tables present security header adoption and 
 cookie security flag usage across all datasets. For each successfully reached origin, 
@@ -1692,8 +1691,7 @@ authorities.
 Technology-revealing headers appear on 94.4\% of Canadian authority origins, with over 40\% 
 exposing two or more such headers (Table~\ref{tab:revealing_headers_summary}), indicating that many sites disclose multiple layers of their tech stack (e.g., web 
 server and application framework). Canadian education and energy sectors also 
-show high rates of 
-revealing headers, while Canadian finance again demonstrates comparatively good hygiene, with only 53.5\% of 
+show high rates of revealing headers, while Canadian finance again demonstrates comparatively good hygiene, with only 53.5\% of 
 origins exposing any such header. Error-page analysis paints a similar picture to revealing headers. 
 47.2\% of Canadian authority origins and 45.6\% of Canadian education origins leak technology information on 
 HTTP error responses, with around 10--13\% of Canadian authority and energy sites exposing specific version 
