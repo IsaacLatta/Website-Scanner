@@ -11,6 +11,11 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{csvsimple}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -692,6 +697,63 @@ of origins whose inputs were all unreachable from the scanner's vantage point.
 %     }%
 %     \end{inlinecap}
 
+\begin{table*}[t]
+    \caption{Redirect resolution outcomes by country and sector.}
+    \label{tab:redirect_summary}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{2.5pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\textwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrrrrrr,
+      table head=\toprule
+        Dataset & Sector &
+        $n$ URIs &
+        $n$ final URIs &
+        $n$ input origins &
+        $n$ final origins &
+        $n$ unique final origins &
+        Final 2xx (\%) &
+        Final 4xx/5xx (\%) &
+        No final URL (\%) &
+        Origins all unreachable (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/redirects/redirects_summary.csv}{%
+      dataset_label=\Dataset,
+      sector_label=\Sector,
+      n_input_uris=\Nuris,
+      n_final_uris=\Nfuri,
+      n_input_origins=\Niorig,
+      n_final_origins=\Nforig,
+      pct_final_2xx=\P2xx,
+      pct_final_4xx_5xx=\Perr,
+      pct_no_final=\Pno,
+      pct_origins_all_unreachable=\PorigDead
+    }{%
+      \Dataset & \Sector &
+      \Nuris & \Nfuri & \Niorig & \Nforig &
+      \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
+      \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
+      \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
+      \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
+      \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
+      \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
+      \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
+      \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
+      \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
+      \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
+      \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
+      &%
+      \P2xx & \Perr & \Pno & \PorigDead
+    }%
+    }%
+    % }
+    \end{table*}
+    
+    
 
 \vspace{1em}Among Canadian authority inputs, 68.4\% resolved to final 2xx responses, 5.2\% ended in 
 4xx/5xx errors, and 26.4\% failed to reach any final URL due to timeouts or connection 
@@ -719,89 +781,88 @@ an indicator that the site is offline. Rather, ``unreachable''  that
 our scanner was repeatedly unable to complete a TLS handshake or receive an HTTP response. 
 This behaviour suggests bot mitigation, rate limiting, or WAF/CDN filtering---not unavailability.
 
-% \begin{inlinecap}
-% \captionof{table}{HTTP/HTTPS connectivity outcomes by country and sector.
-% Values are the percentage of origins in each dataset that successfully served HTTPS,
-% were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS,
-% or served HTTP without redirecting.}
-% \label{tab:https_connectivity}
-% \centering
-% \scriptsize
-% \setlength{\tabcolsep}{2.5pt}
-% \resizebox{\textwidth}{!}{%
-% \csvreader[
-%   tabular=llrrrrrr,
-%   table head=\toprule Dataset & Sector &
-%     $n$ origins &
-%     HTTPS ok (\%) &
-%     HTTPS unreachable (\%) &
-%     HTTP probe ok (\%) &
-%     HTTP$\to$HTTPS redirect (\%) &
-%     HTTP no redirect (\%) \\\midrule,
-%   late after line=\\,
-%   late after last line=\\\bottomrule
-% ]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
-%   dataset_label=\Dataset,
-%   sector_label=\Sector,
-%   n_origins=\Norigins,
-%   pct_https_success=\PHttpsOk,
-%   pct_https_unreachable=\PUnreach,
-%   pct_http_probe_ok=\PHttpOk,
-%   pct_http_redirect_to_https=\PRedir,
-%   pct_http_no_redirect=\PNoRedir
-% }{%
-%   \Dataset & \Sector &
-%   \Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
-% }%
-% }%
-% \end{inlinecap}
 
+\begin{table}[t]
+\caption{HTTP/HTTPS connectivity outcomes by country and sector. Values are the percentage of origins in each dataset that successfully served HTTPS, were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS, or served HTTP without redirecting.}
+\label{tab:https_connectivity}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.15}
 
-% \begin{inlinecap}
-%     \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
-%     For each dataset we report the number of origins that successfully served HTTPS and, among
-%     those, the share that enabled HSTS at all, used a strong HSTS policy, and included
-%     a long max-age, subdomain coverage, and the preload flag.}
-%     \label{tab:https_hsts_quality}
-%     \centering
-%     \scriptsize
-%     \setlength{\tabcolsep}{2.5pt}
-%     \resizebox{\textwidth}{!}{%
-%       \csvreader[
-%         tabular=llrrrrrrr,
-%         table head=\toprule
-%           \multicolumn{2}{c}{Dataset} &
-%           \multicolumn{2}{c}{Counts} &
-%           \multicolumn{5}{c}{Share of sites (\%)} \\
-%           \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(l){5-9}
-%           Dataset & Sector &
-%           $n$ HTTPS ok &
-%           $n$ with HSTS &
-%           Any HSTS (of HTTPS ok) &
-%           Strong HSTS (of HSTS) &
-%           max-age $\geq$ 1y (of HSTS) &
-%           incl.\ subdom.\ (of HSTS) &
-%           preload flag (of HSTS) \\\midrule,
-%         late after line=\\,
-%         late after last line=\\\bottomrule
-%       ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
-%         dataset_label=\Dataset,
-%         sector_label=\Sector,
-%         n_https_ok=\NHttpsOk,
-%         n_has_hsts=\NHasHsts,
-%         pct_has_hsts_among_https_ok=\PAnyHsts,
-%         pct_hsts_strong_among_hsts=\PStrong,
-%         pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
-%         pct_hsts_include_subdomains_among_hsts=\PSubs,
-%         pct_hsts_preload_among_hsts=\PPreload
-%       }{%
-%         \Dataset & \Sector &
-%         \NHttpsOk & \NHasHsts &
-%         \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
-%       }%
-%     }%
-%     \end{inlinecap}
-
+\resizebox{\columnwidth}{!}{%
+\csvreader[
+tabular=llrrrrrr,
+table head=\toprule
+Dataset & Sector &
+$n$ origins &
+HTTPS ok (\%) &
+HTTPS unreachable (\%) &
+HTTP probe ok (\%) &
+HTTP$\to$HTTPS redirect (\%) &
+HTTP no redirect (\%) \\\midrule,
+late after line=\\,
+late after last line=\\\bottomrule
+]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
+dataset_label=\Dataset,
+sector_label=\Sector,
+n_origins=\Norigins,
+pct_https_success=\PHttpsOk,
+pct_https_unreachable=\PUnreach,
+pct_http_probe_ok=\PHttpOk,
+pct_http_redirect_to_https=\PRedir,
+pct_http_no_redirect=\PNoRedir
+}{%
+\Dataset & \Sector &
+\Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
+}%
+}%
+\end{table}
+    
+\begin{table}[t]
+    \caption{HTTPS reachability and HSTS configuration quality by country and sector. For each dataset we report the number of origins that successfully served HTTPS and, among those, the share that enabled HSTS at all, used a strong HSTS policy, and included a long max-age, subdomain coverage, and the preload flag.}
+    \label{tab:https_hsts_quality}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{2.0pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=llrrrrrrr,
+      table head=\toprule
+        \multicolumn{2}{c}{Dataset} &
+        \multicolumn{2}{c}{Counts} &
+        \multicolumn{5}{c}{Share of sites (\%)} \\
+        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-9}
+        Dataset & Sector &
+        $n$ HTTPS ok &
+        $n$ with HSTS &
+        Any HSTS &
+        Strong HSTS &
+        max-age $\geq$ 1y &
+        incl.\ subdom.\ &
+        preload flag \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
+      dataset_label=\Dataset,
+      sector_label=\Sector,
+      n_https_ok=\NHttpsOk,
+      n_has_hsts=\NHasHsts,
+      pct_has_hsts_among_https_ok=\PAnyHsts,
+      pct_hsts_strong_among_hsts=\PStrong,
+      pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
+      pct_hsts_include_subdomains_among_hsts=\PSubs,
+      pct_hsts_preload_among_hsts=\PPreload
+    }{%
+      \Dataset & \Sector &
+      \NHttpsOk & \NHasHsts &
+      \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
+    }%
+    }%
+    \end{table}
+    
 
 The following table summarizes TLS protocol support, naturally negotiated versions, and forced TLS 1.2 cipher quality across 
 all datasets for each country and sector. 
@@ -810,116 +871,118 @@ version and cipher suite negotiated during a standard handshake, and then perfor
 classify cipher suites into recommended, sufficient, phase-out, insecure, or unknown 
 categories based on CCCS guidance.
     
-% \begin{inlinecap}
-%   \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
-%   \label{tab:tls_cipher_summary}
-%   \centering
-%   \tiny
-%   \setlength{\tabcolsep}{1.5pt}
-%   \resizebox{\textwidth}{!}{%
-%     \csvreader[
-%       tabular=llrrrrrrrrrrrrrr,
-%       table head=\toprule
-%         Country & Sector & $n$ origins &
-%         \multicolumn{4}{c}{TLS Support (\%)} &
-%         \multicolumn{3}{c}{Negotiated (\%)} &
-%         \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
-%         \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
-%         & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
-%       late after line=\\,
-%       late after last line=\\\bottomrule
-%     ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
-%       country=\Country,
-%       sector=\Sector,
-%       n_origins=\Norigins,
-%       pct_tls13_support=\TLSa,
-%       pct_tls12_support=\TLSb,
-%       pct_tls11_support=\TLSc,
-%       pct_tls10_support=\TLSd,
-%       n_with_version=\Nwv,
-%       pct_tls13_neg=\Nega,
-%       pct_tls12_neg=\Negb,
-%       pct_other_neg=\Negc,
-%       n_tls12_forced=\Ntf,
-%       pct_recommended=\Crec,
-%       pct_sufficient=\Csuf,
-%       pct_phase_out=\Cphs,
-%       pct_insecure=\Cins,
-%       pct_unknown=\Cunk
-%     }{%
-%       \Country & \Sector & \Norigins &
-%       \TLSa & \TLSb & \TLSc & \TLSd &
-%       \Nega & \Negb & \Negc &
-%       \Crec & \Csuf & \Cphs & \Cins & \Cunk
-%     }%
-%   }%
-%   \end{inlinecap}
+\begin{table}[t]
+    \caption{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
+    \label{tab:tls_cipher_summary}
+    \centering
+    \tiny
+    \setlength{\tabcolsep}{1.0pt}
+    \renewcommand{\arraystretch}{1.10}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=llrrrrrrrrrrrrrr,
+      table head=\toprule
+        Country & Sector & $n$ origins &
+        \multicolumn{4}{c}{TLS Support (\%)} &
+        \multicolumn{3}{c}{Negotiated (\%)} &
+        \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
+        \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
+        & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
+      country=\Country,
+      sector=\Sector,
+      n_origins=\Norigins,
+      pct_tls13_support=\TLSa,
+      pct_tls12_support=\TLSb,
+      pct_tls11_support=\TLSc,
+      pct_tls10_support=\TLSd,
+      pct_tls13_neg=\Nega,
+      pct_tls12_neg=\Negb,
+      pct_other_neg=\Negc,
+      pct_recommended=\Crec,
+      pct_sufficient=\Csuf,
+      pct_phase_out=\Cphs,
+      pct_insecure=\Cins,
+      pct_unknown=\Cunk
+    }{%
+      \Country & \Sector & \Norigins &
+      \TLSa & \TLSb & \TLSc & \TLSd &
+      \Nega & \Negb & \Negc &
+      \Crec & \Csuf & \Cphs & \Cins & \Cunk
+    }%
+    }%
+    \end{table}
   
 The chart below illustrates the negotiated version of TLS recorded in a ``natural'' handshake. This handshake 
 represents what a typical Canadian's user agent (browser) recieves in practice. We note here the Canadian authority
 sites lower proclivity for negotiating TLS~1.3 (vs higher TLS~1.2) compared to the other sectors. 
 
-%   \begin{inlinecap}
-%     \label{fig:tls_stacked_auth_fin}
-%     \centering
-%     \scriptsize
-%     \begin{tikzpicture}
-%       \begin{axis}[
-%         ybar stacked,
-%         bar width=8pt,
-%         x=2cm,
-%         enlarge x limits=0.15,
-%         ymin=0, ymax=100,
-%         ylabel={Negotiated TLS versions (\%)},
-%         symbolic x coords={CA-Auth,US-Auth,UK-Auth,CA-Fin,US-Fin,UK-Fin},
-%         xtick=data,
-%         xticklabels={
-%           CA\\Authorities,
-%           US\\Authorities,
-%           UK\\Authorities,
-%           CA\\Finance,
-%           US\\Finance,
-%           UK\\Finance
-%         },
-%         xticklabel style={
-%           align=center,
-%           font=\scriptsize,
-%           text width=1.6cm
-%         },
-%         tick label style={font=\scriptsize},
-%         ymajorgrids=true,
-%         legend style={
-%           at={(0.5,1.20)},
-%           anchor=south,
-%           legend columns=3,
-%           column sep=8pt,
-%           font=\scriptsize,
-%         },
-%       ]
-  
-%         \addplot[fill=green!70!black] coordinates {
-%           (CA-Auth, 69.1)
-%           (US-Auth, 84.6)
-%           (UK-Auth,100.0)
-%           (CA-Fin, 95.4)
-%           (US-Fin, 84.9)
-%           (UK-Fin, 90.2)
-%         };
-  
-%         \addplot[fill=orange!80!black] coordinates {
-%           (CA-Auth, 30.9)
-%           (US-Auth, 15.4)
-%           (UK-Auth,  0.0)
-%           (CA-Fin,  4.6)
-%           (US-Fin, 15.1)
-%           (UK-Fin,  9.8)
-%         };
-  
-%         \legend{TLS 1.3, TLS 1.2}
-%       \end{axis}
-%     \end{tikzpicture}
-%     \captionof{figure}{Stacked bar chart of negotiated TLS versions for authority and finance websites by country.}
-%   \end{inlinecap}
+\begin{figure}[t]
+    \centering
+    \resizebox{\columnwidth}{!}{
+    \begin{tikzpicture}
+      \begin{axis}[
+        ybar stacked,
+        bar width=8pt,
+        x=2cm,
+        enlarge x limits=0.15,
+        ymin=0, ymax=100,
+        ylabel={Negotiated TLS versions (\%)},
+        symbolic x coords={CA-Auth,US-Auth,UK-Auth,CA-Fin,US-Fin,UK-Fin},
+        xtick=data,
+        xticklabels={
+          CA\\Authorities,
+          US\\Authorities,
+          UK\\Authorities,
+          CA\\Finance,
+          US\\Finance,
+          UK\\Finance
+        },
+        xticklabel style={
+          align=center,
+          font=\scriptsize,
+          text width=1.6cm
+        },
+        tick label style={font=\scriptsize},
+        ymajorgrids=true,
+        legend style={
+          at={(0.5,1.20)},
+          anchor=south,
+          legend columns=3,
+          column sep=8pt,
+          font=\scriptsize,
+        },
+      ]
+
+        \addplot[fill=green!70!black] coordinates {
+          (CA-Auth, 69.1)
+          (US-Auth, 84.6)
+          (UK-Auth,100.0)
+          (CA-Fin, 95.4)
+          (US-Fin, 84.9)
+          (UK-Fin, 90.2)
+        };
+
+        \addplot[fill=orange!80!black] coordinates {
+          (CA-Auth, 30.9)
+          (US-Auth, 15.4)
+          (UK-Auth,  0.0)
+          (CA-Fin,  4.6)
+          (US-Fin, 15.1)
+          (UK-Fin,  9.8)
+        };
+
+        \legend{TLS 1.3, TLS 1.2}
+      \end{axis}
+    \end{tikzpicture}}
+
+    \caption{Stacked bar chart of negotiated TLS versions for authority and finance websites by country.}
+    \label{fig:tls_stacked_auth_fin}
+\end{figure}
+
 
 Among Canadian authority origins, 65.9\% advertised TLS 1.3 support and 94.4\% supported TLS 1.2, 
 while 11.5\% still accepted TLS 1.1 and 9.6\% accepted TLS 1.0. During natural handshakes, 69.1\% of these authorities negotiated TLS 1.3 and 30.9\% negotiated TLS 1.2, with no 
@@ -968,6 +1031,45 @@ whether Expires dates remained valid.
 % }%
 % }%
 % \end{inlinecap}
+
+\begin{table}[t]
+    \caption{Security.txt adoption and field completeness by country and sector.}
+    \label{tab:securitytxt_summary}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ origins &
+        $n$ with security.txt &
+        Sites with security.txt (\%) &
+        Contact field (\%) &
+        Expires field (\%) &
+        Valid expires (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_origins=\Norigins,
+      n_with_securitytxt=\Nwith,
+      pct_sites_with_securitytxt=\Psites,
+      pct_with_contact_among_present=\Pcontact,
+      pct_with_expires_among_present=\Pexpires,
+      pct_valid_expires_among_expires=\Pvalid
+    }{%
+      \Dataset & \Country & \Sector &
+      \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
+    }%
+    }%
+    \end{table}
+    
 
 Among Canadian authority origins, only 1.1\% (4 of 375) 
 published a security.txt file. All four files included Contact information and Expires fields, 
@@ -1019,47 +1121,88 @@ cookie security attributes (Secure, HttpOnly, SameSite flags).
 % }%
 % \end{inlinecap}
 
+% Security Headers Presence Table
+\begin{table}[t]
+    \caption{Security header adoption by country and sector.}
+    \label{tab:security_headers_presence}
+    \centering
+    \tiny
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        Referrer-Policy (\%) &
+        X-Content-Type-Options (\%) &
+        X-Frame-Options (\%) &
+        CSP frame-ancestors (\%) &
+        Permissions-Policy (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/security_headers_presence.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_referrer_policy_present=\Pref,
+      pct_x_content_type_options_present=\Pxcto,
+      pct_x_frame_options_present=\Pxfo,
+      pct_csp_frame_ancestors_present=\Pcsp,
+      pct_permissions_policy_present=\Pperm
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
+    }%
+    }%
+    \end{table}
+      
+
 Overall, Canadian authorities show modest but uneven security-header adoption: 
 simple headers are common, but usage drops sharply for more complex policies. 
 US and UK authorities perform noticeably better, and within Canada the education sector generally 
 outperforms authorities.
 
-
-% \begin{inlinecap}
-%     \captionof{table}{Cookie security flag adoption by country and sector.}
-%     \label{tab:cookie_security_flags}
-%     \centering
-%     \small
-%     \setlength{\tabcolsep}{3pt}
-%     \resizebox{\textwidth}{!}{%
-%     \csvreader[
-%     tabular=llllrrrrr,
-%     table head=\toprule
-%       Dataset & Country & Sector &
-%       $n$ sites &
-%       Sites w/ cookies (\%) &
-%       Secure flag (\%) &
-%       HttpOnly flag (\%) &
-%       SameSite$\ge$Lax (\%) &
-%       Rec./Suff. (\%) \\\midrule,
-%     late after line=\\,
-%     late after last line=\\\bottomrule
-%     ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
-%     dataset_label=\Dataset,
-%     country=\Country,
-%     sector_label=\Sector,
-%     n_sites=\Nsites,
-%     pct_sites_with_cookies=\Pcookies,
-%     pct_secure_among_cookie_sites=\Psecure,
-%     pct_httponly_among_cookie_sites=\Phttp,
-%     pct_samesite_ge_lax_among_cookie_sites=\Psame,
-%     pct_rec_suff_among_cookie_sites=\Prec
-%     }{%
-%     \Dataset & \Country & \Sector &
-%     \Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
-%     }%
-%     }%
-%     \end{inlinecap}  
+\begin{table}[t]
+    \caption{Cookie security flag adoption by country and sector.}
+    \label{tab:cookie_security_flags}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        Sites w/ cookies (\%) &
+        Secure flag (\%) &
+        HttpOnly flag (\%) &
+        SameSite$\ge$Lax (\%) &
+        Rec./Suff. (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_sites_with_cookies=\Pcookies,
+      pct_secure_among_cookie_sites=\Psecure,
+      pct_httponly_among_cookie_sites=\Phttp,
+      pct_samesite_ge_lax_among_cookie_sites=\Psame,
+      pct_rec_suff_among_cookie_sites=\Prec
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
+    }%
+    }%
+    \end{table}
     
     Among Canadian authority origins setting cookies (28.2\% of all origins), 63.5\% used the 
     Secure flag, 48.7\% used HttpOnly, 15.7\% implemented SameSite at Lax or Strict, and only 
@@ -1072,42 +1215,45 @@ outperforms authorities.
     
     \subsubsection{Information Leakage}
     
-    % % Revealing Headers Summary Table
-    % \begin{inlinecap}
-    % \captionof{table}{Distribution of technology-revealing headers by country and sector.}
-    % \label{tab:revealing_headers_summary}
-    % \centering
-    % \small
-    % \setlength{\tabcolsep}{3pt}
-    % \resizebox{\textwidth}{!}{%
-    % \csvreader[
-    % tabular=llllrrrrrr,
-    % table head=\toprule
-    % Dataset & Country & Sector &
-    % $n$ sites &
-    % 0 headers (\%) &
-    % 1 header (\%) &
-    % 2 headers (\%) &
-    % 3+ headers (\%) &
-    % Any revealing (\%) \\\midrule,
-    % late after line=\\,
-    % late after last line=\\\bottomrule
-    % ]{../results/comparison/headers/revealing_headers_summary.csv}{%
-    % dataset_label=\Dataset,
-    % country=\Country,
-    % sector_label=\Sector,
-    % n_sites=\Nsites,
-    % pct_revealing_0=\Pzero,
-    % pct_revealing_1=\Pone,
-    % pct_revealing_2=\Ptwo,
-    % pct_revealing_3_plus=\Pthree,
-    % pct_with_any_revealing=\Pany
-    % }{%
-    % \Dataset & \Country & \Sector &
-    % \Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
-    % }%
-    % }%
-    % \end{inlinecap}
+    % Revealing Headers Summary Table
+\begin{table}[t]
+    \caption{Distribution of technology-revealing headers by country and sector.}
+    \label{tab:revealing_headers_summary}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ sites &
+        0 headers (\%) &
+        1 header (\%) &
+        2 headers (\%) &
+        3+ headers (\%) &
+        Any revealing (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_sites=\Nsites,
+      pct_revealing_0=\Pzero,
+      pct_revealing_1=\Pone,
+      pct_revealing_2=\Ptwo,
+      pct_revealing_3_plus=\Pthree,
+      pct_with_any_revealing=\Pany
+    }{%
+      \Dataset & \Country & \Sector &
+      \Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
+    }%
+    }%
+    \end{table}
+    
     
     Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
     with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
@@ -1123,38 +1269,41 @@ outperforms authorities.
     error response for technology disclosure through framework signatures (Django, Laravel, 
     Spring Boot, etc.), database identifiers (MySQL, PostgreSQL, MongoDB, etc.), cloud platform banners (AWS, Azure, GCP), version numbers, and full stack traces in seven languages (Python, JavaScript, Java, PHP, Ruby, Go, C\#).
     
-    % % Error Leaks Summary Table
-    % \begin{inlinecap}
-    % \captionof{table}{Information leakage in HTTP error responses by country and sector.}
-    % \label{tab:error_leaks_summary}
-    % \centering
-    % \small
-    % \setlength{\tabcolsep}{4pt}
-    % \resizebox{\textwidth}{!}{%
-    % \csvreader[
-    % tabular=llllrrrr,
-    % table head=\toprule
-    %   Dataset & Country & Sector &
-    %   $n$ origins &
-    %   Any tech leak (\%) &
-    %   Version leak (\%) &
-    %   Stack trace (\%) \\\midrule,
-    % late after line=\\,
-    % late after last line=\\\bottomrule
-    % ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
-    % dataset_label=\Dataset,
-    % country=\Country,
-    % sector_label=\Sector,
-    % n_scanned_origins=\Norigins,
-    % pct_any_tech_leak=\Ptech,
-    % pct_version_leak=\Pversion,
-    % pct_stacktrace=\Pstack
-    % }{%
-    % \Dataset & \Country & \Sector &
-    % \Norigins & \Ptech & \Pversion & \Pstack
-    % }%
-    % }%
-    % \end{inlinecap}
+    % Error Leaks Summary Table
+\begin{table}[t]
+    \caption{Information leakage in HTTP error responses by country and sector.}
+    \label{tab:error_leaks_summary}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.15}
+    
+    \resizebox{\columnwidth}{!}{%
+    \csvreader[
+      tabular=lllrrrr,
+      table head=\toprule
+        Dataset & Country & Sector &
+        $n$ origins &
+        Any tech leak (\%) &
+        Version leak (\%) &
+        Stack trace (\%) \\\midrule,
+      late after line=\\,
+      late after last line=\\\bottomrule
+    ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
+      dataset_label=\Dataset,
+      country=\Country,
+      sector_label=\Sector,
+      n_scanned_origins=\Norigins,
+      pct_any_tech_leak=\Ptech,
+      pct_version_leak=\Pversion,
+      pct_stacktrace=\Pstack
+    }{%
+      \Dataset & \Country & \Sector &
+      \Norigins & \Ptech & \Pversion & \Pstack
+    }%
+    }%
+    \end{table}
+    
     
 Canadian authorities leaked technology information on 47.2\% of origins, compared with 20.9\% in Canadian finance, 
 with other sectors and countries showing intermediate levels of disclosure. Version numbers were exposed 
