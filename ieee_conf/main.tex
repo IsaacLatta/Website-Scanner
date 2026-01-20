@@ -1,155 +1,80 @@
-% !TeX root = main.tex
-
-
-% TODO:
-% Align it with the CSA guidlines
-% Remove verbosness from methodology
-% Write remaining sections
-% Proof read and reword for more storyness 
-
-\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
-% \documentclass{IEEEtran}
-
-\usepackage{graphicx}
-\usepackage{multirow}
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{amsthm}
-\usepackage{mathrsfs}
-\usepackage[title]{appendix}
-\usepackage{xcolor}
+\usepackage{algorithmic}
+\usepackage{graphicx}
 \usepackage{textcomp}
-\usepackage{manyfoot}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
-\usepackage{algorithm}
-\usepackage{algorithmicx}
-\usepackage{algpseudocode}%
-\usepackage{listings}%
-\usepackage{pgfplotstable} % read/filter CSVs into tables
-\usepackage{booktabs}     
-\usepackage{changepage}    
-% \pgfplotsset{compat=1.18}
-\usepackage{csvsimple}
+\usepackage{tabularx}
 
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
-\usepackage{tikz}
-
-
-
-\usepackage{capt-of}  % provides \captionof{figure} and \captionof{table}
-% Inline block with padding above/below (works for tables or figures)
-\newlength{\inlinecapskip}
-\setlength{\inlinecapskip}{0.75\baselineskip} % adjust to taste (0.5--1.0)
-\newenvironment{inlinecap}[1][\textwidth]
-  {\par\vspace{\inlinecapskip}\noindent\begin{minipage}{#1}\centering}
-  {\end{minipage}\par\vspace{\inlinecapskip}}
-
-\numberwithin{equation}{section}
-
-\theoremstyle{thmstyleone}
-\newtheorem{theorem}{Theorem}
-\newtheorem{proposition}[theorem]{Proposition}
-
-\theoremstyle{thmstyletwo}%
-\newtheorem{example}{Example}%
-\newtheorem{remark}{Remark}%
-
-\theoremstyle{thmstylethree}%
-\newtheorem{definition}{Definition}
-
-\raggedbottom
-
-%%%%%% LENGTHS %%%%%%
-
-\setlength{\oddsidemargin}{0cm}
-\setlength{\evensidemargin}{0cm}
-\setlength{\textwidth}{16cm}
-\setlength{\textheight}{25cm}
-% \setlength{\oddsidemargin}{-0.2cm}
-% \setlength{\evensidemargin}{-0.2cm}
-\setlength{\topmargin}{-0.5cm}
-\setlength{\footskip}{1cm}
-
-\newlength{\plotwidth}
-\setlength{\plotwidth}{0.7\textwidth}
-
-\newlength{\tablewidth}
-\setlength{\tablewidth}{1.2\textwidth}
-
-\usepackage{siunitx}
-\sisetup{
-  round-mode=figures,
-  round-precision=2, 
-  detect-weight,
-  detect-inline-family
-}
-
-\newcommand{\QuoteFigure}[4][0.9\textwidth]{%
-  \begin{center}
-    \begin{minipage}{#1}
-      \centering
-      \itshape
-      \textquotedblleft #2\textquotedblright
-      \par\vspace{0.4\baselineskip}
-      \captionof{figure}{#3}
-      \label{#4}
-    \end{minipage}
-  \end{center}%
-}
-
-\newcommand{\miniheader}[1]{%
-  \vspace{0.75em}%
-  \noindent\textbf{\large #1}\par\vspace{0.4em}
-}
-
-
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title[Article Title]{Benchmarking the Security Posture of Canadian Public Sector Web Services}
+\title{Conference Paper Title*\\
+{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
+should not be used}
+\thanks{Identify applicable funding agency here. If none, delete this.}
+}
 
-\author[1]{\fnm{Isaac} \sur{Latta}\footnotemark[1]}\email{lattai11@mytru.ca}
-\author[1]{\fnm{Sina} \sur{Keshvadi}\footnotemark[3]}\email{skeshvadi@tru.ca}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+}
 
 
-\affil[1]{\orgdiv{Dept. Software Engineering}, \orgname{Thompson Rivers University},
-\state{BC}, \country{Canada}}
+% \and
+% \IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% \and
+% \IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
+% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+% \textit{name of organization (of Aff.)}\\
+% City, Country \\
+% email address or ORCID}
+% }
 
 \maketitle
 
-\vfill
-\begin{center}
-\small
-\copyright~2025 Isaac Latta and 
-Sina Keshvadi. All Rights Reserved.
-\end{center}
-\clearpage
+\begin{abstract}
+This document is a model and instructions for \LaTeX.
+This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
+or Math in Paper Title or Abstract.
+\end{abstract}
 
-\section{Acknowledgments}
-We would like to gratefully acknowledge the support of the CSA Group Undergraduate Research Scholarship, 
-whose funding made this work possible. We would also like to express our gratitude 
-to the CSA Group staff for their guidance and accommodation throughout the project.
+\begin{IEEEkeywords}
+component, formatting, style, styling, insert
+\end{IEEEkeywords}
 
-% \section{Summary}
-% This report examines the security readiness of Canadian public-sector and critical web 
-% services. A list of representative datasets of 
-% authority, finance, education, and energy websites in Canada, the United States, and the United 
-% Kingdom are evaluated and compared with an automated scanner. 
-% The web security criteria is grounded in recommendations from the Canadian Centre 
-% for Cyber Security (CCCS), OWASP, MDN, and international cybersecurity authorities. Assessing
-% HTTPS/HSTS  deployment, TLS protocol and cipher configuration, security headers, cookie
-% protections, information leaks, and the presence of vulnerability disclosure files. 
-% Overall, Canadian sites have adopted foundational 
-% transport-layer controls, but advanced protections are uneven and frequently lag behind international 
-% and domestic sector counterparts. These findings suggest that Canada’s primary challenge is
-% inconsistent adherence to guidance rather than a lack of technical ability. 
-% Thus, demonstrating the need for binding and enforceable standards around web security 
-% for Canadian public-sector domains. 
-
-\section{Introduction}\label{sec:intro}
-
-\subsection{\color{red}{Orientating Paragraph}}
-
-\vspace{1em}
+\section{Introduction}
 Public-sector websites are among the most trusted surfaces on the Internet, yet their security
 posture is rarely measured at the depth modern web complexity requires.Organizations and government
 bodies increasingly rely on their online presence to deliver essential services, building upon the
@@ -177,8 +102,10 @@ under-measured class of weaknesses involves inadvertent information disclosure t
 and error handling \cite{owasp_improper_error_handling,cwe_209,cwe_200}. Together, these realities motivate
 the need for a scalable, standards-aligned benchmarking methodology that can quantify real-world web
 security control adoption across Canadian public-sector and critical web services.
+\section{Ease of Use}
 
-\subsection{\color{red}{Main Questions Posed}}
+\subsection{Main Questions Posed}
+
 
 \vspace{1em}
 In this paper we answer the following research questions:
@@ -205,9 +132,8 @@ In this paper we answer the following research questions:
     % websites and their visitors?
 \end{itemize}
 
-\subsection{\color{red}{Significant}}
+\section{Significant}
 
-\vspace{1em}
 At a global scale, HTTPS has become the default expectation for modern browsing. Google’s HTTPS telemetry
 shows that modern browsing is now predominantly encrypted, with desktop users loading more than half of pages
 over HTTPS and spending roughly two-thirds of their browsing time on HTTPS pages \cite{GoogleTransparencyHTTPS}.
@@ -242,9 +168,8 @@ recommendations on secure protocol configuration and website security considerat
 in the absence of binding web-specific mandates, to what extent are modern security controls consistently
 adopted across Canadian authorities?
 
-\subsection{\color{red}{Literature}}
+\section{Literature}\label{AA}
 
-\vspace{1em}
 Prior work has examined the security posture of government and public-sector websites, but the scope and
 granularity of these evaluations vary substantially across jurisdictions. Dunbar et al.\ surveyed a large set
 of US-related domains and proposed a compact scoring system primarily driven by SSL/TLS version support and
@@ -272,7 +197,7 @@ testing, but their primary goal is vulnerability discovery rather than measureme
 \cite{tool_owasp_zap}. In contrast, our work emphasizes a unified, standards-aligned posture evaluation suitable
 for large-scale comparative analysis of Canadian authority websites.
 
-\subsection{\color{red}{What Is New With This Paper}}
+\section{What Is New With This Paper}
 
 \vspace{1em}
 Despite the efforts of the tooling, literature, and CCCS recommendations, several gaps remain for evaluating
@@ -300,94 +225,7 @@ Network (MDN). We compare the performance of Canadian authority sites against th
 Energy sectors of not only Canada, but the United States and United Kingdom, providing a frame of reference
 for how Canada's public-sector web security readiness compares to that of our allies and public-sector neighbors.
 
-\section{Materials \& Methods}\label{sec:methods}
-
-% \subsection{Definitions}
-
-% In this context, \textit{URIs} (Uniform Resource Identifiers) referes to the web resource identifiers---not just domains---and may include complete URLs endpoints with paths, and pages containing query strings.
-% These URIs were resolved upstream by our scanner, but they represent the \emph{link} a Canadian would click to visit a online resource. 
-% For example, the following table provides an example of how a scheme, origin, and endpoint is parsed out of a URI.
-
-% \begin{inlinecap}[1.0\textwidth]
-%   \small
-%   \setlength{\tabcolsep}{6pt}
-%   \renewcommand{\arraystretch}{1.15}
-%   \captionof{table}{Example URIs and Their Parsed Components.}
-%   \label{tab:uri_components}
-%   \begin{tabular}{l l l l}
-%   \toprule
-%   \textbf{URI} & \textbf{Scheme} & \textbf{Origin} & \textbf{Endpoint / Path} \\
-%   \midrule
-  
-%   \texttt{http://example.org/about/team} &
-%   \texttt{http} &
-%   \texttt{example.org} &
-%   \texttt{/about/team} \\
-  
-%   \texttt{https://example.net/resources?id=42} &
-%   \texttt{https} &
-%   \texttt{example.net} &
-%   \texttt{/resources?id=42} \\
-  
-%   \texttt{http://192.0.2.15:80/status} &
-%   \texttt{http} &
-%   \texttt{192.0.2.15:80} &
-%   \texttt{/status} \\
-  
-%   \texttt{https://192.0.2.15:443/api/v1/info} &
-%   \texttt{https} &
-%   \texttt{192.0.2.15:443} &
-%   \texttt{/api/v1/info} \\
-
-%   \bottomrule
-%   \end{tabular}
-%   \end{inlinecap}
-  
-% Going forward, the terms \textit{Scheme} is used synonymously with \textit{Protocol}. \textit{Endpoint} is used synonymously with \textit{Resource}
-% and \textit{Path}. 
-
-% \subsection{Overview - Factual guide}
-% Overview ideas:
-% - Dataset construction:
-%   * How many sites per sector/jurisdiction.
-%   * Brief description of each authoritative source list (with examples).
-% - Standards & guidance sources:
-%   * CCCS, IETF RFCs (TLS/HSTS/security.txt), OWASP cheat sheets, MDN header references, NIST SP 800-52r2, etc.
-% - Tool implementation:
-%   * Built in Python, extended from the Swedish tool: modules for HTTPS/HSTS, TLS version negotiation, cipher enumeration, header parsing, cookie analysis, error page probing, security.txt discovery, etc.
-%   * Use of threads/async to parallelise scans with global + per-host rate limits.
-% - What and why we checked:
-%   * Group checks into categories: 
-%       - Transport/TLS (HTTPS enforcement, HSTS, TLS versions, ciphers).
-%       - Browser-side headers (Referrer-Policy, X-Frame-Options/CSP frame-ancestors, X-Content-Type-Options, Permissions-Policy).
-%       - Cookies (Secure/HttpOnly/SameSite).
-%       - Application posture (error pages and stack traces).
-%       - Disclosure/communication (security.txt).
-% - Backoff/breaker strategy:
-%   * Per-origin failure tracking and temporary blacklisting when WAFs/CDNs respond with repeated 403/503 or effectively null-route traffic.
-%   * Global timeouts and connection limits to avoid overwhelming endpoints and to prevent the scanner from hanging.
-
-% We conducted a cross-sectional assesment of authority and public infrasture websites accross Canada. To perform this
-% evaluationwe compiled a list of Canadian authority websites. 
-% In provide a frame of reference for Canada's web security readiness, 
-% we also evaluated a set of authority websites from both the United Kingdom and United States. In addition to authority sites,
-% we evaluated three public sectors: educational institutions, financial institutions, and energy providers. 
-% All assessments were performed via custom automated scanning tool aligned with standards sourced from 
-% Canadian and International Cyber Authorities. 
-
-% \subsection{Simulation? Experimental? Subjects?}
-% "Subjects" framing:
-% - Not human subjects; "subjects" are production websites belonging to:
-%   * Canadian authorities, financial institutions, universities, energy companies.
-%   * Comparator sets in the US and UK (authorities, banks, universities; no UK energy due to lack of link data).
-% - Clarify that scanning is limited to:
-%   * Landing pages over HTTP/HTTPS, error pages on a synthetic path, and a small number of well-defined auxiliary paths (e.g., /.well-known/security.txt).
-%   * Only safe, low-intensity GET requests with strict rate limiting.
-% - Note: This is closer to "internet measurement" than lab simulation; no intrusive fuzzing, no auth, no POSTs.
-
-% \subsubsection{Canada}
-
-
+\section{Methodology}
 
 \subsection{Website Selection \& Sources}
 
@@ -399,154 +237,142 @@ critical infrastructure. The table below summarizes how we have sourced the webs
 Note that UK energy providers were excluded due to the absence of an authoritative source 
 with usable URIs. As such we leave our energy site comparison between Canada and the US.
 
-\begin{inlinecap}
-  \captionof{table}{Overview of website datasets and primary data sources.}
-  \label{tab:dataset_sources}
-  \centering
-  \scriptsize
-  \setlength{\tabcolsep}{4pt}
-  \renewcommand{\arraystretch}{1.4}% extra vertical padding
-  \resizebox{\textwidth}{!}{%
-    \begin{tabular}{llp{0.8\textwidth}}
-      \toprule
-      Country & Sector & Primary data sources \\
-      \midrule
-      Canada & Authorities &
-        Federal departments \cite{canada_depts}, federal institutions \cite{canada_institutions},
-        Crown corporations \cite{crown_corps}, airport authorities \cite{ca_airports},
-        maritime port authorities \cite{maritime_ports}, securities commissioners
-        \cite{ca_securities_admins}, provincial courts \cite{canada_courts_list},
-        and emergency management organizations \cite{ca_emergency_management};
-        provincial election agencies, privacy commissioners, and health authorities were
-        added via manual lookup of each province’s official listings, excluding Quebec
-        and Ontario health authorities where no authoritative consolidated lists exist. \\
-      Canada & Finance &
-        Schedule I and II banks from the Canadian Bankers Association
-        \cite{cba_member_banks_2024}; credit unions from provincial
-        regulators in Ontario \cite{ontario-credit-unions-fsra}, British Columbia
-        \cite{bc-credit-unions}, Saskatchewan \cite{sask-credit-unions}, and
-        New Brunswick \cite{nb-credit-unions}. \\
-      Canada & Education &
-        Public-facing universities and colleges from Universities Canada
-        \cite{ca_unis_list}. \\
-      Canada & Energy &
-        Electricity Canada members \cite{electric_canada_members},
-        Canadian Gas Association industry links \cite{cga_industry_links},
-        Canadian Energy Regulator pipeline companies \cite{cer_pipeline_companies},
-        and Canadian Nuclear Safety Commission nuclear facilities
-        \cite{cnsc_nuclear_facilities}. \\
-      \addlinespace[0.6em]
-      USA & Authorities &
-        Federal agency index of U.S. government organizations
-        \cite{usa-agency-index}. \\
-      USA & Finance &
-        FDIC ``BankFind'' API \cite{fdic-bankfind-api}; for the ten most populous
-        states by US population statistics \cite{us-population-stats}, we selected
-        the top ten banks in each state by assets under management. \\
-      USA & Education &
-        U.S. Department of Education ``College Scorecard'' API
-        \cite{us-college-scorecard-docs}; for the ten most populous states,
-        we selected the top five institutions in each state by enrollment. \\
-      USA & Energy &
-        Edison Electric Institute list of member companies and their websites
-        \cite{edison-electric-member-sites}. \\
-      \addlinespace[0.6em]
-      UK & Authorities &
-        GOV.UK Collections API \cite{uk-gov-collections-api-docs,uk-gov-collections-api},
-        filtered to organizations marked as ``live''. \\
-      UK & Finance &
-        Bank of England PRA-regulated banks list
-        \cite{uk-pra-creditunions-list} cross-referenced against the FCA
-        FSDeveloper API \cite{uk-fca-api-docs}. \\
-      UK & Education &
-        Discover Uni dataset of higher-education providers
-        \cite{hesa_discoveruni_2024}. \\
-      UK & Energy &
-        No dataset was constructed; we did not identify an authoritative, URL-complete
-        registry of UK energy providers. \\
-      \bottomrule
-    \end{tabular}%
-  }
-\end{inlinecap}
+% \begin{table*}[t]
+%     \caption{Overview of website datasets and primary data sources.}
+%     \label{tab:dataset_sources}
+%     \centering
+%     \footnotesize
+%     \setlength{\tabcolsep}{4pt}
+%     \renewcommand{\arraystretch}{1.2}
+%     \begin{tabularx}{\textwidth}{l l X}
+%     \toprule
+%     Country & Sector & Primary data sources \\
+%     \midrule
+%     Canada & Authorities &
+%     Federal departments \cite{canada_depts}, federal institutions \cite{canada_institutions},
+%     Crown corporations \cite{crown_corps}, airport authorities \cite{ca_airports},
+%     maritime port authorities \cite{maritime_ports}, securities commissioners
+%     \cite{ca_securities_admins}, provincial courts \cite{canada_courts_list},
+%     and emergency management organizations \cite{ca_emergency_management};
+%     provincial election agencies, privacy commissioners, and health authorities were
+%     added via manual lookup of each province’s official listings, excluding Quebec
+%     and Ontario health authorities where no authoritative consolidated lists exist. \\
+%     Canada & Finance &
+%     Schedule I and II banks from the Canadian Bankers Association
+%     \cite{cba_member_banks_2024}; credit unions from provincial
+%     regulators in Ontario \cite{ontario-credit-unions-fsra}, British Columbia
+%     \cite{bc-credit-unions}, Saskatchewan \cite{sask-credit-unions}, and
+%     New Brunswick \cite{nb-credit-unions}. \\
+%     Canada & Education &
+%     Public-facing universities and colleges from Universities Canada
+%     \cite{ca_unis_list}. \\
+%     Canada & Energy &
+%     Electricity Canada members \cite{electric_canada_members},
+%     Canadian Gas Association industry links \cite{cga_industry_links},
+%     Canadian Energy Regulator pipeline companies \cite{cer_pipeline_companies},
+%     and Canadian Nuclear Safety Commission nuclear facilities
+%     \cite{cnsc_nuclear_facilities}. \\
+%     \addlinespace[0.6em]
+%     USA & Authorities &
+%     Federal agency index of U.S. government organizations
+%     \cite{usa-agency-index}. \\
+%     USA & Finance &
+%     FDIC ``BankFind'' API \cite{fdic-bankfind-api}; for the ten most populous
+%     states by US population statistics \cite{us-population-stats}, we selected
+%     the top ten banks in each state by assets under management. \\
+%     USA & Education &
+%     U.S. Department of Education ``College Scorecard'' API
+%     \cite{us-college-scorecard-docs}; for the ten most populous states,
+%     we selected the top five institutions in each state by enrollment. \\
+%     USA & Energy &
+%     Edison Electric Institute list of member companies and their websites
+%     \cite{edison-electric-member-sites}. \\
+%     \addlinespace[0.6em]
+%     UK & Authorities &
+%     GOV.UK Collections API \cite{uk-gov-collections-api-docs,uk-gov-collections-api},
+%     filtered to organizations marked as ``live''. \\
+%     UK & Finance &
+%     Bank of England PRA-regulated banks list
+%     \cite{uk-pra-creditunions-list} cross-referenced against the FCA
+%     FSDeveloper API \cite{uk-fca-api-docs}. \\
+%     UK & Education &
+%     Discover Uni dataset of higher-education providers
+%     \cite{hesa_discoveruni_2024}. \\
+%     UK & Energy &
+%     No dataset was constructed; we did not identify an authoritative, URL-complete
+%     registry of UK energy providers. \\
+%     \bottomrule
+%     \end{tabularx}
+%     \end{table*}
+    
 
-
-
-% \subsubsection{Canadian Datasets}
-
-% Canadian authority URIs were compiled from official government registries: federal departments 
-% \cite{canada_depts}, institutions \cite{canada_institutions}, Crown corporations \cite{crown_corps}, 
-% airport authorities \cite{ca_airports}, maritime port authorities \cite{maritime_ports}, securities 
-% commissioners \cite{ca_securities_admins}, provincial courts \cite{canada_courts_list}, and emergency 
-% management organizations \cite{ca_emergency_management}. Provincial election agencies, privacy commissioners, 
-% and health authorities were identified through manual lookup of each province's official listings, 
-% excluding Quebec and Ontario health authorities due to the absence of authoritative consolidated lists.
-
-% \vspace{1em}Financial institutions sites are comprised of Schedule I and II banks from the Canadian Bankers 
-% Association \cite{cba_member_banks_2024}. Credit unions are sourced from provincial regulatory authorities in 
-% Ontario \cite{ontario-credit-unions-fsra}, British Columbia \cite{bc-credit-unions}, 
-% Saskatchewan \cite{sask-credit-unions}, and New Brunswick \cite{nb-credit-unions}, yielding 43 bank and 
-% 115 credit union URIs. Educational institutions were sourced from Universities Canada \cite{ca_unis_list}. 
-% Energy providers were compiled from Electricity Canada \cite{electric_canada_members}, the Canadian Gas 
-% Association \cite{cga_industry_links}, the Canadian Energy Regulator's pipeline list \cite{cer_pipeline_companies}, 
-% and the Canadian Nuclear Safety Commission \cite{cnsc_nuclear_facilities}.
-
-
-% \subsubsection{Canada}
-
-% \vspace{1em}The Canadian endpoints evaluated were sourced directly from publicly facing registries hosted by the Canadian Government. 
-% Our list of Candian Domains consists of and was sourced from, the following; 
-% Government Departments \cite{canada_depts}, Government Institutions \cite{canada_institutions}, Crown Corporations \cite{crown_corps}, 
-% Airport Authorities \cite{ca_airports}, Maritime Port Authorities \cite{maritime_ports}, Security Commissioners \cite{ca_securities_admins},
-% Provincial Courts \cite{canada_courts_list} and Emergency Management \cite{ca_emergency_management}. 
-% In addition to the above the lists, we sourced domains for Canada's election agencies by manually looking up each province's election agency. 
-% Similarly, we looked up each province's privacy commissioner. Each province also maintains a list of health authorities, 
-% we looked up each province's healthcare authorities manually as most provinces only have a handful of healthcare authorities. 
-% However, we omitted sourcing healthcare authorities from both Quebec and Ontario as there seemed to be numeruous, 
-% with no authoritative lists.
-
-% \vspace{1em}Canadian Financial Institutions were composed of both banks, and credit unions. Canadian banks were 
-% sourced from the Canadian Banks Association (CBA) list of schedule I and II banks \cite{cba_member_banks_2024}. As schedule I and II represent banks
-% found in Canada. Due to the plethora of credit unions available in each Canadian province, 
-% we only selected credit unions from provinces with holistic lists readily available. 
-% The list of credit unions covers Ontario, British Columbia (BC), Saskatchewan and New Brunswick. 
-% Ontario's credit union URIs 
-% were derived from the Financial Services Regulatory Authority of Ontario (FSRA) \cite{ontario-credit-unions-fsra}. BC's credit unions were
-% sourced from the BC Financial Services Authority (BCFSA) \cite{bc-credit-unions}. 
-% Saskatchewan's credit unions were derived from SaskCentral, 
-% Saskatchewan's liquity manager which is owned by the Credit Unions of Saskatchewan \cite{sask-credit-unions}. 
-% Lastly, New Brunswick's credit unions
-% were compiled from the New Brunswick Credit Union Deposit Insurance Corporation's list of protected institutions \cite{nb-credit-unions}. In total this list
-% provided 115 credit unions URIs, and 43 bank URIs.  
-% Canadian Educational Institutions were sourced directly from Universities Canada's list of universities \cite{ca_unis_list}.
-
-% \vspace{1em}Canadian Energy providers were derived from a handful of authoritative sources. Electrical companies 
-% were sourced from Electricity Canada's list of members \cite{electric_canada_members}. Natural Gas companies were obtained from the 
-% Canadian Gas Association (CGA)'s industry links page \cite{cga_industry_links}. Canadian pipelines were collected from the Canadian Energy Regulator (CER). 
-% The CER maintains a list of pipelines whom they regulate \cite{cer_pipeline_companies}. Finally, Canadian nuclear powerplants were extracted the Canadian 
-% Nuclear Safety Comission (CSNC) list of nuclear facilities \cite{cnsc_nuclear_facilities}. 
-
-% \subsubsection{Comparator Datasets}
-
-% American authority sites were derived from the federal agency index \cite{usa-agency-index}. 
-% American Financial Institutions were gathered from the US Government Federal Deposit Insurance 
-% Corporation (FDIC) public ``BankFind'' API \cite{fdic-bankfind-api}. Given that there are a 
-% myriad of banks in the United States, we took the top 10 states according to US Population statistics 
-% \cite{us-population-stats}, then took the top 10 banks by assets undermanagement
-% for each of these states. These states included; California, Texas, Florida, New York, Pennsylvania, Illinois, 
-% Ohio, Georgia, Noth Carolina, and Michigan. USA education institutions were retrieved from the US Department of 
-% Education's ``College Scorecard'' API \cite{us-college-scorecard-docs}. We once again took the top 10 states 
-% by population, then queried the API for the top 5 education institutions by population. 
-% For US Energy, we leveraged Edision Electric's list of 
-% member companies websites \cite{edison-electric-member-sites}.
-
-% \vspace{1em}United Kingdom authority URIs were extracted from the GOV.UK Collections API 
-% \cite{uk-gov-collections-api-docs,uk-gov-collections-api}, filtering for organizations marked ``live''. 
-% Financial institutions were identified by cross-referencing the Bank of England PRA regulated banks list 
-% \cite{uk-pra-creditunions-list} against the FCA FSDeveloper API \cite{uk-fca-api-docs}. Educational 
-% institutions were obtained from the Discover Uni dataset \cite{hesa_discoveruni_2024}. UK energy 
-% providers were excluded due to the absence of an authoritative source with usable URIs. As such leave 
-% our energy site comparison between Canada and the US.
-
+\begin{table}[t]
+    \caption{Overview of website datasets and primary data sources.}
+    \label{tab:dataset_sources}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabularx}{\columnwidth}{l l X}
+    \toprule
+    Country & Sector & Primary data sources \\
+    \midrule
+    Canada & Authorities &
+    Federal departments \cite{canada_depts}, federal institutions \cite{canada_institutions},
+    Crown corporations \cite{crown_corps}, airport authorities \cite{ca_airports},
+    maritime port authorities \cite{maritime_ports}, securities commissioners
+    \cite{ca_securities_admins}, provincial courts \cite{canada_courts_list},
+    and emergency management organizations \cite{ca_emergency_management};
+    provincial election agencies, privacy commissioners, and health authorities were
+    added via manual lookup of each province’s official listings, excluding Quebec
+    and Ontario health authorities where no authoritative consolidated lists exist. \\
+    Canada & Finance &
+    Schedule I and II banks from the Canadian Bankers Association
+    \cite{cba_member_banks_2024}; credit unions from provincial
+    regulators in Ontario \cite{ontario-credit-unions-fsra}, British Columbia
+    \cite{bc-credit-unions}, Saskatchewan \cite{sask-credit-unions}, and
+    New Brunswick \cite{nb-credit-unions}. \\
+    Canada & Education &
+    Public-facing universities and colleges from Universities Canada
+    \cite{ca_unis_list}. \\
+    Canada & Energy &
+    Electricity Canada members \cite{electric_canada_members},
+    Canadian Gas Association industry links \cite{cga_industry_links},
+    Canadian Energy Regulator pipeline companies \cite{cer_pipeline_companies},
+    and Canadian Nuclear Safety Commission nuclear facilities
+    \cite{cnsc_nuclear_facilities}. \\
+    \addlinespace[0.4em]
+    USA & Authorities &
+    Federal agency index of U.S. government organizations
+    \cite{usa-agency-index}. \\
+    USA & Finance &
+    FDIC ``BankFind'' API \cite{fdic-bankfind-api}; for the ten most populous
+    states by US population statistics \cite{us-population-stats}, we selected
+    the top ten banks in each state by assets under management. \\
+    USA & Education &
+    U.S. Department of Education ``College Scorecard'' API
+    \cite{us-college-scorecard-docs}; for the ten most populous states,
+    we selected the top five institutions in each state by enrollment. \\
+    USA & Energy &
+    Edison Electric Institute list of member companies and their websites
+    \cite{edison-electric-member-sites}. \\
+    \addlinespace[0.4em]
+    UK & Authorities &
+    GOV.UK Collections API \cite{uk-gov-collections-api-docs,uk-gov-collections-api},
+    filtered to organizations marked as ``live''. \\
+    UK & Finance &
+    Bank of England PRA-regulated banks list
+    \cite{uk-pra-creditunions-list} cross-referenced against the FCA
+    FSDeveloper API \cite{uk-fca-api-docs}. \\
+    UK & Education &
+    Discover Uni dataset of higher-education providers
+    \cite{hesa_discoveruni_2024}. \\
+    UK & Energy &
+    No dataset was constructed; we did not identify an authoritative, URL-complete
+    registry of UK energy providers. \\
+    \bottomrule
+    \end{tabularx}
+    \end{table}
 
 \subsection{URL \& Origin Normalization}
 
@@ -629,16 +455,13 @@ specification that provides a means of open vulnerability disclosure and managem
 organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value} and that each domain and subdomain within an agency's network. 
 This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
 
-\begin{center}
-  \begin{minipage}{\plotwidth}
-  \centering
-  \includegraphics[width=\linewidth]{../resources/images/cisa_securitytxt.png}
-  \captionof{figure}{
-  The US Cybersecurity and infrastructure Agency (CISA) \texttt{security.txt} file.
-  }
-  \label{fig:cisa_securitytxt}
-  \end{minipage}
-  \end{center}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{../resources/images/cisa_securitytxt.png}
+    \caption{The U.S. Cybersecurity and Infrastructure Security Agency (CISA) \texttt{security.txt} file.}
+    \label{fig:cisa_securitytxt}
+\end{figure}
+
 
 \vspace{1em}Congruent with RFC 9116 and the CISA guidance, the scanner sends a \texttt{GET} request to the paths '\texttt{/security.txt}', and '\texttt{/.well-known/security.txt}'.
 A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
@@ -657,55 +480,8 @@ On public-sector and financial sites, these URLs can easily contain case identif
 We derive this header's evaluation from the guidance
 of OWASP and MDN. 
 
-% OWASP recommends setting the header to \texttt{Referrer-Policy: strict-origin-when-cross-origin} 
-% \cite{owasp_http_security_response_headers}. This directive
-% indicates the browser should only send the origin, path, and query string when making a same-origin request, only send the origin
-% in cross-origin requests when protocol security remains the same (e.g., HTTPS to HTTPS), and finally never send the \texttt{Referer} header to less secure destinations (e.g., HTTPS to HTTPS). 
-% MDN advocates for setting the strictest \texttt{Referrer-Policy} comptable with th server. MDN lists the following derictives as the only \emph{client-protecting} directives in
-% decreasing order of protection; \texttt{no-referrer}, \texttt{no-origin}, \texttt{strict-origin}, \texttt{strict-origin-when-cross-origin} 
-% \cite{mdn_referrer_policy_config}. 
-% Following OWASP and MDN guidance, we treat policies that never send full paths to third-party origins (for example \texttt{strict-origin-when-cross-origin}, 
-% \texttt{strict-origin}, \texttt{same-origin}, or \texttt{no-referrer}) as recommended defaults 
-% . Policies that still expose full URLs across sites (such as \texttt{unsafe-url} or \texttt{origin-when-cross-origin}) are classified as weak. Absense of the policy
-% is also treated as recommended, since MDN states the default is \texttt{strict-origin-when-cross-origin}.
 
-
-% \vspace{1em}Attackers can sometimes load a legitimate government or banking page inside a hidden 
-% \texttt{<iframe>} and trick a user into clicking on real buttons (for example ``Approve payment'' or 
-% ``Submit application'') 
-% while believing they are interacting with a harmless overlay. 
-% To counter this ``clickjacking'' risk, modern guidance recommends
-% setting the \texttt{X-Frame-Options} header. In line with this guidance, the 
-% scanner records the presence of the {X-Frame-Options} header.
-
-% that restricts 
-% framing (for example \texttt{frame-ancestors 'none'} or \texttt{frame-ancestors 'self'}) and 
-%whether it sets \texttt{X-Frame-Options}
-% to \texttt{DENY} or \texttt{SAMEORIGIN}. Configurations that completely forbid framing 
-%(\texttt{'none'} or \texttt{DENY}) are treated
-% as recommended; policies that only allow the site's own pages to frame themselves (\texttt{'self'} or 
-%\texttt{SAMEORIGIN}) are treated 
-% as acceptable but weaker. Sites that omit both controls, or explicitly allow any domain to frame
-% them, are classified as lacking clickjacking protection.
-
-% \vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the attack surface
-% of cross-site scripting (XSS) and other content-injection attacks by restricting which sources of scripts, images, and 
-% other resources the browser may load. Consider the following illustrative example of an XSS attack: a bad actor discovers a 
-% vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that 
-% attempts to steal session
-% cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
-% With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding even if an 
-% injection point exists. The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an explicit CSP 
-% \cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites}.  Policies that explicitly forbid all framing 
-% (e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
-% site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
-% https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
-% define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
-% as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
-% \emph{unknown} rather than over-interpreted. This aims to answer the question: 
-% ``Are sites explicitly controlling who can embed their content?''.
-
-\vspace{1em}The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the 
+The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the 
 attack surface of cross-site scripting (XSS) and other content-injection attacks by restricting which 
 sources of scripts, images, and 
 other resources the browser may load. Providing additional security over the aforementioned 
@@ -720,47 +496,7 @@ focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
 The scanner records whether a response includes a \texttt{Content-Security-Policy} header and, if so, 
 whether it contains \texttt{frame-ancestors} directive.
 
-% we therefore interpret our CSP results narrowly, focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
-% This directive provides defence against an attack known as ``clickjacking''. Clickjacking refers to when a malicious website
-% embeds another website inside an invisible \texttt{<iframe>}. Thus tricking the user into taking potentially harmful actions
-% unknowlingly. OWASP recommends setting the \texttt{frame-ancestors} derective to control exactly which other origins are 
-% allowed to embed this origin's content inside an \texttt{<iframe>} \cite{owasp_clickjacking_defense}. 
-% As such, we record whether a response includes a 
-% \texttt{Content-Security-Policy} header and, if so, 
-% extract and classify its \texttt{frame-ancestors} directive. Policies that explicitly forbid all framing 
-% (e.g.\ \texttt{frame-ancestors 'none'}) are classified as \emph{recommended}. Policies that allow only the 
-% site itself (and any explicitly named partners) to frame the content (e.g.\ \texttt{frame-ancestors 'self' 
-% https://example.gov}) are classified as \emph{sufficient}. If the CSP header is missing altogether, does not 
-% define \texttt{frame-ancestors}, or uses a wildcard (e.g.\ \texttt{frame-ancestors *}), we classify the site 
-% as \emph{insecure} for the purpose of clickjacking protection. Any other patterns are recorded but treated as 
-% \emph{unknown} rather than over-interpreted. This aims to answer the question: 
-% ``Are sites explicitly controlling who can embed their content?''.
-
-% Consider the following illustrative example of an XSS attack: a bad actor 
-% discovers a 
-% vulnerable input field on a government services page and injects a malicious \texttt{<script>} tag that attempts 
-% to steal session
-% cookies or redirect users to a phishing site. Without a restrictive CSP, the browser would execute this injected script. 
-% With a proper CSP in place, however, the browser blocks the untrusted script, preventing the attack from succeeding 
-% even if an 
-% injection point exists. 
-
-% \vspace{1em}
-% An older security header that aims to reduce the risk of clickjacking is 
-% \texttt{X-Frame-Options} (XFO). Although largely superseded by the 
-% \texttt{frame-ancestors} directive in CSP, many sites still rely on XFO
-% for backwards compatability. Similar to the CSP's \texttt{frame-ancestors} derective, XFO instructs the 
-% browser whether the page may be 
-% displayed inside a \texttt{<frame>} or \texttt{<iframe>} element. The header 
-% supports three directives: \texttt{DENY} (never permit framing), 
-% \texttt{SAMEORIGIN} (allow framing only by pages from the same site), and 
-% \texttt{ALLOW-FROM <origin>}. Our scanner attempts to retrieve the raw XFO header. If the header is present and set to 
-% \texttt{DENY}, we classify the site as \emph{recommended}. If set to 
-% \texttt{SAMEORIGIN}, we classify it as \emph{sufficient}, since the site at 
-% least restricts framing to itself. If the site sets XFO to \texttt{ALLOW-FROM}, we record this as \emph{obsolete}---as this directive is now deprecated. 
-% If the header is missing entirely, contains unknown syntax, or is malformed we treat it as \emph{unknown}.
-
-\vspace{1em}The \texttt{X-Content-Type-Options} header is a simple but important control. This header eliminates 
+The \texttt{X-Content-Type-Options} header is a simple but important control. This header eliminates 
 ``MIME Sniffing'', where a browser may \emph{guess} the MIME (Multipurpose Internet Mail Extension) type of a 
 resource and act accordingly. This behaviour can be abused in so-called MIME confusion
 attacks, where user-supplied or third-party content is interpreted as active HTML or JavaScript instead of 
@@ -768,12 +504,6 @@ static data. OWASP recommends administrators to set the \texttt{X-Content-Type-O
 the browser to \emph{always} follow the content type found in the \texttt{Content-Type} header
 \cite{owasp_http_security_response_headers, mdn_mime_types_guide}. In line with OWASP's guidance, the scanner records
 the presence of \texttt{X-Content-Type-Options} in the response of the final resolved URI.
-
-% In line with this guidance, 
-% our scanner performs a simple
-% check as to whether the endpoint has the \texttt{X-Content-Type-Options} header present, and 
-% whether it's value is set
-% to \texttt{nosniff}.
 
 \vspace{1em}The next header the scanner records is the \texttt{Permissions-Policy} (formerly \texttt{Feature-Policy}). This header allows a site
 to declare which powerful browser features are enabled on a page and which embedded origins, if any, may use them. Examples include 
@@ -783,11 +513,6 @@ embedded third-party content. Both OWASP and Google Chrome both recommend web ad
 \cite{owasp_http_security_response_headers, chrome_permissions_policy}, 
 disabling what isn't in use. 
 
-% The scanner checks for this response header, and 
-% evaluates whether this endpoint is explicitly controlling certain features via structured directives of the form 
-% \texttt{feature = sources}(e.g., \texttt{camera=()})
-
-\vspace{1em}Cookies are a common mechanism for tracking sessions and user state on the web. 
 Even ostensibly ``public'' pages often set cookies for language preferences, analytics, or short-lived 
 session identifiers. Due to cookies being sent automatically to a site with each request, weak cookie settings can expose
 users to eavesdropping, cross-site request forgery (CSRF), or theft of authentication tokens. The CCCS 
@@ -834,26 +559,6 @@ imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owas
 For each origin's final response, the scanner recorded whether any response header name matched the OWASP list 
 (e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks.
 
-% \begin{table}[h]
-%   \centering
-%   \begin{tabular}{p{3cm}p{4.5cm}p{6.5cm}}
-%     \hline
-%     \textbf{Header} & \textbf{Example value} & \textbf{Why it is revealing} \\
-%     \hline
-%     \texttt{Server} &
-%     \texttt{Apache/2.4.49 (Unix)} &
-%     Discloses the exact web server product and version; attackers can search for this version when a remote code execution or path traversal CVE is published. \\
-%     \texttt{X-Powered-By} &
-%     \texttt{PHP/7.4.33} or \texttt{Express} &
-%     Reveals the application platform or framework in use (PHP, Node.js, etc.), again often with a specific version number. \\
-%     \texttt{X-Generator} &
-%     \texttt{Drupal 9.4.1}, \texttt{PrestaShop} &
-%     Discloses the CMS product and version, facilitating targeted CMS exploitation. \\
-%     \hline
-%   \end{tabular}
-%   \caption{Examples of ``revealing'' HTTP headers tracked by our scanner. These headers are not required for end-user functionality but expose details about the server's software stack and versions. Our analysis focuses on how many public-sector sites retain such headers versus those that follow OWASP guidance and remove or genericise them.}
-%   \label{tab:revealing-headers-examples}
-% \end{table}
 
 
 \vspace{1em}Misconfigured error pages are another common source of unintended information disclosure 
@@ -892,7 +597,6 @@ and no further HTTP/TLS modules were run against them. These hyper-conservative 
 and prevent service disruption. Thus, allowing us to distinguish genuinely unreachable sites, 
 without inundating servers with excessive traffic.
 
-
 \vspace{1em}Because our conclusions depend on automated classification, we invested effort in testing the scanner 
 itself
 before running it at scale. The goal of these tests was not to prove the scanner is perfect, but to ensure that, 
@@ -924,42 +628,6 @@ aggregated results. In these scenarios, the scanner was pointed at a collection 
 secure, partially configured and clearly misconfigured sites. We then compared the resulting findings against an expected 
 ``ground truth'' for each test target. 
 
-
-
-% \subsection{Data Analysis}
-% % Data analysis plan:
-% % - For each site, derive binary/ternary indicators per check:
-% %   * Example: HTTPS enforced (yes/no/partial), HSTS quality (good/weak/missing), TLS version support (modern/legacy), etc.
-% % - Aggregate by:
-% %   * Sector (authority/finance/education/energy).
-% %   * Jurisdiction (CA/US/UK).
-% %   * CDN/WAF vs non-CDN (where inferable from headers/CNAMEs).
-% % - Compute:
-% %   * Proportion of sites meeting each recommended control.
-% %   * "Profiles" of controls (e.g., % with strong TLS but weak headers vs the reverse).
-% %   * Distribution of security.txt adoption, CSP presence, and cookie flag hygiene.
-% % - For RQ2:
-% %   * Compare distributions across CA vs US vs UK for the same sector.
-% %   * Highlight statistically meaningful gaps (even if just descriptive comparisons, not heavy stats).
-% % - Handle WAF-affected sites:
-% %   * Treat as a distinct category (unmeasurable due to active blocking).
-% %   * Report their counts separately to avoid biasing denominators.
-
-% \subsection{Evaluation metrics}
-% % Evaluation metrics:
-% % - Per-check classification:
-% %   * Recommended / acceptable / missing, based on concrete standards (e.g., HSTS max-age >= 1 year; TLS >= 1.2; Referrer-Policy at least strict-origin-when-cross-origin; etc.).
-% % - Site-level "profiles" instead of a single score:
-% %   * Transport posture: {modern TLS only, legacy allowed, HTTPS not enforced}.
-% %   * Header posture: {all key hardening headers present, partial, minimal}.
-% %   * Application posture: {no error leaks, minor leaks, stack trace / directory listing exposed}.
-% %   * Disclosure posture: {security.txt present and complete, present but weak, absent}.
-% % - Sector/jurisdiction metrics:
-% %   * For each sector + jurisdiction: report percentages for all major checks with CIs or at least clear N.
-% % - Optional composite:
-% %   * A simple "meets a minimum Canadian baseline" flag (e.g., HTTPS enforced, HSTS present, modern TLS only, no obvious error leaks) to answer RQ1 succinctly.
-
-
 \section{Results}\label{sec:result}
 
 \subsection{URL \& Origin Normalization}
@@ -970,59 +638,60 @@ redirects, and the percentage of inputs that ended in a successful 2xx
 response, a final 4xx/5xx response, or no final URL. Plus the percentage
 of origins whose inputs were all unreachable from the scanner's vantage point. 
 
-\begin{inlinecap}  % no argument; default is \textwidth
-  \captionof{table}{Redirect resolution outcomes by country and sector.}
-  \label{tab:redirect_summary}
-  \centering
-  \scriptsize
-  \setlength{\tabcolsep}{2.5pt}
-  \resizebox{\textwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrrrrrr,  % Added one more 'r' column
-      table head=\toprule
-        Dataset & Sector &
-        $n$ URIs &
-        $n$ final URIs &
-        $n$ input origins &
-        $n$ final origins &
-        $n$ unique final origins &  % NEW COLUMN
-        Final 2xx (\%) &
-        Final 4xx/5xx (\%) &
-        No final URL (\%) &
-        Origins all unreachable (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/redirects/redirects_summary.csv}{%
-      dataset_label=\Dataset,
-      sector_label=\Sector,
-      n_input_uris=\Nuris,
-      n_final_uris=\Nfuri,
-      n_input_origins=\Niorig,
-      n_final_origins=\Nforig,
-      pct_final_2xx=\P2xx,
-      pct_final_4xx_5xx=\Perr,
-      pct_no_final=\Pno,
-      pct_origins_all_unreachable=\PorigDead
-    }{%
-      \Dataset & \Sector &
-      \Nuris & \Nfuri & \Niorig & \Nforig &
-      % NEW: Conditional column for n unique final origins
-      \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
-      &  % End of new column
-      \P2xx & \Perr & \Pno & \PorigDead
-    }%
-  }%
-  \end{inlinecap}
+% \begin{inlinecap}  % no argument; default is \textwidth
+%     \captionof{table}{Redirect resolution outcomes by country and sector.}
+%     \label{tab:redirect_summary}
+%     \centering
+%     \scriptsize
+%     \setlength{\tabcolsep}{2.5pt}
+%     \resizebox{\textwidth}{!}{%
+%       \csvreader[
+%         tabular=lllrrrrrrrr,  % Added one more 'r' column
+%         table head=\toprule
+%           Dataset & Sector &
+%           $n$ URIs &
+%           $n$ final URIs &
+%           $n$ input origins &
+%           $n$ final origins &
+%           $n$ unique final origins &  % NEW COLUMN
+%           Final 2xx (\%) &
+%           Final 4xx/5xx (\%) &
+%           No final URL (\%) &
+%           Origins all unreachable (\%) \\\midrule,
+%         late after line=\\,
+%         late after last line=\\\bottomrule
+%       ]{../results/comparison/redirects/redirects_summary.csv}{%
+%         dataset_label=\Dataset,
+%         sector_label=\Sector,
+%         n_input_uris=\Nuris,
+%         n_final_uris=\Nfuri,
+%         n_input_origins=\Niorig,
+%         n_final_origins=\Nforig,
+%         pct_final_2xx=\P2xx,
+%         pct_final_4xx_5xx=\Perr,
+%         pct_no_final=\Pno,
+%         pct_origins_all_unreachable=\PorigDead
+%       }{%
+%         \Dataset & \Sector &
+%         \Nuris & \Nfuri & \Niorig & \Nforig &
+%         % NEW: Conditional column for n unique final origins
+%         \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
+%         \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
+%         &  % End of new column
+%         \P2xx & \Perr & \Pno & \PorigDead
+%       }%
+%     }%
+%     \end{inlinecap}
+
 
 \vspace{1em}Among Canadian authority inputs, 68.4\% resolved to final 2xx responses, 5.2\% ended in 
 4xx/5xx errors, and 26.4\% failed to reach any final URL due to timeouts or connection 
@@ -1050,128 +719,89 @@ an indicator that the site is offline. Rather, ``unreachable''  that
 our scanner was repeatedly unable to complete a TLS handshake or receive an HTTP response. 
 This behaviour suggests bot mitigation, rate limiting, or WAF/CDN filtering---not unavailability.
 
-\begin{inlinecap}
-\captionof{table}{HTTP/HTTPS connectivity outcomes by country and sector.
-Values are the percentage of origins in each dataset that successfully served HTTPS,
-were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS,
-or served HTTP without redirecting.}
-\label{tab:https_connectivity}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-  tabular=llrrrrrr,
-  table head=\toprule Dataset & Sector &
-    $n$ origins &
-    HTTPS ok (\%) &
-    HTTPS unreachable (\%) &
-    HTTP probe ok (\%) &
-    HTTP$\to$HTTPS redirect (\%) &
-    HTTP no redirect (\%) \\\midrule,
-  late after line=\\,
-  late after last line=\\\bottomrule
-]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
-  dataset_label=\Dataset,
-  sector_label=\Sector,
-  n_origins=\Norigins,
-  pct_https_success=\PHttpsOk,
-  pct_https_unreachable=\PUnreach,
-  pct_http_probe_ok=\PHttpOk,
-  pct_http_redirect_to_https=\PRedir,
-  pct_http_no_redirect=\PNoRedir
-}{%
-  \Dataset & \Sector &
-  \Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
-}%
-}%
-\end{inlinecap}
-
 % \begin{inlinecap}
-% \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
-% For each dataset we report the number of origins that successfully served HTTPS and, among
-% those, the share that enabled HSTS at all, used a strong HSTS policy, and included
-% a long max-age, subdomain coverage, and the preload flag.}
-% \label{tab:https_hsts_quality}
+% \captionof{table}{HTTP/HTTPS connectivity outcomes by country and sector.
+% Values are the percentage of origins in each dataset that successfully served HTTPS,
+% were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS,
+% or served HTTP without redirecting.}
+% \label{tab:https_connectivity}
 % \centering
 % \scriptsize
 % \setlength{\tabcolsep}{2.5pt}
 % \resizebox{\textwidth}{!}{%
-%   \csvreader[
-%     tabular=llrrrrrrr,
-%     table head=\toprule Dataset & Sector &
-%       $n$ HTTPS ok &
-%       $n$ with HSTS &
-%       Any HSTS (\% of HTTPS ok) &
-%       Strong HSTS (\% of HSTS) &
-%       HSTS max-age $\geq$ 1y (\% of HSTS) &
-%       HSTS incl.\ subdom.\ (\% of HSTS) &
-%       HSTS preload flag (\% of HSTS) \\\midrule,
-%     late after line=\\,
-%     late after last line=\\\bottomrule
-%   ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
-%     dataset_label=\Dataset,
-%     sector_label=\Sector,
-%     n_https_ok=\NHttpsOk,
-%     n_has_hsts=\NHasHsts,
-%     pct_has_hsts_among_https_ok=\PAnyHsts,
-%     pct_hsts_strong_among_hsts=\PStrong,
-%     pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
-%     pct_hsts_include_subdomains_among_hsts=\PSubs,
-%     pct_hsts_preload_among_hsts=\PPreload
-%   }{%
-%     \Dataset & \Sector &
-%     \NHttpsOk & \NHasHsts &
-%     \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
-%   }%
+% \csvreader[
+%   tabular=llrrrrrr,
+%   table head=\toprule Dataset & Sector &
+%     $n$ origins &
+%     HTTPS ok (\%) &
+%     HTTPS unreachable (\%) &
+%     HTTP probe ok (\%) &
+%     HTTP$\to$HTTPS redirect (\%) &
+%     HTTP no redirect (\%) \\\midrule,
+%   late after line=\\,
+%   late after last line=\\\bottomrule
+% ]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
+%   dataset_label=\Dataset,
+%   sector_label=\Sector,
+%   n_origins=\Norigins,
+%   pct_https_success=\PHttpsOk,
+%   pct_https_unreachable=\PUnreach,
+%   pct_http_probe_ok=\PHttpOk,
+%   pct_http_redirect_to_https=\PRedir,
+%   pct_http_no_redirect=\PNoRedir
+% }{%
+%   \Dataset & \Sector &
+%   \Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
+% }%
 % }%
 % \end{inlinecap}
 
-\begin{inlinecap}
-  \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
-  For each dataset we report the number of origins that successfully served HTTPS and, among
-  those, the share that enabled HSTS at all, used a strong HSTS policy, and included
-  a long max-age, subdomain coverage, and the preload flag.}
-  \label{tab:https_hsts_quality}
-  \centering
-  \scriptsize
-  \setlength{\tabcolsep}{2.5pt}
-  \resizebox{\textwidth}{!}{%
-    \csvreader[
-      tabular=llrrrrrrr,
-      table head=\toprule
-        \multicolumn{2}{c}{Dataset} &
-        \multicolumn{2}{c}{Counts} &
-        \multicolumn{5}{c}{Share of sites (\%)} \\
-        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(l){5-9}
-        Dataset & Sector &
-        $n$ HTTPS ok &
-        $n$ with HSTS &
-        Any HSTS (of HTTPS ok) &
-        Strong HSTS (of HSTS) &
-        max-age $\geq$ 1y (of HSTS) &
-        incl.\ subdom.\ (of HSTS) &
-        preload flag (of HSTS) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
-      dataset_label=\Dataset,
-      sector_label=\Sector,
-      n_https_ok=\NHttpsOk,
-      n_has_hsts=\NHasHsts,
-      pct_has_hsts_among_https_ok=\PAnyHsts,
-      pct_hsts_strong_among_hsts=\PStrong,
-      pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
-      pct_hsts_include_subdomains_among_hsts=\PSubs,
-      pct_hsts_preload_among_hsts=\PPreload
-    }{%
-      \Dataset & \Sector &
-      \NHttpsOk & \NHasHsts &
-      \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
-    }%
-  }%
-  \end{inlinecap}
-  
+
+% \begin{inlinecap}
+%     \captionof{table}{HTTPS reachability and HSTS configuration quality by country and sector.
+%     For each dataset we report the number of origins that successfully served HTTPS and, among
+%     those, the share that enabled HSTS at all, used a strong HSTS policy, and included
+%     a long max-age, subdomain coverage, and the preload flag.}
+%     \label{tab:https_hsts_quality}
+%     \centering
+%     \scriptsize
+%     \setlength{\tabcolsep}{2.5pt}
+%     \resizebox{\textwidth}{!}{%
+%       \csvreader[
+%         tabular=llrrrrrrr,
+%         table head=\toprule
+%           \multicolumn{2}{c}{Dataset} &
+%           \multicolumn{2}{c}{Counts} &
+%           \multicolumn{5}{c}{Share of sites (\%)} \\
+%           \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(l){5-9}
+%           Dataset & Sector &
+%           $n$ HTTPS ok &
+%           $n$ with HSTS &
+%           Any HSTS (of HTTPS ok) &
+%           Strong HSTS (of HSTS) &
+%           max-age $\geq$ 1y (of HSTS) &
+%           incl.\ subdom.\ (of HSTS) &
+%           preload flag (of HSTS) \\\midrule,
+%         late after line=\\,
+%         late after last line=\\\bottomrule
+%       ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
+%         dataset_label=\Dataset,
+%         sector_label=\Sector,
+%         n_https_ok=\NHttpsOk,
+%         n_has_hsts=\NHasHsts,
+%         pct_has_hsts_among_https_ok=\PAnyHsts,
+%         pct_hsts_strong_among_hsts=\PStrong,
+%         pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
+%         pct_hsts_include_subdomains_among_hsts=\PSubs,
+%         pct_hsts_preload_among_hsts=\PPreload
+%       }{%
+%         \Dataset & \Sector &
+%         \NHttpsOk & \NHasHsts &
+%         \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
+%       }%
+%     }%
+%     \end{inlinecap}
+
 
 The following table summarizes TLS protocol support, naturally negotiated versions, and forced TLS 1.2 cipher quality across 
 all datasets for each country and sector. 
@@ -1180,116 +810,116 @@ version and cipher suite negotiated during a standard handshake, and then perfor
 classify cipher suites into recommended, sufficient, phase-out, insecure, or unknown 
 categories based on CCCS guidance.
     
-\begin{inlinecap}
-  \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
-  \label{tab:tls_cipher_summary}
-  \centering
-  \tiny
-  \setlength{\tabcolsep}{1.5pt}
-  \resizebox{\textwidth}{!}{%
-    \csvreader[
-      tabular=llrrrrrrrrrrrrrr,
-      table head=\toprule
-        Country & Sector & $n$ origins &
-        \multicolumn{4}{c}{TLS Support (\%)} &
-        \multicolumn{3}{c}{Negotiated (\%)} &
-        \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
-        \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
-        & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
-      country=\Country,
-      sector=\Sector,
-      n_origins=\Norigins,
-      pct_tls13_support=\TLSa,
-      pct_tls12_support=\TLSb,
-      pct_tls11_support=\TLSc,
-      pct_tls10_support=\TLSd,
-      n_with_version=\Nwv,
-      pct_tls13_neg=\Nega,
-      pct_tls12_neg=\Negb,
-      pct_other_neg=\Negc,
-      n_tls12_forced=\Ntf,
-      pct_recommended=\Crec,
-      pct_sufficient=\Csuf,
-      pct_phase_out=\Cphs,
-      pct_insecure=\Cins,
-      pct_unknown=\Cunk
-    }{%
-      \Country & \Sector & \Norigins &
-      \TLSa & \TLSb & \TLSc & \TLSd &
-      \Nega & \Negb & \Negc &
-      \Crec & \Csuf & \Cphs & \Cins & \Cunk
-    }%
-  }%
-  \end{inlinecap}
+% \begin{inlinecap}
+%   \captionof{table}{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
+%   \label{tab:tls_cipher_summary}
+%   \centering
+%   \tiny
+%   \setlength{\tabcolsep}{1.5pt}
+%   \resizebox{\textwidth}{!}{%
+%     \csvreader[
+%       tabular=llrrrrrrrrrrrrrr,
+%       table head=\toprule
+%         Country & Sector & $n$ origins &
+%         \multicolumn{4}{c}{TLS Support (\%)} &
+%         \multicolumn{3}{c}{Negotiated (\%)} &
+%         \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
+%         \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
+%         & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
+%       late after line=\\,
+%       late after last line=\\\bottomrule
+%     ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
+%       country=\Country,
+%       sector=\Sector,
+%       n_origins=\Norigins,
+%       pct_tls13_support=\TLSa,
+%       pct_tls12_support=\TLSb,
+%       pct_tls11_support=\TLSc,
+%       pct_tls10_support=\TLSd,
+%       n_with_version=\Nwv,
+%       pct_tls13_neg=\Nega,
+%       pct_tls12_neg=\Negb,
+%       pct_other_neg=\Negc,
+%       n_tls12_forced=\Ntf,
+%       pct_recommended=\Crec,
+%       pct_sufficient=\Csuf,
+%       pct_phase_out=\Cphs,
+%       pct_insecure=\Cins,
+%       pct_unknown=\Cunk
+%     }{%
+%       \Country & \Sector & \Norigins &
+%       \TLSa & \TLSb & \TLSc & \TLSd &
+%       \Nega & \Negb & \Negc &
+%       \Crec & \Csuf & \Cphs & \Cins & \Cunk
+%     }%
+%   }%
+%   \end{inlinecap}
   
 The chart below illustrates the negotiated version of TLS recorded in a ``natural'' handshake. This handshake 
 represents what a typical Canadian's user agent (browser) recieves in practice. We note here the Canadian authority
 sites lower proclivity for negotiating TLS~1.3 (vs higher TLS~1.2) compared to the other sectors. 
 
-  \begin{inlinecap}
-    \label{fig:tls_stacked_auth_fin}
-    \centering
-    \scriptsize
-    \begin{tikzpicture}
-      \begin{axis}[
-        ybar stacked,
-        bar width=8pt,
-        x=2cm,
-        enlarge x limits=0.15,
-        ymin=0, ymax=100,
-        ylabel={Negotiated TLS versions (\%)},
-        symbolic x coords={CA-Auth,US-Auth,UK-Auth,CA-Fin,US-Fin,UK-Fin},
-        xtick=data,
-        xticklabels={
-          CA\\Authorities,
-          US\\Authorities,
-          UK\\Authorities,
-          CA\\Finance,
-          US\\Finance,
-          UK\\Finance
-        },
-        xticklabel style={
-          align=center,
-          font=\scriptsize,
-          text width=1.6cm
-        },
-        tick label style={font=\scriptsize},
-        ymajorgrids=true,
-        legend style={
-          at={(0.5,1.20)},
-          anchor=south,
-          legend columns=3,
-          column sep=8pt,
-          font=\scriptsize,
-        },
-      ]
+%   \begin{inlinecap}
+%     \label{fig:tls_stacked_auth_fin}
+%     \centering
+%     \scriptsize
+%     \begin{tikzpicture}
+%       \begin{axis}[
+%         ybar stacked,
+%         bar width=8pt,
+%         x=2cm,
+%         enlarge x limits=0.15,
+%         ymin=0, ymax=100,
+%         ylabel={Negotiated TLS versions (\%)},
+%         symbolic x coords={CA-Auth,US-Auth,UK-Auth,CA-Fin,US-Fin,UK-Fin},
+%         xtick=data,
+%         xticklabels={
+%           CA\\Authorities,
+%           US\\Authorities,
+%           UK\\Authorities,
+%           CA\\Finance,
+%           US\\Finance,
+%           UK\\Finance
+%         },
+%         xticklabel style={
+%           align=center,
+%           font=\scriptsize,
+%           text width=1.6cm
+%         },
+%         tick label style={font=\scriptsize},
+%         ymajorgrids=true,
+%         legend style={
+%           at={(0.5,1.20)},
+%           anchor=south,
+%           legend columns=3,
+%           column sep=8pt,
+%           font=\scriptsize,
+%         },
+%       ]
   
-        \addplot[fill=green!70!black] coordinates {
-          (CA-Auth, 69.1)
-          (US-Auth, 84.6)
-          (UK-Auth,100.0)
-          (CA-Fin, 95.4)
-          (US-Fin, 84.9)
-          (UK-Fin, 90.2)
-        };
+%         \addplot[fill=green!70!black] coordinates {
+%           (CA-Auth, 69.1)
+%           (US-Auth, 84.6)
+%           (UK-Auth,100.0)
+%           (CA-Fin, 95.4)
+%           (US-Fin, 84.9)
+%           (UK-Fin, 90.2)
+%         };
   
-        \addplot[fill=orange!80!black] coordinates {
-          (CA-Auth, 30.9)
-          (US-Auth, 15.4)
-          (UK-Auth,  0.0)
-          (CA-Fin,  4.6)
-          (US-Fin, 15.1)
-          (UK-Fin,  9.8)
-        };
+%         \addplot[fill=orange!80!black] coordinates {
+%           (CA-Auth, 30.9)
+%           (US-Auth, 15.4)
+%           (UK-Auth,  0.0)
+%           (CA-Fin,  4.6)
+%           (US-Fin, 15.1)
+%           (UK-Fin,  9.8)
+%         };
   
-        \legend{TLS 1.3, TLS 1.2}
-      \end{axis}
-    \end{tikzpicture}
-    \captionof{figure}{Stacked bar chart of negotiated TLS versions for authority and finance websites by country.}
-  \end{inlinecap}
+%         \legend{TLS 1.3, TLS 1.2}
+%       \end{axis}
+%     \end{tikzpicture}
+%     \captionof{figure}{Stacked bar chart of negotiated TLS versions for authority and finance websites by country.}
+%   \end{inlinecap}
 
 Among Canadian authority origins, 65.9\% advertised TLS 1.3 support and 94.4\% supported TLS 1.2, 
 while 11.5\% still accepted TLS 1.1 and 9.6\% accepted TLS 1.0. During natural handshakes, 69.1\% of these authorities negotiated TLS 1.3 and 30.9\% negotiated TLS 1.2, with no 
@@ -1303,56 +933,47 @@ origins falling back to older protocols. When forced to use TLS 1.2, 74.9\% of C
 file per RFC 9116, then parsed present files to assess whether they included required Contact and Expires fields, and 
 whether Expires dates remained valid.
 
-\begin{inlinecap}
-\captionof{table}{Security.txt adoption and field completeness by country and sector.}
-\label{tab:securitytxt_summary}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrrr,
-table head=\toprule
-Dataset & Country & Sector &
-$n$ origins &
-$n$ with security.txt &
-Sites w/ security.txt (\%) &
-Contact field (\%) &
-Expires field (\%) &
-Valid expires (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_origins=\Norigins,
-n_with_securitytxt=\Nwith,
-pct_sites_with_securitytxt=\Psites,
-pct_with_contact_among_present=\Pcontact,
-pct_with_expires_among_present=\Pexpires,
-pct_valid_expires_among_expires=\Pvalid
-}{%
-\Dataset & \Country & \Sector &
-\Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
-}%
-}%
-\end{inlinecap}
+% \begin{inlinecap}
+% \captionof{table}{Security.txt adoption and field completeness by country and sector.}
+% \label{tab:securitytxt_summary}
+% \centering
+% \small
+% \setlength{\tabcolsep}{3pt}
+% \resizebox{\textwidth}{!}{%
+% \csvreader[
+% tabular=llllrrrrr,
+% table head=\toprule
+% Dataset & Country & Sector &
+% $n$ origins &
+% $n$ with security.txt &
+% Sites w/ security.txt (\%) &
+% Contact field (\%) &
+% Expires field (\%) &
+% Valid expires (\%) \\\midrule,
+% late after line=\\,
+% late after last line=\\\bottomrule
+% ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+% dataset_label=\Dataset,
+% country=\Country,
+% sector_label=\Sector,
+% n_origins=\Norigins,
+% n_with_securitytxt=\Nwith,
+% pct_sites_with_securitytxt=\Psites,
+% pct_with_contact_among_present=\Pcontact,
+% pct_with_expires_among_present=\Pexpires,
+% pct_valid_expires_among_expires=\Pvalid
+% }{%
+% \Dataset & \Country & \Sector &
+% \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
+% }%
+% }%
+% \end{inlinecap}
 
 Among Canadian authority origins, only 1.1\% (4 of 375) 
 published a security.txt file. All four files included Contact information and Expires fields, 
 though only 25\% had unexpired dates. US authorities showed higher adoption at 3.5\% (13 of 373), 
 with 92.3\% of those including Expires fields and 83.3\% maintaining valid expiration dates. 
 
-% \vspace{1em}Across Canadian sectors, energy demonstrated the highest adoption at 4.2\% (9 origins), 
-% followed by education at 3.9\% 
-% (4 origins), while finance showed minimal adoption at 0.6\% (1 origin). US sectors 
-% displayed comparable patterns, with education at 
-% 5.7\%, finance at 2.8\%, and energy at 0.7\%. UK education and finance sectors showed 
-% substantially higher adoption rates of 
-% 5.8\% and 12.1\% respectively, though field completeness varied with only 75\% of UK education
-% files and 50\% of UK finance 
-% files including Expires fields. 
 
 \vspace{1em}The following 2 tables present security header adoption and 
 cookie security flag usage across all datasets. For each successfully reached origin, 
@@ -1361,216 +982,186 @@ we analyzed HTTP response headers to identify the presence of key security heade
 \texttt{X-Frame-Options}, \texttt{Content-Security-Policy}, \texttt{Permissions-Policy}) and 
 cookie security attributes (Secure, HttpOnly, SameSite flags).
 
-% Security Headers Presence Table
-\begin{inlinecap}
-\captionof{table}{Security header adoption by country and sector.}
-\label{tab:security_headers_presence}
-\centering
-\tiny
-\setlength{\tabcolsep}{2pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrrr,
-table head=\toprule
-  Dataset & Country & Sector &
-  $n$ sites &
-  Referrer-Policy (\%) &
-  X-Content-Type-Options (\%) &
-  X-Frame-Options (\%) &
-  CSP frame-ancestors (\%) &
-  Permissions-Policy (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/headers/security_headers_presence.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_sites=\Nsites,
-pct_referrer_policy_present=\Pref,
-pct_x_content_type_options_present=\Pxcto,
-pct_x_frame_options_present=\Pxfo,
-pct_csp_frame_ancestors_present=\Pcsp,
-pct_permissions_policy_present=\Pperm
-}{%
-\Dataset & \Country & \Sector &
-\Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
-}%
-}%
-\end{inlinecap}
+% % Security Headers Presence Table
+% \begin{inlinecap}
+% \captionof{table}{Security header adoption by country and sector.}
+% \label{tab:security_headers_presence}
+% \centering
+% \tiny
+% \setlength{\tabcolsep}{2pt}
+% \resizebox{\textwidth}{!}{%
+% \csvreader[
+% tabular=llllrrrrr,
+% table head=\toprule
+%   Dataset & Country & Sector &
+%   $n$ sites &
+%   Referrer-Policy (\%) &
+%   X-Content-Type-Options (\%) &
+%   X-Frame-Options (\%) &
+%   CSP frame-ancestors (\%) &
+%   Permissions-Policy (\%) \\\midrule,
+% late after line=\\,
+% late after last line=\\\bottomrule
+% ]{../results/comparison/headers/security_headers_presence.csv}{%
+% dataset_label=\Dataset,
+% country=\Country,
+% sector_label=\Sector,
+% n_sites=\Nsites,
+% pct_referrer_policy_present=\Pref,
+% pct_x_content_type_options_present=\Pxcto,
+% pct_x_frame_options_present=\Pxfo,
+% pct_csp_frame_ancestors_present=\Pcsp,
+% pct_permissions_policy_present=\Pperm
+% }{%
+% \Dataset & \Country & \Sector &
+% \Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
+% }%
+% }%
+% \end{inlinecap}
 
 Overall, Canadian authorities show modest but uneven security-header adoption: 
 simple headers are common, but usage drops sharply for more complex policies. 
 US and UK authorities perform noticeably better, and within Canada the education sector generally 
 outperforms authorities.
 
-% Canadian authorities showed modest security header adoption, with 62.3\% 
-% deploying X-Content-Type-Options, 64.5\% using \texttt{X-Frame-Options}, 17.9\% implementing CSP 
-% frame-ancestors, 17.4\% setting \texttt{Referrer-Policy}, and only 8.6\% adopting \texttt{Permissions-Policy}. 
-% US authorities outperformed across most headers, achieving 78.0\% for \texttt{X-Content-Type-Options}, 
-% 81.2\% for \texttt{X-Frame-Options}, and 34.7\% for CSP frame-ancestors. UK authorities demonstrated
-% substantially higher adoption at 87.7\% for X-Content-Type-Options and X-Frame-Options, 
-% though this represents a small sample of 348 sites. Among Canadian sectors, education 
-% consistently exceeded authorities' performance (60.4\% X-Content-Type-Options, 28.6\% 
-% CSP frame-ancestors), while finance and energy showed mixed results with finance achieving 
-% the highest Referrer-Policy adoption at 28.0\%.
 
-\begin{inlinecap}
-\captionof{table}{Cookie security flag adoption by country and sector.}
-\label{tab:cookie_security_flags}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrrr,
-table head=\toprule
-  Dataset & Country & Sector &
-  $n$ sites &
-  Sites w/ cookies (\%) &
-  Secure flag (\%) &
-  HttpOnly flag (\%) &
-  SameSite$\ge$Lax (\%) &
-  Rec./Suff. (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_sites=\Nsites,
-pct_sites_with_cookies=\Pcookies,
-pct_secure_among_cookie_sites=\Psecure,
-pct_httponly_among_cookie_sites=\Phttp,
-pct_samesite_ge_lax_among_cookie_sites=\Psame,
-pct_rec_suff_among_cookie_sites=\Prec
-}{%
-\Dataset & \Country & \Sector &
-\Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
-}%
-}%
-\end{inlinecap}  
-
-Among Canadian authority origins setting cookies (28.2\% of all origins), 63.5\% used the 
-Secure flag, 48.7\% used HttpOnly, 15.7\% implemented SameSite at Lax or Strict, and only 
-3.5\% achieved recommended or sufficient configurations (Secure + HttpOnly + SameSite Strict/Lax). 
-Canadian energy sites showed stronger cookie security with 74.4\% using Secure and 76.8\% 
-using HttpOnly, achieving 4.9\% recommended configurations. US authorities showed comparable
-patterns with 51.6\% Secure, 44.0\% HttpOnly, and 3.3\% recommended. While UK authorities' 
-limited cookie-setting origins (0.6\% of 348 sites, or approximately 2 origins) 
-achieved perfect flag implementation but represent insufficient data for meaningful comparison.
-
-\subsubsection{Information Leakage}
-
-% Revealing Headers Summary Table
-\begin{inlinecap}
-\captionof{table}{Distribution of technology-revealing headers by country and sector.}
-\label{tab:revealing_headers_summary}
-\centering
-\small
-\setlength{\tabcolsep}{3pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrrrr,
-table head=\toprule
-Dataset & Country & Sector &
-$n$ sites &
-0 headers (\%) &
-1 header (\%) &
-2 headers (\%) &
-3+ headers (\%) &
-Any revealing (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/headers/revealing_headers_summary.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_sites=\Nsites,
-pct_revealing_0=\Pzero,
-pct_revealing_1=\Pone,
-pct_revealing_2=\Ptwo,
-pct_revealing_3_plus=\Pthree,
-pct_with_any_revealing=\Pany
-}{%
-\Dataset & \Country & \Sector &
-\Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
-}%
-}%
-\end{inlinecap}
-
-Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
-with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
-Canadian finance performed best with only 53.5\% revealing any technology information, 
-while energy (85.5\%) and education (82.4\%) showed lower disclosure rates than authorities. 
-US authorities demonstrated better information hygiene at 80.6\% disclosure, and UK
-authorities revealed technology on all origins (100\%), predominantly exposing exactly one
-header (99.4\%). Only 5.6\% of Canadian authorities exposed no technology-revealing headers,
-compared to 46.5\% of Canadian finance origins.
-
-\vspace{1em}The table below reports information leakage in HTTP error responses. 
-For each origin, we probed a randomly generated nonexistent path and analyzed the 
-error response for technology disclosure through framework signatures (Django, Laravel, 
-Spring Boot, etc.), database identifiers (MySQL, PostgreSQL, MongoDB, etc.), cloud platform banners (AWS, Azure, GCP), version numbers, and full stack traces in seven languages (Python, JavaScript, Java, PHP, Ruby, Go, C\#).
-
-% Error Leaks Summary Table
-\begin{inlinecap}
-\captionof{table}{Information leakage in HTTP error responses by country and sector.}
-\label{tab:error_leaks_summary}
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\csvreader[
-tabular=llllrrrr,
-table head=\toprule
-  Dataset & Country & Sector &
-  $n$ origins &
-  Any tech leak (\%) &
-  Version leak (\%) &
-  Stack trace (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
-dataset_label=\Dataset,
-country=\Country,
-sector_label=\Sector,
-n_scanned_origins=\Norigins,
-pct_any_tech_leak=\Ptech,
-pct_version_leak=\Pversion,
-pct_stacktrace=\Pstack
-}{%
-\Dataset & \Country & \Sector &
-\Norigins & \Ptech & \Pversion & \Pstack
-}%
-}%
-\end{inlinecap}
-
+% \begin{inlinecap}
+%     \captionof{table}{Cookie security flag adoption by country and sector.}
+%     \label{tab:cookie_security_flags}
+%     \centering
+%     \small
+%     \setlength{\tabcolsep}{3pt}
+%     \resizebox{\textwidth}{!}{%
+%     \csvreader[
+%     tabular=llllrrrrr,
+%     table head=\toprule
+%       Dataset & Country & Sector &
+%       $n$ sites &
+%       Sites w/ cookies (\%) &
+%       Secure flag (\%) &
+%       HttpOnly flag (\%) &
+%       SameSite$\ge$Lax (\%) &
+%       Rec./Suff. (\%) \\\midrule,
+%     late after line=\\,
+%     late after last line=\\\bottomrule
+%     ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
+%     dataset_label=\Dataset,
+%     country=\Country,
+%     sector_label=\Sector,
+%     n_sites=\Nsites,
+%     pct_sites_with_cookies=\Pcookies,
+%     pct_secure_among_cookie_sites=\Psecure,
+%     pct_httponly_among_cookie_sites=\Phttp,
+%     pct_samesite_ge_lax_among_cookie_sites=\Psame,
+%     pct_rec_suff_among_cookie_sites=\Prec
+%     }{%
+%     \Dataset & \Country & \Sector &
+%     \Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
+%     }%
+%     }%
+%     \end{inlinecap}  
+    
+    Among Canadian authority origins setting cookies (28.2\% of all origins), 63.5\% used the 
+    Secure flag, 48.7\% used HttpOnly, 15.7\% implemented SameSite at Lax or Strict, and only 
+    3.5\% achieved recommended or sufficient configurations (Secure + HttpOnly + SameSite Strict/Lax). 
+    Canadian energy sites showed stronger cookie security with 74.4\% using Secure and 76.8\% 
+    using HttpOnly, achieving 4.9\% recommended configurations. US authorities showed comparable
+    patterns with 51.6\% Secure, 44.0\% HttpOnly, and 3.3\% recommended. While UK authorities' 
+    limited cookie-setting origins (0.6\% of 348 sites, or approximately 2 origins) 
+    achieved perfect flag implementation but represent insufficient data for meaningful comparison.
+    
+    \subsubsection{Information Leakage}
+    
+    % % Revealing Headers Summary Table
+    % \begin{inlinecap}
+    % \captionof{table}{Distribution of technology-revealing headers by country and sector.}
+    % \label{tab:revealing_headers_summary}
+    % \centering
+    % \small
+    % \setlength{\tabcolsep}{3pt}
+    % \resizebox{\textwidth}{!}{%
+    % \csvreader[
+    % tabular=llllrrrrrr,
+    % table head=\toprule
+    % Dataset & Country & Sector &
+    % $n$ sites &
+    % 0 headers (\%) &
+    % 1 header (\%) &
+    % 2 headers (\%) &
+    % 3+ headers (\%) &
+    % Any revealing (\%) \\\midrule,
+    % late after line=\\,
+    % late after last line=\\\bottomrule
+    % ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+    % dataset_label=\Dataset,
+    % country=\Country,
+    % sector_label=\Sector,
+    % n_sites=\Nsites,
+    % pct_revealing_0=\Pzero,
+    % pct_revealing_1=\Pone,
+    % pct_revealing_2=\Ptwo,
+    % pct_revealing_3_plus=\Pthree,
+    % pct_with_any_revealing=\Pany
+    % }{%
+    % \Dataset & \Country & \Sector &
+    % \Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
+    % }%
+    % }%
+    % \end{inlinecap}
+    
+    Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
+    with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
+    Canadian finance performed best with only 53.5\% revealing any technology information, 
+    while energy (85.5\%) and education (82.4\%) showed lower disclosure rates than authorities. 
+    US authorities demonstrated better information hygiene at 80.6\% disclosure, and UK
+    authorities revealed technology on all origins (100\%), predominantly exposing exactly one
+    header (99.4\%). Only 5.6\% of Canadian authorities exposed no technology-revealing headers,
+    compared to 46.5\% of Canadian finance origins.
+    
+    \vspace{1em}The table below reports information leakage in HTTP error responses. 
+    For each origin, we probed a randomly generated nonexistent path and analyzed the 
+    error response for technology disclosure through framework signatures (Django, Laravel, 
+    Spring Boot, etc.), database identifiers (MySQL, PostgreSQL, MongoDB, etc.), cloud platform banners (AWS, Azure, GCP), version numbers, and full stack traces in seven languages (Python, JavaScript, Java, PHP, Ruby, Go, C\#).
+    
+    % % Error Leaks Summary Table
+    % \begin{inlinecap}
+    % \captionof{table}{Information leakage in HTTP error responses by country and sector.}
+    % \label{tab:error_leaks_summary}
+    % \centering
+    % \small
+    % \setlength{\tabcolsep}{4pt}
+    % \resizebox{\textwidth}{!}{%
+    % \csvreader[
+    % tabular=llllrrrr,
+    % table head=\toprule
+    %   Dataset & Country & Sector &
+    %   $n$ origins &
+    %   Any tech leak (\%) &
+    %   Version leak (\%) &
+    %   Stack trace (\%) \\\midrule,
+    % late after line=\\,
+    % late after last line=\\\bottomrule
+    % ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
+    % dataset_label=\Dataset,
+    % country=\Country,
+    % sector_label=\Sector,
+    % n_scanned_origins=\Norigins,
+    % pct_any_tech_leak=\Ptech,
+    % pct_version_leak=\Pversion,
+    % pct_stacktrace=\Pstack
+    % }{%
+    % \Dataset & \Country & \Sector &
+    % \Norigins & \Ptech & \Pversion & \Pstack
+    % }%
+    % }%
+    % \end{inlinecap}
+    
 Canadian authorities leaked technology information on 47.2\% of origins, compared with 20.9\% in Canadian finance, 
 with other sectors and countries showing intermediate levels of disclosure. Version numbers were exposed 
 on a minority of origins. Revealing specific software or framework versions enables attackers 
 to directly look up publicly documented vulnerabilities (CVEs) associated with that version without 
 additional probing. Across all datasets, no stack traces were observed.
 
-% Canadian authorities leaked technology information on 47.2\% of origins, with 10.7\% 
-% exposing version numbers and no origins leaking complete stack traces. Canadian finance 
-% demonstrated superior information hygiene with only 20.9\% revealing any technology details and 
-% 8.5\% exposing versions. Education (45.6\%) and energy (39.3\%) showed disclosure rates 
-% comparable to authorities. US authorities performed slightly better at 44.5\% disclosure 
-% with lower version exposure (6.4\%), while UK authorities showed 50.0\% technology 
-% disclosure in a limited sample. Across all datasets, no stack traces were detected, 
-% indicating effective suppression of detailed debugging output in production environments 
-% despite widespread framework and platform disclosure through error pages and response 
-% headers.
-
-% \subsection{Enough to support main questions}
-% RQ coverage:
-% - RQ1 (Canadian posture vs baseline):
-%   * Use the CA-only numbers for HTTPS, HSTS, TLS versions, cipher strength, cookies, and basic headers.
-% - RQ2 (sector/jurisdiction variation):
-%   * Tables comparing CA vs US vs UK within each sector for key metrics (HTTPS/HSTS, CSP, security.txt, etc.).
-% - RQ3 (second-line defenses and gaps):
-%   * Prevalence of CSP, Permissions-Policy, referrer policies, error-page hygiene, security.txt.
-%   * WAF/CDN behaviour data (how many sites effectively "opt out" of being measured).
 
 
 \section{Discussion}\label{sec:discussion}
@@ -1585,6 +1176,7 @@ transport controls, but that public-sector web services remain unevenly protecte
 both domestic critical-infrastructure providers and international peers.
 
 \subsection{\color{red}{Restate and Answer Main Questions}}
+    
 
 
 % \item \textbf{RQ1}: To what extent do Canadian public-sector and critical web services
@@ -1650,15 +1242,6 @@ majority of Canadian authority sites (Table~\ref{tab:revealing_headers_summary})
 disclose technology identifiers through error responses (Table~\ref{tab:error_leaks_summary}), lowering the
 cost of reconnaissance and targeted exploitation \cite{owasp_secure_headers_project,owasp_http_security_response_headers,cwe_200,cwe_209}.
 
-% \vspace{1em}This difference in governance model aligns closely with the gaps observed in our scan. 
-% US authority domains consistently outperformed Canadian authorities on several controls directly targeted by 
-% BOD~18-01 and related guidance, despite both countries having access to 
-% similar technical standards. Canadian finance and energy sectors, which often face stronger regulatory and
-% market incentives, showed security levels closer to their US counterparts than did Canadian authorities. 
-% Taken together, these patterns support the hypothesis that policy drives
-% security. When secure configuration is framed as a binding requirement with accountability
-% mechanisms, compliance is substantially higher than when equivalent recommendations are issued as
-% non-mandatory best practices.
 
 \subsection{What These Results Mean for Canadians}
 
@@ -1727,27 +1310,48 @@ discipline through secure defaults, routine validation, and incentives that make
 Converting recommendations into consistently applied practice would materially reduce exposure to common attacks and better
 honour the trust that Canadians place in online public services.
 
-% Acknowledgments ideas:
-% - Funding: CSA Group undergraduate research grant (project name).
-% - Institutional support: TRU supervisors/mentors, lab resources.
-% - Any assistance with infrastructure (cloud credits, security review, etc.).
+\section*{Acknowledgment}
 
-% \subsection{Funding/Equipment}
-% \newpage \begin{appendices}\label{app:reproducibility}
-% \section{Reproducibility Notes}
-% % Reproducibility notes:
-% % - Environment:
-% %   * Python version; key libraries (requests, ssl/PyOpenSSL, etc.).
-% %   * OS and VM specs.
-% % - Code:
-% %   * Repository structure; which commit/tag corresponds to this paper.
-% %   * High-level configuration: rate limits, timeouts, retry/backoff params.
-% % - Inputs:
-% %   * How to reconstruct site lists from the same public sources (without shipping full lists if they are sensitive).
-% % - Outputs:
-% %   * What artifacts you can safely share (aggregate stats, per-site anonymised summaries, or full per-site results if approved).
-% \end{appendices}
-\newpage 
-\bibliography{sn-bibliography}
+% The preferred spelling of the word ``acknowledgment'' in America is without 
+% an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
+% G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
+% acknowledgments in the unnumbered footnote on the first page.
+
+% \section*{References}
+
+\bibliographystyle{IEEEtran}
+\bibliography{main}
+
+% Please number citations consecutively within brackets \cite{b1}. The 
+% sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
+% number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
+% the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
+
+% Number footnotes separately in superscripts. Place the actual footnote at 
+% the bottom of the column in which it was cited. Do not put footnotes in the 
+% abstract or reference list. Use letters for table footnotes.
+
+% Unless there are six authors or more give all authors' names; do not use 
+% ``et al.''. Papers that have not been published, even if they have been 
+% submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers 
+% that have been accepted for publication should be cited as ``in press'' \cite{b5}. 
+% Capitalize only the first word in a paper title, except for proper nouns and 
+% element symbols.
+
+% For papers published in translation journals, please give the English 
+% citation first, followed by the original foreign-language citation \cite{b6}.
+
+% \begin{thebibliography}{00}
+% \bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
+% \bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
+% \bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
+% \bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
+% \bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
+% \bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
+% \bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+% \end{thebibliography}
+% \vspace{12pt}
+% \color{red}
+% IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
 
 \end{document}
