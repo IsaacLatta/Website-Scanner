@@ -70,13 +70,9 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -107,7 +103,6 @@ under-measured class of weaknesses involves inadvertent information disclosure t
 and error handling \cite{owasp_improper_error_handling,cwe_209,cwe_200}. Together, these realities motivate
 the need for a scalable, standards-aligned benchmarking methodology that can quantify real-world web
 security control adoption across Canadian public-sector and critical web services.
-\section{Ease of Use}
 
 \subsection{Main Questions Posed}
 
@@ -234,13 +229,22 @@ for how Canada's public-sector web security readiness compares to that of our al
 
 \subsection{Website Selection \& Sources}
 
-We have 4 sectors of websites we performed evaluation on for each country. \emph{Authorities}, consist of government 
-institutions, departments, crown corporations, and airport/health/maritime authorities. 
-\emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
-includes banks and credit unions of the parent country. Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing 
-critical infrastructure. The table below summarizes how we have sourced the website list for each domain. 
-Note that UK energy providers were excluded due to the absence of an authoritative source 
-with usable URIs. As such we leave our energy site comparison between Canada and the US.
+We curated a sector-balanced dataset across Canada (CA), the United States (US), and the
+United Kingdom (UK), spanning government, finance, education, and energy sectors. 
+Candidate websites were sourced from authoritative registries and well-established sector lists to
+prioritize institutional relevance and reduce sampling bias. 
+We distinguish between \emph{origins} (scheme + host + port) and \emph{endpoints} (origins with
+specific paths), enabling measurements at both transport and application levels.
+
+
+% We have 4 sectors of websites we performed evaluation on for each country. 
+% \emph{Authorities}, consist of government 
+% institutions, departments, crown corporations, and airport/health/maritime authorities. 
+% \emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
+% includes banks and credit unions of the parent country. Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing 
+% critical infrastructure. The table below summarizes how we have sourced the website list for each domain. 
+% Note that UK energy providers were excluded due to the absence of an authoritative source 
+% with usable URIs. As such we leave our energy site comparison between Canada and the US.
 
 % \begin{table*}[t]
 %     \caption{Overview of website datasets and primary data sources.}
@@ -381,9 +385,18 @@ with usable URIs. As such we leave our energy site comparison between Canada and
 
 \subsection{URL \& Origin Normalization}
 
+To ensure consistent measurement and avoid duplicate counting, 
+all candidate URLs were normalized to a canonical form. Hostnames were
+lowercased and default ports were removed (80/443). We resolved redirects up to a
+fixed depth, recording the final reachable destination and mapping each input URL to a
+single canonical origin. For origin-scoped controls (e.g.,
+transport security), we strip paths and queries to evaluate the underlying
+hosting posture, while endpoint-scoped controls (e.g., security headers and cookie attributes) are
+evaluated on the final resolved endpoint.
+
 After assembling the list of candidate URIs, we normalize each URI into an origin-URL pair. Any inputs 
-without a scheme were given HTTPS as a default (e.g., \texttt{example.gov} was rewritten as
-\texttt{https://example.gov/}), and all host names were lower-cased. From these normalized URLs we derived two sets. The first set was comprised of a list of 
+without a scheme were given HTTPS as a default, and all host names were lower-cased. From these normalized 
+URLs we derived two sets. The first set was comprised of a list of 
 unique origins, stripping off the port if present (e.g, \texttt{https://example.gov:443/} treated as \texttt{https://example.gov/}). 
 The second set consisted of a list of 
 normalized URIs to be resolved. Following the normalization, we then performed a redirect resolution pass.
@@ -395,83 +408,126 @@ cached the final and
 entry headers. If the redirect chain exceeded 8 hops, 
 or if the server returned a redirect without a \texttt{Location} header, we stopped following and tagged the resolution as
 an error rather than continuing indefinitely. This resolution 
-yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. In the later methodology and results, we
-discuss our set of analysis modules in terms of their scope, 
-i.e. whether they target an origin or the request URI. All of our origin-targeting tests (e.g., cryptographic tests) 
-were performed on both the final and entry origin. 
+yields 2 final sets of URLs and origins for analysis, consisting of the entry and final URL-origin pair. 
+All of our origin-targeting tests (e.g., cryptographic tests)  were performed on both the final and entry origin. 
 All URI-scoped tests were performed on \emph{only} the final URI, since this is the URI the end-user interacts with. 
 
 \subsection{Website Security Evaluation}
 
 For each target in our normalized and resolved list, the scanner performs a series of \emph{tests}. 
-As mentioned earlier some tests target origins, while others target URIs, since security measures may operate at
-different levels of the network stack. Each test operationalizes guidance from the Canadian Centre for 
-Cyber Security (CCCS), OWASP, Mozilla Developer Network (MDN), and relevant RFCs. Where necessary, each test's specifications are further
+Each test operationalizes guidance from the Canadian Centre for 
+Cyber Security (CCCS), OWASP, Mozilla Developer Network (MDN), and relevant RFCs. 
+Where necessary, each test's specifications are further
 consolidated by international authorities and browser engines. For example: the National Security Agency (NSA), 
 US Chief Information Officers Council (CIO), or Chromium and Firefox.
 
 \subsubsection{Transport Security}
 
-The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS 
-in line with modern guidance. This is an origin-scoped test, as HTTPS/HTTP operate at the transport layer. 
-The CCCS outlines in
-ITSP.40.062 \cite{cccs-itsp-40062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, but also implement HTTP Strict Transport 
-Security (HSTS) as outlined in RFC 6797 \cite{rfc6797}. HSTS informs the browser that this origin should \emph{only} be accessed over HTTPS, and any attempts at connecting over HTTP
-should automatically be upgraded to HTTPS. Furthermore, the American CIO also advocates for HTTPS-only and HSTS \cite{uscio-https-guide, uscio-hsts}. 
-In addition to these, modern browsers also explicitly document warning or outright blocking websites who do not enforce HTTPS as seen in Safari, Chrome, 
-and Firefox \cite{apple-http-warning,chrome-always-https,firefox-https-only-mode} documentation. In line with this guidance, our scanner first checks whether each origin accepts an HTTP and HTTPS connection. Secondly, it tests whether the HTTP connection was correctly redirected to
-an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required 
-in RFC 6797. If this header is present we extract 3 directives from the header's value. The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser should \emph{remember} that this origin
-should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second directive---\texttt{includeSubDomains}---indicates that this HSTS policy should apply to all subdomains on this origin.
-Thirdy, we extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
-Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
-it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
+The first evaluation measures whether each \emph{origin} supports HTTPS and enforces HTTPS-only
+ access, as recommended by CCCS guidance \cite{cccs-itsp-40062,cccs-itsm-60005} and standardized by HSTS
+  (RFC 6797) \cite{rfc6797}. HSTS instructs clients to automatically upgrade future requests to HTTPS for a specified duration.
+
+For each origin, the scanner (i) attempts both HTTP and HTTPS connections, (ii) verifies whether HTTP
+is upgraded to an HTTPS destination via redirection, and (iii) checks for the \texttt{Strict-Transport-Security} header.
+When present, we extract the HSTS directives \texttt{max-age}, \texttt{includeSubDomains}, and \texttt{preload}, where preload
+eligibility requires \texttt{max-age} $\ge 31536000$ seconds (1 year) \cite{mdn_sts_header,chromium_hsts_preload,firefox_hsts_preload}.
+
+
+
+% The first evaluation tests whether each origin actually supports HTTPS and whether it enforces HTTPS 
+% in line with modern guidance. This is an origin-scoped test, as HTTPS/HTTP operate at the transport layer. 
+% The CCCS outlines in
+% ITSP.40.062 \cite{cccs-itsp-40062} and ITSM.60.005 \cite{cccs-itsm-60005}, that origins should not only support HTTPS, 
+% but also implement HTTP Strict Transport 
+% Security (HSTS) as outlined in RFC 6797 \cite{rfc6797}. HSTS informs the browser that this origin should \emph{only} be
+%  accessed over HTTPS, and any attempts at connecting over HTTP
+% should automatically be upgraded to HTTPS. Furthermore, the American CIO also advocates for HTTPS-only and HSTS \cite{uscio-https-guide, uscio-hsts}. 
+% In addition to these, modern browsers also explicitly document warning or outright blocking websites who do not enforce HTTPS as seen in Safari, Chrome, 
+% and Firefox \cite{apple-http-warning,chrome-always-https,firefox-https-only-mode} documentation. 
+
+% In line with this guidance, our scanner first checks whether each origin accepts an HTTP and HTTPS connection. 
+% Secondly, it tests whether the HTTP connection was correctly redirected to
+% an HTTPS URI, typically via a 3xx status code and a \texttt{Location} header. 
+% Lastly, the scanner parses the server's response for the \texttt{Strict-Transport-Security} header as required 
+% in RFC 6797. If this header is present we extract 3 directives from the header's value. 
+% The first directive is \texttt{max-age}, this directive indicates how long in seconds the browser
+%  should \emph{remember} that this origin
+% should \emph{only} be accessed over HTTPS \cite{mdn_sts_header}. The second directive---\texttt{includeSubDomains}---indicates that this HSTS policy should apply to all subdomains on this origin.
+% Thirdy, we extract whether the site contains the \texttt{preload} directive. This directive indicates that the site should be added to the Google 
+% Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
+% it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
+
+\subsection{TLS Configuration}
+Beyond HTTPS enforcement, we profile each origin's Transport Layer Security (TLS) posture to determine (i) supported
+ protocol versions and (ii) exposure to deprecated ciphers. CCCS guidance recommends prioritizing TLS~1.3 and 
+ deprecating older protocols (TLS~1.1, TLS~1.0, SSL) \cite{cccs-itsap-40016,cccs-itsp-40062}. This CCCS guidance
+  consistent with NIST and NSA directives \cite{nist_800_52r2,nsa_eliminating_obsolete_tls} as well. 
+
+For each origin, the scanner attempts constrained handshakes for TLS~1.3, 1.2, 1.1, 1.0
+to record protocol support. We also perform a single ``natural'' handshake using a modern 
+client configuration to capture the negotiated protocol and cipher suite experienced by typical users.
+
+Cipher suites observed during these handshakes are classified using CCCS categories 
+(recommended/sufficient/phase-out) and NSA ``obsolete'' guidance \cite{cccs-itsp-40062,nsa_eliminating_obsolete_tls}. 
+Additionally, we flag any use of SHA-1 within the negotiated parameters
+ as non-compliant with CCCS guidance and vulnerable in practice \cite{cccs_itsp_40_111,leurent2020shambles,polk2011sha,stevens2017firstsha1collision}.
 
 % \subsection{TLS Configuration}
 
-% NOTE: Need to consider removing CBC from any plots and discussions, as much of the CCCS sufficient cipher suites contain CBC algorithms.
-\vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
-underlying Transport Layer Security (TLS) protocols and cipher suites.
-The goal of these checks was to answer two practical questions, do public-facing services offer modern TLS versions, 
-and are legacy or explicitly deprecated cipher
-suites still enabled. The CCCS provides an explicit recommendation of configuring clients and servers to only 
-use TLS 1.3 in 
-ITSAP.40.062 \cite{cccs-itsap-40016}. Similarly in ITSP.40.062 , the CCCS recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
-modern sites should not include TLS versions older than 1.2, or any versions of the Secure Socket Layer (SSL). 
-The desirability of TLS 1.3 and deprecation of older TLS and SSL versions is further corroborated by directives 
-from both the NSA and NIST \cite{nist_800_52r2, nsa_eliminating_obsolete_tls}. Aligned with these recommendations, 
-our scanner attempts a series of handshakes at TLS 1.3, TLS 1.2, TLS 1.1, TLS 1.0 and SSLv3. Thus, yielding a simple profile for each origin on how well they meet 
-modern HTTPS encryption standards. To understand what a typical user actually receives in practice, we then
-performed a single ``natural'' TLS handshake to each origin using a modern
-client configuration. This allows us to count how many sites have fully migrated to the modern TLS versions and how many continue to offer older protocols that have
-been formally deprecated due to known weaknesses and downgrade risks.
+% \vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
+% underlying Transport Layer Security (TLS) protocols and cipher suites.
+% The goal of these checks was to answer two practical questions, do public-facing services offer modern TLS versions, 
+% and are legacy or explicitly deprecated cipher
+% suites still enabled. The CCCS provides an explicit recommendation of configuring clients and servers to only 
+% use TLS 1.3 in 
+% ITSAP.40.062 \cite{cccs-itsap-40016}. Similarly in ITSP.40.062 , the CCCS recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
+% modern sites should not include TLS versions older than 1.2, or any versions of the Secure Socket Layer (SSL). 
+% The desirability of TLS 1.3 and deprecation of older TLS and SSL versions is further corroborated by directives 
+% from both the NSA and NIST \cite{nist_800_52r2, nsa_eliminating_obsolete_tls}. Aligned with these recommendations, 
+% our scanner attempts a series of handshakes at TLS 1.3, TLS 1.2, TLS 1.1, TLS 1.0 and SSLv3. Thus, yielding a simple profile for each origin on how well they meet 
+% modern HTTPS encryption standards. To understand what a typical user actually receives in practice, we then
+% performed a single ``natural'' TLS handshake to each origin using a modern
+% client configuration. This allows us to count how many sites have fully migrated to the modern TLS versions and how many continue to offer older protocols that have
+% been formally deprecated due to known weaknesses and downgrade risks.
 
-\vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
-The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', and ``phase out''. Augmenting this, we
-reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
-in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
-Each TLS handshake's outcome is cross-referenced against these lists to provide additional insights beyond simply the version.  
+% \vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
+% The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', and ``phase out''. Augmenting this, we
+% reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
+% in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
+% Each TLS handshake's outcome is cross-referenced against these lists to provide additional insights beyond simply the version.  
 
 \subsubsection{Vulnerability Disclosure (security.txt)}
 
-\vspace{1em} Next, we probe each origin for the presence of \texttt{security.txt}, ``A File Format to Aid in Security Vulnerability Disclosure'' \cite{rfc9116}.
-\texttt{Security.txt} is a simple 
-specification that provides a means of open vulnerability disclosure and management. America's Cybersecurity and Infrastructure Agency (CISA) advocates that all 
-organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value} and that each domain and subdomain within an agency's network. 
-This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{../resources/images/cisa_securitytxt.png}
-    \caption{The U.S. Cybersecurity and Infrastructure Security Agency (CISA) \texttt{security.txt} file.}
-    \label{fig:cisa_securitytxt}
-\end{figure}
+Next, the scanner probes each origin for \texttt{security.txt} (RFC~9116), 
+a standardized file that advertises vulnerability disclosure contacts and related policies \cite{rfc9116}.
+America's Cybersecurity and Infrastructure Agency (CISA) advocates that all 
+organizations should adopt the \texttt{securitytxt} standards \cite{cisa_securitytxt_simple_file_big_value} and
+that each domain and subdomain within an agency's network. 
+The scanner issues \texttt{GET} requests to \texttt{/security.txt} and \texttt{/.well-known/security.txt}. 
+A response is considered valid if it returns \texttt{200 OK} and contains at least one \texttt{Contact:} 
+field or a syntactically valid future-dated \texttt{Expires:} field at scan time. 
+When present, we additionally record whether a canonical URL is specified.
 
 
-\vspace{1em}Congruent with RFC 9116 and the CISA guidance, the scanner sends a \texttt{GET} request to the paths '\texttt{/security.txt}', and '\texttt{/.well-known/security.txt}'.
-A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
-syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. This evaluation
-is scoped at the origin, as each server may contain the \texttt{security.txt} resources at different URIs.
+% \vspace{1em} Next, we probe each origin for the presence of \texttt{security.txt}, 
+% ``A File Format to Aid in Security Vulnerability Disclosure'' \cite{rfc9116}.
+% \texttt{Security.txt} is a simple 
+% specification that provides a means of open vulnerability disclosure and management. 
+ 
+% This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
+
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=\columnwidth]{../resources/images/cisa_securitytxt.png}
+%     \caption{The U.S. Cybersecurity and Infrastructure Security Agency (CISA) \texttt{security.txt} file.}
+%     \label{fig:cisa_securitytxt}
+% \end{figure}
+
+
+% \vspace{1em}Congruent with RFC 9116 and the CISA guidance, the scanner sends a \texttt{GET} request to the paths '\texttt{/security.txt}', and '\texttt{/.well-known/security.txt}'.
+% A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
+% syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. This evaluation
+% is scoped at the origin, as each server may contain the \texttt{security.txt} resources at different URIs.
 
 \subsubsection{Security Headers \& Cookies}
 
