@@ -531,163 +531,122 @@ When present, we additionally record whether a canonical URL is specified.
 
 \subsubsection{Security Headers \& Cookies}
 
-\vspace{1em}Additionally, our scanner also performs a series of presence and evaluation checks on set of security headers. These checks are performed on 
-each of the final URIs (URI-scoped). First we record the presence of the \texttt{Referrer-Policy} header.
-The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent 
-along when a browser navigates to another site or loads third-party content.
-Without an explicit policy, browsers may send the full URL, including path and query parameters, 
-to external services. 
-On public-sector and financial sites, these URLs can easily contain case identifiers or other sensitive information. 
-We derive this header's evaluation from the guidance
-of OWASP and MDN. 
-
-
-The next header we evaluate is the \texttt{Content-Security-Policy} (CSP). The CSP aims at reducing the 
+Additionally, the scanner evaluates browser-enforced security controls on the final resolved landing page (URI-scoped) 
+inline with recommendedations from OWASP/MDN guidance, major platforms, and government authorities 
+\cite{owasp_http_security_response_headers,mdn_csp_guide,chrome_permissions_policy,owasp_csp_cheatsheet,gds_security_overview_websites, owasp_clickjacking_defense}. 
+Specifically, the following headers were evaluated: \texttt{Referrer-Policy}, \texttt{X-Frame-Options}, 
+\texttt{Content-Security-Policy} with \texttt{frame-ancestors}, \texttt{X-Content-Type-Options}=\texttt{nosniff},
+ and \texttt{Permissions-Policy} \cite{owasp_clickjacking_defense}. The \texttt{Referrer-Policy} header controls how much of the current page's URL (the ``referrer'') is sent 
+along when a browser navigates to another site or loads third-party content. \texttt{Content-Security-Policy} (CSP) aims at reducing the 
 attack surface of cross-site scripting (XSS) and other content-injection attacks by restricting which 
-sources of scripts, images, and 
-other resources the browser may load. Providing additional security over the aforementioned 
-\texttt{X-Frame-Options}.
-The MDN, OWASP and UK Government Digital Services (GDS) all recommend setting an 
-explicit CSP 
-\cite{mdn_csp_guide, owasp_csp_cheatsheet,gds_security_overview_websites, owasp_clickjacking_defense} with 
-the \texttt{frame-ancestors} directive. This directive controls exactly which other origins are 
-allowed to embed this origin's content inside an \texttt{<iframe>}.
-CSP is a powerful but application specific measure, we therefore interpret our CSP results narrowly, 
-focusing on \texttt{Content-Security-Policy: frame-ancestors} directive.
-The scanner records whether a response includes a \texttt{Content-Security-Policy} header and, if so, 
-whether it contains \texttt{frame-ancestors} directive.
-
-The \texttt{X-Content-Type-Options} header is a simple but important control. This header eliminates 
+sources of scripts, images, and other resources the browser may load. The \texttt{X-Content-Type-Options} header eliminates 
 ``MIME Sniffing'', where a browser may \emph{guess} the MIME (Multipurpose Internet Mail Extension) type of a 
-resource and act accordingly. This behaviour can be abused in so-called MIME confusion
-attacks, where user-supplied or third-party content is interpreted as active HTML or JavaScript instead of 
-static data. OWASP recommends administrators to set the \texttt{X-Content-Type-Options} to \texttt{nosniff}, instructing
-the browser to \emph{always} follow the content type found in the \texttt{Content-Type} header
-\cite{owasp_http_security_response_headers, mdn_mime_types_guide}. In line with OWASP's guidance, the scanner records
-the presence of \texttt{X-Content-Type-Options} in the response of the final resolved URI.
+resource and act accordingly. \vspace{1em}The \texttt{Permissions-Policy} (formerly \texttt{Feature-Policy}) allows a site to declare which browser
+features are enabled on a page and which embedded origins, may use them (e.g., camera, microphone, etc). 
 
-\vspace{1em}The next header the scanner records is the \texttt{Permissions-Policy} (formerly \texttt{Feature-Policy}). This header allows a site
-to declare which powerful browser features are enabled on a page and which embedded origins, if any, may use them. Examples include 
-access to the camera, microphone, geolocation, clipboard and more. 
-In the absence of an explicit policy, browsers generally assume that these features are available to the top-level origin and depending on the feature, 
-embedded third-party content. Both OWASP and Google Chrome both recommend web administrators explicitly set the \texttt{Permissions-Policy} 
-\cite{owasp_http_security_response_headers, chrome_permissions_policy}, 
-disabling what isn't in use. 
+In addition to the above headers, the scanner also evaluates the website's cookies (if present). 
+We assess cookie hardening because weak cookie attributes can undermine session security and increase exposure to common
+web attacks<CITE SOME HERE>. The scanner parses the following cookie parameters inline with modern guidance \cite{cccs_itsp_40_111,mdn_secure_cookie_configuration}.
 
-Even ostensibly ``public'' pages often set cookies for language preferences, analytics, or short-lived 
-session identifiers. Due to cookies being sent automatically to a site with each request, weak cookie settings can expose
-users to eavesdropping, cross-site request forgery (CSRF), or theft of authentication tokens. The CCCS 
-explicitly recommends the use of cookie security flags as part of secure session
-management \cite{cccs_itsp_40_111}. Additionally, MDN provides practical guidance on applying these flags in modern 
-applications \cite{mdn_secure_cookie_configuration}. Furthermore, OWASP marks multiple cookie protection mechanisms as mandatory.
-In particular, three attributes are widely recognized as baseline protections:
+% Maybe table ?
 \begin{itemize}
   \item \textbf{\texttt{Secure}} ensures that a cookie is only sent over HTTPS, preventing passive attackers on the network from reading its value on unencrypted connections.
   \item \textbf{\texttt{HttpOnly}} prevents JavaScript from accessing the cookie via \texttt{document.cookie}, which limits the impact of cross-site scripting (XSS) attacks on session tokens.
   \item \textbf{\texttt{SameSite}} limits when cookies are sent on cross-site requests. Strict or lax settings here can significantly reduce CSRF state changes by omitting cookies from certain cross-origin operations.
 \end{itemize}
 
-To evaluate how these protections are used in practice, our scanner inspects the \texttt{Set-Cookie} header on the final 
-landing page and parses any attributes attached to each cookie name–value pair. We record whether the \texttt{Secure} and 
-\texttt{HttpOnly} flags are present, the value of the \texttt{SameSite} attribute (if any), and whether
- the cookie appears to have an explicit lifetime via \texttt{Max-Age} or \texttt{Expires}. 
-Because some informational sites do not set 
-cookies at all, we only apply this check when at least one \texttt{Set-Cookie} header is observed on the 
-landing page. For the purposes of this study, cookies that are marked both \texttt{Secure} and \texttt{HttpOnly} and use a 
-strict
-\texttt{same-site} policy are classified as \emph{recommended}, 
-reflecting CCCS, MDN and OWASP guidance for session management. 
-Cookies that are \texttt{Secure} and \texttt{HttpOnly} but use a more permissive same-site setting 
-(e.g., \texttt{SameSite=Lax}) are treated as \emph{sufficient}, 
-since they still provide substantial protection against token theft and many cross-site attacks. 
-Cookies that lack any of these flags, particularly those that are neither \texttt{Secure} nor \texttt{HttpOnly} 
-or that omit a same-site policy entirely, are classified as \emph{insecure}. 
-
 \subsubsection{Information Leakage}
 
-\vspace{1em}Beyond checking for the presence of modern security headers, we also examined whether sites leaked 
-unnecessary implementation details through so--called 
-``revealing'' HTTP response headers. This check once again targets the final URI. 
-These are headers that advertise the underlying web server, framework, CMS, or platform. Prior work by the OWASP 
-HTTP Security Response Headers
-Cheat Sheet and the OWASP Secure Headers Project explicitly recommends removing or genericising headers such as 
-\texttt{Server}, \texttt{X-Powered-By}, 
-and framework version banners because they ease fingerprinting and targeted exploitation of known vulnerabilities 
-\cite{owasp_secure_headers_project, owasp_http_security_response_headers}. 
-More generally, government and national guidance on secure configuration, including CCCS ITSG--33 and related profiles, emphasises limiting information leakage from public services, 
-which includes avoiding unnecessary disclosure of software and version details. To operationalize this, our scanner 
-imported OWASP Secure Headers Project's list of ``revealing'' headers \cite{owasp_secure_headers_remove_json}. 
-For each origin's final response, the scanner recorded whether any response header name matched the OWASP list 
-(e.g., \texttt{server}, \texttt{x-powered-by}, etc.), and whether that response header contained version leaks.
+% \vspace{1em} 
+% \cite{owasp_top10_a05_2021,owasp_error_handling,cwe_209}.
 
+Beyond modern security headers, the scanner probes for information leakage via ``revealing'' HTTP response headers and verbose error pages. 
+Following OWASP guidance, each final URI is checked for the presence of commonly discouraged headers (e.g., server and framework identifiers) and 
+whether they expose version strings \cite{owasp_secure_headers_project,owasp_http_security_response_headers}. Specific revealing
+headers were sourced directly from OWASP \cite{owasp_secure_headers_remove_json}.
 
-
-\vspace{1em}Misconfigured error pages are another common source of unintended information disclosure 
-\cite{owasp_top10_a05_2021,owasp_error_handling,cwe_209}. These error pages can reveal the exact framework, cloud provider, or 
-database in use, and in the worst case they display full stack traces to unauthenticated users. Since leaks occur at the web application level, we perform this evaluation
-on origins. To assess this risk in a safe and consistent way, we carried out a
-single, non-invasive probe of each origin's error handling. For every origin, the scanner issued one HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
+ 
+To assess default error handling safely, the scanner carries out a single HTTPS \texttt{GET} request to a deliberately non-existent path of the form 
 \texttt{https://\textit{origin}/\_\_scanner\_404\_\_\textit{token}/}, where \textit{token} is a 
-random 16-character string chosen per origin. This is
-intended to trigger the site's standard 404/4xx error handler without sending any exploit payloads. 
-Responses were only analysed further if the \texttt{Content-Type} header indicated textual 
-content. 
-Otherwise, the origin was treated as not exposing any interpretable error page. The body of each error page was then scanned for two classes of
-information leaks. First, we looked for technology banners using a curated set of signatures for common web frameworks, cloud platforms, and databases. These signatures
-were derived from the most widely used web technologies in the 2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}. 
-Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
-minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
-identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
+random 16-character string chosen per origin. If the response returns textual content, the body is analyzed for two leak classes: (i) banners indicating frameworks, platforms, or
+databases (including version strings), and (ii) stack traces from common backend languages (e.g., Python, Java, PHP, Node.js). 
+The scanner used a set of regular expression (REGEX) signatures derived from the most common web languages / frameworks, cloud platforms, and databases found in the 
+2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}.
 
-\vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Developer Survey. For
-each language we defined a pair of regular-expression families. These families include header patterns
-that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
-When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
-the leaked language is recorded. Results were limited to at most one trace per language per origin.
+% Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
+% minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
+% identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
+
+% \vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Developer Survey. For
+% each language we defined a pair of regular-expression families. These families include header patterns
+% that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
+% When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
+% the leaked language is recorded. Results were limited to at most one trace per language per origin.
 
 \subsection{Scanner Implementation \& Validation}
 
-\vspace{1em}To keep our scan non-invasive and respectful, the scanner was built to allow a configured 
-total and per-origin simultaneous connection limit. 
-For the authority sites, we allowed 15 total concurrent connections, with at most 
-3 connections to each origin at a time. For other sectors (finance, education, energy) 
-we allowed 20 total concurrent connections with 5 concurrent per origin. Each request was bounded by a client-side timeout of 3 seconds. 
-The scanner also maintains per-origin timeout counters.
-Origins that accumulated 3 HTTP timeouts or 2 TLS timeouts were marked as temporarily dead for that protocol, 
-and no further HTTP/TLS modules were run against them. These hyper-conservative constraints were chosen to ensure ethical scanning practice 
-and prevent service disruption. Thus, allowing us to distinguish genuinely unreachable sites, 
-without inundating servers with excessive traffic.
+\subsection{Scanner Implementation \& Validation}
+To ensure ethical, non-invasive measurement, the scanner enforces conservative global and
+ per-origin concurrency limits, client-side timeouts, 
+ and conservative retry/stop rules. Origins timeing out beyond the HTTP / TLS limits were marked temporarily unavailable for that
+protocol and excluded from subsequent modules. Thus, preventing repeated probing of unstable services. All measurements 
+ relied on standard HTTP(S) requests and redirects only, without any exploit payloads.
 
-\vspace{1em}Because our conclusions depend on automated classification, we invested effort in testing the scanner 
-itself
-before running it at scale. The goal of these tests was not to prove the scanner is perfect, but to ensure that, 
-for a wide range of realistic inputs, the implementation behaves in a way that matches the methodology described above.
-First, we built automated tests for individual modules such as target parsing, HTTPS/TLS connectivity, security.txt 
-discovery and 
-header classification. For these tests we spun up small local web servers on \texttt{localhost} with controlled behaviour
- (e.g., specific redirects, header combinations, or security.txt contents) and ran the scanner against them. This 
-allowed us to verify that each module correctly interpreted well-formed responses, handled missing or malformed fields 
-gracefully, 
-and produced the expected results for the security headers and cookie flags. 
-TLS-related tests were performed against local HTTPS endpoints using self-signed certificates. 
-We confirmed that the scanner correctly distinguished between successful and failed HTTPS connections by 
-varying certificate properties and connection parameters on the local web servers. 
+% \begin{table}[t]
+%   \centering
+%   \caption{Scanner rate limits and timeouts (non-invasive configuration).}
+%   \label{tab:scan_limits}
+%   \small
+%   \setlength{\tabcolsep}{5pt}
+%   \begin{tabular}{lccc}
+%   \toprule
+%   \textbf{Category} & \multicolumn{2}{c}{\textbf{Concurrency limits}} & \textbf{Timeout} \\
+%   \cmidrule(lr){2-3}
+%    & \textbf{Global} & \textbf{Per-origin} &  \\
+%   \midrule
+%   Authorities & 15 & 3 & 3\,s \\
+%   Edu/Fin/Energy & 20 & 5 & 3\,s \\
+%   \bottomrule
+%   \end{tabular}
+%   \end{table}
+  
+\begin{table}[t]
+  \centering
+  \caption{Scanner rate limits and failure thresholds (non-invasive configuration).}
+  \label{tab:scan_limits}
+  \small
+  \setlength{\tabcolsep}{4.5pt}
+  \begin{tabular}{lcccc}
+  \toprule
+  \textbf{Category} & \multicolumn{2}{c}{\textbf{Concurrency limits}} & \textbf{Timeout} & \textbf{Stop Thresh.} \\
+  \cmidrule(lr){2-3}
+   & \textbf{Global} & \textbf{Per-origin} &  & (HTTP / TLS) \\
+  \midrule
+  Authorities & 15 & 3 & 3\,s & 3 / 2 \\
+  Edu/Fin/Energy & 20 & 5 & 3\,s & 3 / 2 \\
+  \bottomrule
+  \end{tabular}
+  \end{table}
 
-\vspace{1em}To validate the scanner's error leak detection, we first tested the regular-expression approach offline. 
-For each web language, we intentionally executed failing code to 
-generate genuine stack traces and error pages in that language's default format. These raw error messages were 
-fed directly into the parser to confirm that the scanner reliably detected the expected language/technology and 
-extracted the 
-correct label. In parallel, we ran the same detector over leak-free HTML and JSON data drawn from real web endpoints. Asserting that 
-no stack traces or banners were reported, thus guarding against false positives. Similar to the previous tests, we then configured small local web servers to return known responses on specific paths, including pages that 
-contained the captured error messages or only normal content. The scanner then scanned these local endpoints, and our tests 
-asserted the same results were recorded over HTTP. 
+We validated automated classification using controlled ground truth before deployment.
+Unit tests covered URL parsing/normalization, redirect handling, HTTPS reachability, \texttt{security.txt} 
+discovery, and response-header/cookie parsing using local \texttt{localhost} endpoints configured with
+specific redirects, headers, and cookie attributes. TLS probing was tested against local
+HTTPS servers with self-signed certificates and intentionally varied handshake parameters to 
+confirm correct separation of successful and failed connections.
 
-\vspace{1em}Finally, we ran end-to-end tests in which all modules were exercised together, imitating a small scan 
-from input list to
-aggregated results. In these scenarios, the scanner was pointed at a collection of local test servers designed to emulate a mix of 
-secure, partially configured and clearly misconfigured sites. We then compared the resulting findings against an expected 
-``ground truth'' for each test target. 
+% maybe table here ?
+To ensure the scanner's accuracy automated tests were built for individual modules such as target parsing, 
+HTTPS/TLS connectivity, security.txt discovery and header classification. 
+These tests evaluated the scanner against small web servers controlled behaviour (e.g., specific redirects, 
+header combinations, TLS configurations)
+over \texttt{localhost}. 
+
+Error-leak detection was validated using real stack traces and error pages generated 
+locally across common backend languages, alongside a negative-control set of 
+benign HTML/JSON to guard against false positives. Finally, end-to-end integration tests exercised
+all modules against a small suite of local servers emulating secure, partially configured, 
+and misconfigured targets.
 
 \section{Results}\label{sec:result}
 
