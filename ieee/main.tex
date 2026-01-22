@@ -21,6 +21,15 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
+
+
+% TODO
+  % - add frame-x-options block.
+  % - format tables
+  % - elaborate on the fact that origin eval happened at input and final, endpoint final-only
+  % - remove talk on cipher suites, or add it back to the TLS summary table
+  % - confirm methods mentions checking for contact and expires in security.txt
+
 \title{Conference Paper Title*\\
 {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
 should not be used}
@@ -457,7 +466,7 @@ eligibility requires \texttt{max-age} $\ge 31536000$ seconds (1 year) \cite{mdn_
 % Chrome and Firefox preload list \cite{chromium_hsts_preload,firefox_hsts_preload}. Note that for a site to be successfully added to the preload list, 
 % it must implement HSTS with a \texttt{max-age} $\geq \text{1 year (31536000 seconds)}$.   
 
-\subsection{TLS Configuration}
+\subsubsection{TLS Configuration}
 Beyond HTTPS enforcement, we profile each origin's Transport Layer Security (TLS) posture to determine (i) supported
  protocol versions and (ii) exposure to deprecated ciphers. CCCS guidance recommends prioritizing TLS~1.3 and 
  deprecating older protocols (TLS~1.1, TLS~1.0, SSL) \cite{cccs-itsap-40016,cccs-itsp-40062}. This CCCS guidance
@@ -508,26 +517,6 @@ A response is considered valid if it returns \texttt{200 OK} and contains at lea
 field or a syntactically valid future-dated \texttt{Expires:} field at scan time. 
 When present, we additionally record whether a canonical URL is specified.
 
-
-% \vspace{1em} Next, we probe each origin for the presence of \texttt{security.txt}, 
-% ``A File Format to Aid in Security Vulnerability Disclosure'' \cite{rfc9116}.
-% \texttt{Security.txt} is a simple 
-% specification that provides a means of open vulnerability disclosure and management. 
- 
-% This text file contains a concise set of fields that outlining an entity's preferences for vulnerability disclosure. An example of the CISA's security.txt file can be found below:
-
-% \begin{figure}[t]
-%     \centering
-%     \includegraphics[width=\columnwidth]{../resources/images/cisa_securitytxt.png}
-%     \caption{The U.S. Cybersecurity and Infrastructure Security Agency (CISA) \texttt{security.txt} file.}
-%     \label{fig:cisa_securitytxt}
-% \end{figure}
-
-
-% \vspace{1em}Congruent with RFC 9116 and the CISA guidance, the scanner sends a \texttt{GET} request to the paths '\texttt{/security.txt}', and '\texttt{/.well-known/security.txt}'.
-% A response is considered a candidate \texttt{security.txt} file if the server returns 200 OK and the response contains at least one \texttt{Contact:} field or a 
-% syntactically valid \texttt{Expires:} field that exist in the future at scan time. Lastly, the scanner parses whether any canonical URLs are listed. This evaluation
-% is scoped at the origin, as each server may contain the \texttt{security.txt} resources at different URIs.
 
 \subsubsection{Security Headers \& Cookies}
 
@@ -652,288 +641,248 @@ and misconfigured targets.
 
 \subsection{URL \& Origin Normalization}
 
-The table below illustrates the outcome of our initial resolution stage. The columns represent the
-number of input URIs, distinct final URIs and final origins after following
-redirects, and the percentage of inputs that ended in a successful 2xx
-response, a final 4xx/5xx response, or no final URL. Plus the percentage
-of origins whose inputs were all unreachable from the scanner's vantage point. 
+The table below illustrates the outcome of our initial resolution stage. 
+Input origins and URIs refers to those present in the sourced dataset. Final URIs
+refers to the number of de-duplicated URIs present after resolution. Unique origins
+refers to the number of de-duplicated origins accross both the input and final set of 
+resolved hosts. Finally, the 2xx status column indicates the percentage of redirects
+that ended in a positve status code.
 
-% \begin{inlinecap}  % no argument; default is \textwidth
-%     \captionof{table}{Redirect resolution outcomes by country and sector.}
-%     \label{tab:redirect_summary}
-%     \centering
-%     \scriptsize
-%     \setlength{\tabcolsep}{2.5pt}
-%     \resizebox{\textwidth}{!}{%
-%       \csvreader[
-%         tabular=lllrrrrrrrr,  % Added one more 'r' column
-%         table head=\toprule
-%           Dataset & Sector &
-%           $n$ URIs &
-%           $n$ final URIs &
-%           $n$ input origins &
-%           $n$ final origins &
-%           $n$ unique final origins &  % NEW COLUMN
-%           Final 2xx (\%) &
-%           Final 4xx/5xx (\%) &
-%           No final URL (\%) &
-%           Origins all unreachable (\%) \\\midrule,
-%         late after line=\\,
-%         late after last line=\\\bottomrule
-%       ]{../results/comparison/redirects/redirects_summary.csv}{%
-%         dataset_label=\Dataset,
-%         sector_label=\Sector,
-%         n_input_uris=\Nuris,
-%         n_final_uris=\Nfuri,
-%         n_input_origins=\Niorig,
-%         n_final_origins=\Nforig,
-%         pct_final_2xx=\P2xx,
-%         pct_final_4xx_5xx=\Perr,
-%         pct_no_final=\Pno,
-%         pct_origins_all_unreachable=\PorigDead
-%       }{%
-%         \Dataset & \Sector &
-%         \Nuris & \Nfuri & \Niorig & \Nforig &
-%         % NEW: Conditional column for n unique final origins
-%         \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
-%         \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
-%         &  % End of new column
-%         \P2xx & \Perr & \Pno & \PorigDead
-%       }%
-%     }%
-%     \end{inlinecap}
 
-\begin{table*}[t]
-    \caption{Redirect resolution outcomes by country and sector.}
-    \label{tab:redirect_summary}
-    \centering
-    \scriptsize
-    \setlength{\tabcolsep}{2.5pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\textwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrrrrrr,
-      table head=\toprule
-        Dataset & Sector &
-        $n$ URIs &
-        $n$ final URIs &
-        $n$ input origins &
-        $n$ final origins &
-        $n$ unique final origins &
-        Final 2xx (\%) &
-        Final 4xx/5xx (\%) &
-        No final URL (\%) &
-        Origins all unreachable (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/redirects/redirects_summary.csv}{%
-      dataset_label=\Dataset,
-      sector_label=\Sector,
-      n_input_uris=\Nuris,
-      n_final_uris=\Nfuri,
-      n_input_origins=\Niorig,
-      n_final_origins=\Nforig,
-      pct_final_2xx=\P2xx,
-      pct_final_4xx_5xx=\Perr,
-      pct_no_final=\Pno,
-      pct_origins_all_unreachable=\PorigDead
-    }{%
-      \Dataset & \Sector &
-      \Nuris & \Nfuri & \Niorig & \Nforig &
-      \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
-      \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
-      \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
-      \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
-      &%
-      \P2xx & \Perr & \Pno & \PorigDead
-    }%
-    }%
-    % }
-    \end{table*}
-    
-    
+\begin{table}[t]
+  \caption{Redirect resolution summary (inputs mapped to measured endpoints).}
+  \label{tab:redirect_summary}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.15}
+  
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+    tabular=lrrrrr,
+    table head=\toprule
+      \textbf{Dataset} &
+      \multicolumn{2}{c}{\textbf{\emph{n} URIs}} &
+      \multicolumn{2}{c}{\textbf{\emph{n} Origins}} &
+      \textbf{Final 2xx (\%)} \\
+      \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+       & \textbf{Input} & \textbf{Final} & \textbf{Input} & \textbf{Unique} & \\
+      \midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/redirects/redirects_summary.csv}{%
+    dataset_label=\Dataset,
+    n_input_uris=\Nuris,
+    n_final_uris=\Nfinal,
+    n_input_origins=\NorigIn,
+    pct_final_2xx=\Ptwo
+  }{%
+    \Dataset &
+    \Nuris &
+    \Nfinal &
+    \NorigIn &
+    % --- unique origins (hardcoded, CSV unchanged)
+    \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
+    \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
+    \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
+    \ifnum\pdfstrcmp{\Dataset}{CA Energy}=0 188\fi%
+    \ifnum\pdfstrcmp{\Dataset}{US Authorities}=0 373\fi%
+    \ifnum\pdfstrcmp{\Dataset}{US Education}=0 53\fi%
+    \ifnum\pdfstrcmp{\Dataset}{US Finance}=0 107\fi%
+    \ifnum\pdfstrcmp{\Dataset}{US Energy}=0 141\fi%
+    \ifnum\pdfstrcmp{\Dataset}{UK Authorities}=0 4\fi%
+    \ifnum\pdfstrcmp{\Dataset}{UK Education}=0 447\fi%
+    \ifnum\pdfstrcmp{\Dataset}{UK Finance}=0 165\fi%
+    &
+    \Ptwo
+  }%
+  }%
+  \end{table}
 
-\vspace{1em}Among Canadian authority inputs, 68.4\% resolved to final 2xx responses, 5.2\% ended in 
-4xx/5xx errors, and 26.4\% failed to reach any final URL due to timeouts or connection 
-failures. The 342 input origins expanded to 238 final origins after redirect resolution, 
-with 18.6\% of origins completely unreachable. US authorities showed comparable patterns 
-with 72.4\% success, 27.2\% no final URL, and 21.7\% completely unreachable origins. 
-UK authorities achieved 88.0\% successful resolution but represent only 3 input origins 
-expanding to 3 final origins.
-
+During the resolution pass, final 2xx resolution rates varied substantially across datasets, 
+with CA Authorities exhibiting the lowest success rate 
+(68.4\%) compared to 80–95\% in most other sectors.
+  
 \subsection{Website Security Evaluation}
 
 \subsubsection{Transport Security}
 
-\vspace{1em}Following redirect resolution, we outline the results of our HTTPS redirection, and HSTS probes. 
-We compare each sector of each country against the Canadian authority sites. Across the 
-373 Canadian authority origins, roughly three quarters (73\%) successfully served a page over 
-HTTPS from our vantage point, while about one quarter returned HTTPS errors or were unreachable. 
-Over HTTP, almost all origins responded (94\%), and nearly nine in ten  ($\approx89\%$) 
-redirected users to HTTPS, with only a small minority either serving a non-redirecting HTTP 
-page or redirecting somewhere other than HTTPS. 
-Among HTTPS-capable sites, almost nine in ten deployed HSTS at all, and about two-thirds of 
-those used a ``strong'' policy (at least one-year max-age with includeSubDomains), 
-often with the preload flag set. Note that the ``unreachable'' column in this table is \emph{not} 
-an indicator that the site is offline. Rather, ``unreachable''  that
+The following two tables (insert ref) summarize the results of the HTTP/HTTPS and HSTS evaluation.
+Notably, many sectors exhibit low percentages
+within the \emph{strong} HSTS bucket (at least one-year max-age with includeSubDomains). 
+Additionally, one should note that ``unreachable'' here is \emph{not} 
+an indicator that the site is offline. Rather, that
 our scanner was repeatedly unable to complete a TLS handshake or receive an HTTP response. 
-This behaviour suggests bot mitigation, rate limiting, or WAF/CDN filtering---not unavailability.
-
+Any resulting percentages were only recorded on those sites that did not timeout, or become 
+disabled by the scanner's rate limits. 
 
 \begin{table}[t]
-\caption{HTTP/HTTPS connectivity outcomes by country and sector. Values are the percentage of origins in each dataset that successfully served HTTPS, were unreachable over HTTPS, responded to an HTTP probe at all, redirected HTTP to HTTPS, or served HTTP without redirecting.}
-\label{tab:https_connectivity}
-\centering
-\scriptsize
-\setlength{\tabcolsep}{2.5pt}
-\renewcommand{\arraystretch}{1.15}
-
-\resizebox{\columnwidth}{!}{%
-\csvreader[
-tabular=llrrrrrr,
-table head=\toprule
-Dataset & Sector &
-$n$ origins &
-HTTPS ok (\%) &
-HTTPS unreachable (\%) &
-HTTP probe ok (\%) &
-HTTP$\to$HTTPS redirect (\%) &
-HTTP no redirect (\%) \\\midrule,
-late after line=\\,
-late after last line=\\\bottomrule
-]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
-dataset_label=\Dataset,
-sector_label=\Sector,
-n_origins=\Norigins,
-pct_https_success=\PHttpsOk,
-pct_https_unreachable=\PUnreach,
-pct_http_probe_ok=\PHttpOk,
-pct_http_redirect_to_https=\PRedir,
-pct_http_no_redirect=\PNoRedir
-}{%
-\Dataset & \Sector &
-\Norigins & \PHttpsOk & \PUnreach & \PHttpOk & \PRedir & \PNoRedir
-}%
-}%
-\end{table}
-    
-\begin{table}[t]
-    \caption{HTTPS reachability and HSTS configuration quality by country and sector. For each dataset we report the number of origins that successfully served HTTPS and, among those, the share that enabled HSTS at all, used a strong HSTS policy, and included a long max-age, subdomain coverage, and the preload flag.}
-    \label{tab:https_hsts_quality}
-    \centering
-    \scriptsize
-    \setlength{\tabcolsep}{2.0pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=llrrrrrrr,
-      table head=\toprule
-        \multicolumn{2}{c}{Dataset} &
-        \multicolumn{2}{c}{Counts} &
-        \multicolumn{5}{c}{Share of sites (\%)} \\
-        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-9}
-        Dataset & Sector &
-        $n$ HTTPS ok &
-        $n$ with HSTS &
-        Any HSTS &
-        Strong HSTS &
-        max-age $\geq$ 1y &
-        incl.\ subdom.\ &
-        preload flag \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
-      dataset_label=\Dataset,
-      sector_label=\Sector,
-      n_https_ok=\NHttpsOk,
-      n_has_hsts=\NHasHsts,
-      pct_has_hsts_among_https_ok=\PAnyHsts,
-      pct_hsts_strong_among_hsts=\PStrong,
-      pct_hsts_maxage_1yr_among_hsts=\PMaxAge,
-      pct_hsts_include_subdomains_among_hsts=\PSubs,
-      pct_hsts_preload_among_hsts=\PPreload
-    }{%
-      \Dataset & \Sector &
-      \NHttpsOk & \NHasHsts &
-      \PAnyHsts & \PStrong & \PMaxAge & \PSubs & \PPreload
-    }%
-    }%
-    \end{table}
-    
-
-The following table summarizes TLS protocol support, naturally negotiated versions, and forced TLS 1.2 cipher quality across 
-all datasets for each country and sector. 
-For each origin, we probed which TLS protocol versions (1.0, 1.1, 1.2, 1.3) the server advertises support for. Following this recorded the 
-version and cipher suite negotiated during a standard handshake, and then performed forced TLS 1.2 handshakes to 
-classify cipher suites into recommended, sufficient, phase-out, insecure, or unknown 
-categories based on CCCS guidance.
-    
-\begin{table}[t]
-    \caption{TLS protocol support, negotiated versions, and cipher categories by country and sector.}
-    \label{tab:tls_cipher_summary}
-    \centering
-    \tiny
-    \setlength{\tabcolsep}{1.0pt}
-    \renewcommand{\arraystretch}{1.10}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=llrrrrrrrrrrrrrr,
-      table head=\toprule
-        Country & Sector & $n$ origins &
-        \multicolumn{4}{c}{TLS Support (\%)} &
-        \multicolumn{3}{c}{Negotiated (\%)} &
-        \multicolumn{5}{c}{TLS 1.2 Cipher Categories (\%)} \\
-        \cmidrule(lr){4-7} \cmidrule(lr){8-10} \cmidrule(lr){11-15}
-        & & & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Other & Rec. & Suff. & Phase & Insec. & Unk. \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
-      country=\Country,
-      sector=\Sector,
-      n_origins=\Norigins,
-      pct_tls13_support=\TLSa,
-      pct_tls12_support=\TLSb,
-      pct_tls11_support=\TLSc,
-      pct_tls10_support=\TLSd,
-      pct_tls13_neg=\Nega,
-      pct_tls12_neg=\Negb,
-      pct_other_neg=\Negc,
-      pct_recommended=\Crec,
-      pct_sufficient=\Csuf,
-      pct_phase_out=\Cphs,
-      pct_insecure=\Cins,
-      pct_unknown=\Cunk
-    }{%
-      \Country & \Sector & \Norigins &
-      \TLSa & \TLSb & \TLSc & \TLSd &
-      \Nega & \Negb & \Negc &
-      \Crec & \Csuf & \Cphs & \Cins & \Cunk
-    }%
-    }%
-    \end{table}
+  \caption{HTTP/HTTPS connectivity outcomes by dataset (percent of origins).}
+  \label{tab:https_connectivity}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.15}
   
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+  tabular=lrrrrrr,
+  table head=\toprule
+  Dataset &
+  $n$ origins &
+  HTTPS ok (\%)&
+  HTTPS unreach. (\%)&
+  HTTP ok (\%)&
+  HTTP$\to$HTTPS (\%)&
+  HTTP no redir. (\%) \\\midrule,
+  late after line=\\,
+  late after last line=\\\bottomrule
+  ]{../results/comparison/https_hsts/https_hsts_enforcement_summary.csv}{%
+  dataset_label=\Dataset,
+  n_origins=\Norigins,
+  pct_https_success=\PHttpsOk,
+  pct_https_unreachable=\PUnreach,
+  pct_http_probe_ok=\PHttpOk,
+  pct_http_redirect_to_https=\PRedir,
+  pct_http_no_redirect=\PNoRedir
+  }{%
+  \Dataset &
+  \Norigins &
+  \PHttpsOk &
+  \PUnreach &
+  \PHttpOk &
+  \PRedir &
+  \PNoRedir
+  }%
+  }%
+  \end{table}
+  
+    
+\begin{table}[t]
+  \caption{HSTS adoption and strength among HTTPS-capable origins (percent of HTTPS-ok).}
+  \label{tab:https_hsts_quality}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.15}
+
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+    tabular=lrrr,
+    table head=\toprule
+      Dataset &
+      Any HSTS (\%)&
+      Strong HSTS (\%)&
+      Preload (\%)\\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/https_hsts/hsts_quality_summary.csv}{%
+    dataset_label=\Dataset,
+    pct_has_hsts_among_https_ok=\PAnyHsts,
+    pct_hsts_strong_among_hsts=\PStrong,
+    pct_hsts_preload_among_hsts=\PPreload
+  }{%
+    \Dataset &
+    \PAnyHsts &
+    \PStrong &
+    \PPreload
+  }%
+  }%
+\end{table}
+
+% HTTP/HTTPS connectivity
+% - dataset
+% - https ok
+% - http ok
+% - http -> https redirect
+% - http no redirect
+% - http unreachable
+
+% - HSTS
+% - shares of sites columns
+
+The following table summarizes TLS protocol support, and naturally negotiated versions all datasets for each country and sector. 
+ 
+% with recommended column
+
+% \begin{table}[t]
+%   \caption{TLS protocol support, negotiated versions, and TLS 1.2 recommended cipher usage (percent of origins).}
+%   \label{tab:tls_summary}
+%   \centering
+%   \scriptsize
+%   \setlength{\tabcolsep}{3pt}
+%   \renewcommand{\arraystretch}{1.15}
+  
+%   \resizebox{\columnwidth}{!}{%
+%   \csvreader[
+%     tabular=lrrrrrrr,
+%     table head=\toprule
+%       Dataset &
+%       \multicolumn{4}{c}{TLS support (\%)} &
+%       \multicolumn{2}{c}{Negotiated (\%)} &
+%       \multicolumn{1}{c}{TLS 1.2 ciphers (\%)} \\
+%       \cmidrule(lr){2-5}\cmidrule(lr){6-7}\cmidrule(lr){8-8}
+%       & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 & Rec. \\\midrule,
+%     late after line=\\,
+%     late after last line=\\\bottomrule
+%   ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
+%     country=\Country,
+%     sector=\Sector,
+%     pct_tls13_support=\SupThirteen,
+%     pct_tls12_support=\SupTwelve,
+%     pct_tls11_support=\SupEleven,
+%     pct_tls10_support=\SupTen,
+%     pct_tls13_neg=\NegThirteen,
+%     pct_tls12_neg=\NegTwelve,
+%     pct_recommended=\RecCipher
+%   }{%
+%     \Country~\Sector &
+%     \SupThirteen & \SupTwelve & \SupEleven & \SupTen &
+%     \NegThirteen & \NegTwelve & \RecCipher
+%   }%
+%   }%
+% \end{table}
+
+
+\begin{table}[t]
+  \caption{TLS protocol support and negotiated versions by dataset (percent of origins).}
+  \label{tab:tls_summary}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.15}
+  
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+    tabular=lrrrrrr,
+    table head=\toprule
+      Dataset &
+      \multicolumn{4}{c}{TLS support (\%)} &
+      \multicolumn{2}{c}{Negotiated (\%)} \\
+      \cmidrule(lr){2-5}\cmidrule(lr){6-7}
+      & 1.3 & 1.2 & 1.1 & 1.0 & 1.3 & 1.2 \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/tls_cipher/tls_cipher_summary.csv}{%
+    country=\Country,
+    sector=\Sector,
+    pct_tls13_support=\SupThirteen,
+    pct_tls12_support=\SupTwelve,
+    pct_tls11_support=\SupEleven,
+    pct_tls10_support=\SupTen,
+    pct_tls13_neg=\NegThirteen,
+    pct_tls12_neg=\NegTwelve
+  }{%
+    \Country~\Sector &
+    \SupThirteen & \SupTwelve & \SupEleven & \SupTen &
+    \NegThirteen & \NegTwelve
+  }%
+  }%
+\end{table}
+
 The chart below illustrates the negotiated version of TLS recorded in a ``natural'' handshake. This handshake 
-represents what a typical Canadian's user agent (browser) recieves in practice. We note here the Canadian authority
-sites lower proclivity for negotiating TLS~1.3 (vs higher TLS~1.2) compared to the other sectors. 
+represents what a typical user agent (browser) recieves in practice. Canadian authority sites 
+negotiated TLS~1.3 less frequently than the other datasets, with a correspondingly higher share negotiating TLS~1.2
 
 \begin{figure}[t]
     \centering
@@ -998,19 +947,11 @@ sites lower proclivity for negotiating TLS~1.3 (vs higher TLS~1.2) compared to t
     \label{fig:tls_stacked_auth_fin}
 \end{figure}
 
-
-Among Canadian authority origins, 65.9\% advertised TLS 1.3 support and 94.4\% supported TLS 1.2, 
-while 11.5\% still accepted TLS 1.1 and 9.6\% accepted TLS 1.0. During natural handshakes, 69.1\% of these authorities negotiated TLS 1.3 and 30.9\% negotiated TLS 1.2, with no 
-origins falling back to older protocols. When forced to use TLS 1.2, 74.9\% of Canadian authorities selected recommended cipher suites, 1.7\% selected sufficient ciphers, 
-3.4\% used phase-out ciphers, none used insecure ciphers, and 20.1\% negotiated ciphers not categorized in CCCS guidance.
-
 \subsubsection{Vulnerability Disclosure}
 
-\vspace{1em}The next table reports security.txt adoption and field completeness by country and sector. For each origin, we probed standard locations 
-(/.well-known/security.txt and /security.txt) for the presence of a security.txt 
-file per RFC 9116, then parsed present files to assess whether they included required Contact and Expires fields, and 
-whether Expires dates remained valid.
-
+\vspace{1em}The next table reports security.txt adoption and field completeness by country and sector. For each origin, the 
+scanner searches standard locations (/.well-known/security.txt and /security.txt) for the presence of a security.txt 
+file per RFC 9116. 
 % \begin{inlinecap}
 % \captionof{table}{Security.txt adoption and field completeness by country and sector.}
 % \label{tab:securitytxt_summary}
@@ -1047,52 +988,93 @@ whether Expires dates remained valid.
 % }%
 % \end{inlinecap}
 
+% \begin{table}[t]
+%     \caption{Security.txt adoption and field completeness by dataset.}
+%     \label{tab:securitytxt_summary}
+%     \centering
+%     \scriptsize
+%     \setlength{\tabcolsep}{3pt}
+%     \renewcommand{\arraystretch}{1.15}
+    
+%     \resizebox{\columnwidth}{!}{%
+%     \csvreader[
+%       tabular=lllrrrr,
+%       table head=\toprule
+%         Dataset &
+%         $n$ origins &
+%         $n$ with security.txt &
+%         Sites with security.txt (\%) &
+%         Contact field (\%) &
+%         Expires field (\%) &
+%         Valid expires (\%) \\\midrule,
+%       late after line=\\,
+%       late after last line=\\\bottomrule
+%     ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+%       dataset_label=\Dataset,
+%       n_origins=\Norigins,
+%       n_with_securitytxt=\Nwith,
+%       pct_sites_with_securitytxt=\Psites,
+%       pct_with_contact_among_present=\Pcontact,
+%       pct_with_expires_among_present=\Pexpires,
+%       pct_valid_expires_among_expires=\Pvalid
+%     }{%
+%       \Dataset  &
+%       \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
+%     }%
+%     }%
+%     \end{table}
+    
 \begin{table}[t]
-    \caption{Security.txt adoption and field completeness by country and sector.}
-    \label{tab:securitytxt_summary}
-    \centering
-    \scriptsize
-    \setlength{\tabcolsep}{3pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrrrr,
-      table head=\toprule
-        Dataset & Country & Sector &
-        $n$ origins &
-        $n$ with security.txt &
-        Sites with security.txt (\%) &
-        Contact field (\%) &
-        Expires field (\%) &
-        Valid expires (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
-      dataset_label=\Dataset,
-      country=\Country,
-      sector_label=\Sector,
-      n_origins=\Norigins,
-      n_with_securitytxt=\Nwith,
-      pct_sites_with_securitytxt=\Psites,
-      pct_with_contact_among_present=\Pcontact,
-      pct_with_expires_among_present=\Pexpires,
-      pct_valid_expires_among_expires=\Pvalid
-    }{%
-      \Dataset & \Country & \Sector &
-      \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
-    }%
-    }%
-    \end{table}
-    
+  \caption{Security.txt adoption and field completeness by dataset.}
+  \label{tab:securitytxt_summary}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.2pt} % tighter spacing
+  \renewcommand{\arraystretch}{1.15}
+
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+    tabular=lr rr ccc,
+    table head=\toprule
+      Dataset &
+      $n$ orig. &
+      \multicolumn{2}{c}{security.txt present} &
+      Contact (\%) &
+      Expires (\%) &
+      Valid exp. (\%) \\
+      \cmidrule(lr){3-4}
+      & & Count & Share (\%) & & & \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
+    dataset_label=\Dataset,
+    n_origins=\Norigins,
+    n_with_securitytxt=\Nwith,
+    pct_sites_with_securitytxt=\Psites,
+    pct_with_contact_among_present=\Pcontact,
+    pct_with_expires_among_present=\Pexpires,
+    pct_valid_expires_among_expires=\Pvalid
+  }{%
+    \Dataset &
+    \Norigins &
+    \Nwith &
+    \Psites &
+    \Pcontact &
+    \Pexpires &
+    \Pvalid
+  }%
+  }%
+\end{table}
+
 
 Among Canadian authority origins, only 1.1\% (4 of 375) 
 published a security.txt file. All four files included Contact information and Expires fields, 
 though only 25\% had unexpired dates. US authorities showed higher adoption at 3.5\% (13 of 373), 
 with 92.3\% of those including Expires fields and 83.3\% maintaining valid expiration dates. 
 
+\subsubsection{Security Headers \& Cookies}
 
-\vspace{1em}The following 2 tables present security header adoption and 
+The following 2 tables present security header adoption and 
 cookie security flag usage across all datasets. For each successfully reached origin, 
 we analyzed HTTP response headers to identify the presence of key security headers 
 (\texttt{Referrer-Policy}, \texttt{X-Content-Type-Options}, 
