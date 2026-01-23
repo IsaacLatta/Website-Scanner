@@ -29,6 +29,8 @@
   % - elaborate on the fact that origin eval happened at input and final, endpoint final-only
   % - remove talk on cipher suites, or add it back to the TLS summary table
   % - confirm methods mentions checking for contact and expires in security.txt
+  % - add brief security headers + cookies in results (1 or 2 sentences) 
+  % - make sure paper says what recommended security cookie attributes are and who advocates for them
 
 \title{Conference Paper Title*\\
 {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
@@ -85,112 +87,74 @@ email address or ORCID}
 \end{IEEEkeywords}
 
 \section{Introduction}
-Public-sector websites are among the most trusted surfaces on the Internet, yet their security
-posture is rarely measured at the depth modern web complexity requires.Organizations and government
+Organizations and government
 bodies increasingly rely on their online presence to deliver essential services, building upon the
-public’s inherent trust in government websites. However, no single authority is responsible for
-enforcing modern security standards in Canada, leaving many public websites vulnerable to newly
-discovered threats. Moreover, because there is no mandatory set of requirements for web security,
-agencies operate under recommendations rather than enforceable rules. This fragmented approach
-results in gaps in secure implementations, leaving websites and their users vulnerable to cyber threats.
-
-Compounding this issue, the process of identifying precisely which websites are under Canadian public
-authority is itself non-trivial. No centralized entity maintains an exhaustive list of government and
-public domains, complicating the task of measuring widespread compliance with existing security
-guidelines. Additionally, continual monitoring of these web services can be cumbersome. Administrators
-often depend on internal scripts or third-party vendors to maintain security, often resulting in
-inconsistent adoption of essential protective measures. Furthermore, many government websites lack a
-standardized communication channel through which security researchers or concerned citizens can report
-discovered vulnerabilities, leading to risks remaining unpatched and unaddressed for extended periods.
+public’s inherent trust in government websites. These sites are among most trusted surfaces on the
+Internet, yet their security posture is rarely measured at the depth modern web complexity requires. 
 Additionally, Canada is in a unique situation compared to the US and UK. In Canada web security best practices 
-are recommendations given by the CCCS. While, our neighbors are provided enforcable directives ~\cite{omb-m-15-13,cisa_bod_18_01}. 
+are recommendations given by the Canadian Centre for Cyber Security (CCCS). While, our neighbors are
+ provided enforcable directives ~\cite{omb-m-15-13,cisa_bod_18_01}. 
+This fragmented approach results in gaps in secure implementations, leaving websites and their users vulnerable to cyber threats. 
+Furthermore, many government websites lack a standardized communication channel through which security 
+researchers or concerned citizens can report discovered vulnerabilities, leading to risks remaining unpatched
+and unaddressed for extended periods.
 
-These challenges are relected in our measurements. Despite explicit recommendations from the Canadian Centre for Cyber Security (CCCS),
-only $\sim$65\% of assessed websites negotiate TLS~1.3, and only 59.73\% implement HTTP Strict Transport Security (HSTS).
-Thus, leaving numerous Canadians without the most modern cryptographic protections. Beyond transport, a recurring yet
-under-measured class of weaknesses involves inadvertent information disclosure through response metadata
-and error handling \cite{owasp_improper_error_handling,cwe_209,cwe_200}. Together, these realities motivate
-the need for a scalable, standards-aligned benchmarking methodology that can quantify real-world web
-security control adoption across Canadian public-sector and critical web services.
-
-\subsection{Main Questions Posed}
-
-
-\vspace{1em}
-In this paper we answer the following research questions:
-
-\begin{itemize}
-    \vspace{0.4em}
-    \item \textbf{RQ1}: To what extent do Canadian public-sector and critical web services
-    currently implement key web security controls recommended by the CCCS, web security authorities,
-    and international guidance?
-
-    \vspace{0.4em}
-    \item \textbf{RQ2}: How does the adoption of these controls vary by sector (government authorities,
-    finance, education, critical energy infrastructure) and by jurisdiction
-    (Canada vs.\ US vs.\ UK authorities/financial/educational sites)?
-
-    \item \textbf{RQ3}: To what extent do web security control failures occur at the endpoint level
-    (e.g., across redirect chains, paths, and response behaviors) rather than at the host/origin level?
-
-    \item \textbf{RQ4}: Which specific web security controls exhibit the largest adoption gaps across Canadian
-    public-sector and critical web services (e.g., TLS configuration, HSTS, cookie attributes, and security headers)?
-
-    % \vspace{0.4em}
-    % \item \textbf{RQ3}: What are the key web security features and standards needed for securing Canadian
-    % websites and their visitors?
-\end{itemize}
+These challenges are relected in our measurements. Despite explicit recommendations from the CCCS,
+only $\sim$65\% of assessed websites negotiate the most recent TLS~1.3, and only 59.73\% implement
+HTTP Strict Transport Security (HSTS).Thus, leaving numerous Canadians without the most modern cryptographic protections.
+Beyond transport, a recurring yet under-measured class of weaknesses involves inadvertent information disclosure through response metadata
+and error handling \cite{owasp_improper_error_handling,cwe_209,cwe_200}. In addition to information leakage, modern browser-side controls
+remain another under-researched and fragmented area. Together, these realities highlight the
+ need for holistic assessment of web security practices. That is, one that captures not only whether
+  protections exist, but whether it is deployed with sufficient depth and breadth to meet the expectations of today’s World Wide Web. 
 
 \section{Significant}
 
-At a global scale, HTTPS has become the default expectation for modern browsing. Google’s HTTPS telemetry
-shows that modern browsing is now predominantly encrypted, with desktop users loading more than half of pages
+At a global scale, HTTPS has become the default expectation for modern browsing. Google’s data
+illustrates that modern browsing is now predominantly encrypted, with desktop users loading more than half of pages
 over HTTPS and spending roughly two-thirds of their browsing time on HTTPS pages \cite{GoogleTransparencyHTTPS}.
 However, ecosystem-wide configuration quality is still uneven. SSL Labs’ SSL Pulse (150k popular HTTPS sites)
-reports that only 71.3\% are graded as ``secure,'' while just 37.4\% deploy HSTS, leaving many deployments
-vulnerable to downgrade and policy gaps \cite{SSLPulse}. Even as the web increasingly shifts to encrypted
+reports that only 71.3\% are graded as ``secure,'' while just 37.4\% deploy HTTP Strict Transport Security (HSTS)\cite{SSLPulse}. 
+Even as the web increasingly shifts to encrypted
 transport, HTTPS alone is not a guarantee of safety. It protects data in transit, but does not ensure that a
 site is configured securely or resistant to real-world abuse.
 
-Concerningly, leaked credentials remain a routine part of authentication traffic. Google Chrome figures
-indicate that a majority of observed HTTPS login attempts involve compromised credentials (62.1\%),
-highlighting how frequently attackers rely on reuse rather than ``breaking'' encryption. Inline with
-Google's findings, Cloudflare’s Internet-wide telemetry similarly shows that a majority of HTTPS authentication
+Concerningly, leaked credentials remain a routine part of authentication traffic. Cloudflare’s 
+telemetry shows that a majority of HTTPS authentication
 attempts can involve compromised passwords (e.g., 62.1\% flagged as compromised in the observed period)
 \cite{CloudflareRadarAppLayer}. These results reinforce an important point for public-sector services:
 many attacks succeed without defeating cryptography at all, and therefore security posture must be evaluated
 more broadly than transport encryption alone.
 
 A key motivation for measuring web security posture in Canada is that guidance alone does not guarantee
-consistent implementation across a large and diverse public-sector. In the United States, secure web deployment
-has been explicitly operationalized through enforceable government policy, including OMB Memorandum M-15-13
-requiring HTTPS for federal websites and web services, with supporting compliance guidance published by the
+consistent implementation. In the United States, secure web deployment
+has been explicitly operationalized through enforceable government policy, including OMB Memorandum M-15-13 
+and supporting compliance guidance published by the
 U.S.\ government~\cite{omb-m-15-13,uscio-https-guide}. The U.S.\ Cybersecurity and Infrastructure Security Agency
 (CISA) further issues Binding Operational Directives (BODs) that impose mandatory cybersecurity actions for
-federal civilian agencies, including directives targeting web and internet-facing security practices
+federal agencies, including directives targeting web security practices
 \cite{cisa_bod_18_01}. In the United Kingdom, central government guidance for digital services similarly specifies
 HTTPS-only deployment and explicitly calls for HSTS to enforce secure transport at the browser level
 \cite{uk-using-https-service-manual}. By contrast, Canadian best practices for web security are primarily
 communicated through technical and management guidance, such as the Canadian Centre for Cyber Security’s (CCCS)
 recommendations on secure protocol configuration and website security considerations
-\cite{cccs-itsp-40062,cccs-itsm-60005}. This difference in enforcement raises an important question:
-in the absence of binding web-specific mandates, to what extent are modern security controls consistently
-adopted across Canadian authorities?
+\cite{cccs-itsp-40062,cccs-itsm-60005}. This difference in enforcement raises the question: 
+to what extent are modern security controls adopted across Canadian authorities, compared to our mandated neighbors?
 
-\section{Literature}\label{AA}
+\section{Literature}
 
 Prior work has examined the security posture of government and public-sector websites, but the scope and
-granularity of these evaluations vary substantially across jurisdictions. Dunbar et al.\ surveyed a large set
-of US-related domains and proposed a compact scoring system primarily driven by SSL/TLS version support and
-the presence of HSTS \cite{dunbar4240917survey}. Schiavone et al.\ analyzed HTTPS deployment across Italian
+granularity of these evaluations vary substantially. Dunbar et al.\ surveyed a large set
+of US-related domains scoring sites primarily by SSL/TLS version support and HSTS presence \cite{dunbar4240917survey}. 
+Schiavone et al.\ analyzed HTTPS deployment across Italian
 municipal websites using a regulation-derived scoring framework to characterize regional and demographic
-discrepancies in adoption and compliance \cite{schiavone2024municipality2https}. Similarly, Valdaserides Olofsson
+differences in adoption \cite{schiavone2024municipality2https}. Similarly, Valdaserides Olofsson
 et al.\ developed an automated assessment tool and demonstrated its use on Swedish authorities’ websites,
-highlighting that security posture can remain uneven even when baseline HTTPS is present, particularly with
+and found that security posture can remain uneven even when baseline HTTPS is present, particularly with
 respect to HTTP security headers \cite{valdaserides2024automated}. Complementing these configuration-oriented
-studies, Hsiao et al.\ investigated \emph{cyber autonomy} of G7 government websites, finding that government
-sites frequently depend on externally hosted resources and infrastructure, and reporting that a large majority
-of resources loaded by these sites originate from servers in the United States \cite{hsiao2019cyberautonomy}.
+studies, Hsiao et al.\ investigated \emph{cyber autonomy} of G7 government websites. The authors found that
+only 4\% of these government sites were self developed, and reporting that most loaded resources originating 
+from servers outside of the United States \cite{hsiao2019cyberautonomy}.
 
 A number of widely used tools support point-in-time assessment of specific aspects of web security posture.
 For transport-layer configuration, practitioners frequently rely on specialized scanners such as the Qualys
@@ -200,60 +164,33 @@ header-focused graders such as Mozilla's HTTP Observatory and SecurityHeaders.co
 security-relevant HTTP response headers and recommended hardening controls
 \cite{tool_mozilla_observatory,tool_securityheaders}. While these tools are valuable for evaluating individual
 sites, they are generally not designed to provide an integrated, standards-driven benchmarking methodology
-across large, public-sector populations. Nor do these tools explicitly support authority-oriented comparisons
-across jurisdictions. More comprehensive dynamic scanners such as OWASP ZAP can perform deeper web application
-testing, but their primary goal is vulnerability discovery rather than measurement of security control adoption
+across large, public-sector populations. More comprehensive dynamic scanners such as OWASP ZAP can perform deeper web application
+testing, but their primary goal is vulnerability discovery rather than measurement of adoption
 \cite{tool_owasp_zap}. In contrast, our work emphasizes a unified, standards-aligned posture evaluation suitable
 for large-scale comparative analysis of Canadian authority websites.
 
-\section{What Is New With This Paper}
-
-\vspace{1em}
 Despite the efforts of the tooling, literature, and CCCS recommendations, several gaps remain for evaluating
-Canadian authorities’ websites under modern web complexity. First, none of the above studies focuses on
+Canadian authorities’ websites. First, none of the above studies focuses on
 Canadian authorities as a primary target population. Moreover, most work is presented as single-jurisdiction
 snapshots rather than analyses grounded in an international comparison
-\cite{dunbar4240917survey,schiavone2024municipality2https,valdaserides2024automated}. Second, many evaluations
-rely on coarse, site-level indicators (e.g., whether HTTPS exists, which protocol versions are supported,
-or whether HSTS is enabled) \cite{dunbar4240917survey,schiavone2024municipality2https}. This lack of
- granularity can obscure real-world posture in modern deployments. Additionally, no study found evaluating
- transport and application layer security scopes their evaluation at the domain vs.\ endpoint level.
-  Modern website security requires
-evaluation across origins, endpoints, redirect chains, CDNs, and WAFs---not simply URIs. This limitation
-of endpoint-aware evaluation becomes increasingly important given evidence that government websites load
-substantial third-party resources and dependencies \cite{hsiao2019cyberautonomy}. Thus amplifying the need for
-browser (endpoint-aware) enforced controls such as content isolation, clickjacking defenses, and cookie
-hardening.
-
-To answer these questions, we develop an automated scanning tool that incorporates the most recent
-Canadian-specific security guidelines and best practices to evaluate the security readiness of Canadian web
-authorities. This research performs the aggregation and evaluation of Canadian authorities websites against
-Canadian-specific web security standards sourced from the Canadian Centre for Cyber Security, and augmented by
-more modern standards from the Open Worldwide Application Security Project (OWASP) and the Mozilla Developer
-Network (MDN). We compare the performance of Canadian authority sites against the Education, Financial, and
-Energy sectors of not only Canada, but the United States and United Kingdom, providing a frame of reference
-for how Canada's public-sector web security readiness compares to that of our allies and public-sector neighbors.
+\cite{dunbar4240917survey,schiavone2024municipality2https,valdaserides2024automated}. Third, many evaluations
+rely on coarse, site-level indicators \cite{dunbar4240917survey,schiavone2024municipality2https}. Additionally, no study found evaluating
+transport and application layer security scopes their evaluation at the domain vs.\ endpoint level.
+To address these gaps, an automated scanning tool was developed that incorporates the most recent
+Canada-focused security guidelines, augmented by more modern standards from OWASP and the Mozilla Developer Network (MDN). 
+In particular, we seek to determine whether Canadian authority websites exhibit gaps int the transport layer, 
+browser-side controls, vulnerability disclosure, and information leakage.
+The scanner was applied to authority and critical-infrastructure websites in Canada, the US, and the UK, 
+providing a baseline for evaluating Canada’s posture.
 
 \section{Methodology}
 
 \subsection{Website Selection \& Sources}
 
-We curated a sector-balanced dataset across Canada (CA), the United States (US), and the
-United Kingdom (UK), spanning government, finance, education, and energy sectors. 
 Candidate websites were sourced from authoritative registries and well-established sector lists to
 prioritize institutional relevance and reduce sampling bias. 
 We distinguish between \emph{origins} (scheme + host + port) and \emph{endpoints} (origins with
 specific paths), enabling measurements at both transport and application levels.
-
-
-% We have 4 sectors of websites we performed evaluation on for each country. 
-% \emph{Authorities}, consist of government 
-% institutions, departments, crown corporations, and airport/health/maritime authorities. 
-% \emph{Education Institutions}, refers to public facing universities and colleges. \emph{Financial Institutions}, 
-% includes banks and credit unions of the parent country. Lastly \emph{Energy}, consists of oil, gas, and nuclear energy companies, representing 
-% critical infrastructure. The table below summarizes how we have sourced the website list for each domain. 
-% Note that UK energy providers were excluded due to the absence of an authoritative source 
-% with usable URIs. As such we leave our energy site comparison between Canada and the US.
 
 % \begin{table*}[t]
 %     \caption{Overview of website datasets and primary data sources.}
@@ -481,30 +418,6 @@ Cipher suites observed during these handshakes are classified using CCCS categor
 Additionally, we flag any use of SHA-1 within the negotiated parameters
  as non-compliant with CCCS guidance and vulnerable in practice \cite{cccs_itsp_40_111,leurent2020shambles,polk2011sha,stevens2017firstsha1collision}.
 
-% \subsection{TLS Configuration}
-
-% \vspace{1em}In addition to checking whether sites enforce HTTPS, we also assessed the configuration of the 
-% underlying Transport Layer Security (TLS) protocols and cipher suites.
-% The goal of these checks was to answer two practical questions, do public-facing services offer modern TLS versions, 
-% and are legacy or explicitly deprecated cipher
-% suites still enabled. The CCCS provides an explicit recommendation of configuring clients and servers to only 
-% use TLS 1.3 in 
-% ITSAP.40.062 \cite{cccs-itsap-40016}. Similarly in ITSP.40.062 , the CCCS recommends TLS 1.2 should begin to be phased out. Furthermore, the CCCS also guides that
-% modern sites should not include TLS versions older than 1.2, or any versions of the Secure Socket Layer (SSL). 
-% The desirability of TLS 1.3 and deprecation of older TLS and SSL versions is further corroborated by directives 
-% from both the NSA and NIST \cite{nist_800_52r2, nsa_eliminating_obsolete_tls}. Aligned with these recommendations, 
-% our scanner attempts a series of handshakes at TLS 1.3, TLS 1.2, TLS 1.1, TLS 1.0 and SSLv3. Thus, yielding a simple profile for each origin on how well they meet 
-% modern HTTPS encryption standards. To understand what a typical user actually receives in practice, we then
-% performed a single ``natural'' TLS handshake to each origin using a modern
-% client configuration. This allows us to count how many sites have fully migrated to the modern TLS versions and how many continue to offer older protocols that have
-% been formally deprecated due to known weaknesses and downgrade risks.
-
-% \vspace{1em}Furthermore, our scanner also performs a more granular recording and evaluation of the cipher suites used in these TLS handshakes. 
-% The CCCS provides 3 groups of cipher suites for TLS 1.2 and 1.3 in ITSP.40.062; ```recommended'', ``sufficient'', and ``phase out''. Augmenting this, we
-% reference the NSA's ``obsolete'' cipher suite list. Moreover, the scanner explicitly check for the use of the SHA-1 hash, as it does not satisfy the guidance found
-% in CCCS ITSP.40.111 \cite{cccs_itsp_40_111} and has repeatedly been proven vulnerable \cite{leurent2020shambles, polk2011sha, stevens2017firstsha1collision}. 
-% Each TLS handshake's outcome is cross-referenced against these lists to provide additional insights beyond simply the version.  
-
 \subsubsection{Vulnerability Disclosure (security.txt)}
 
 Next, the scanner probes each origin for \texttt{security.txt} (RFC~9116), 
@@ -562,16 +475,6 @@ databases (including version strings), and (ii) stack traces from common backend
 The scanner used a set of regular expression (REGEX) signatures derived from the most common web languages / frameworks, cloud platforms, and databases found in the 
 2025 Stack Overflow Developer Survey \cite{stackoverflow_survey_2025}.
 
-% Each technology's alias was compiled into a case-insensitive regular expression (REGEX) that escapes punctuation, tolerates 
-% minor formatting differences, and provides simple word-boundary semantics using negative look-behind/ahead. Thus, allowing the scanner to match whole 
-% identifiers (e.g., django or django 4.2.5) but not substrings inside longer words.
-
-% \vspace{1em}Second, we scanned each error page for stack traces from widely used backend languages, sourced from the previously mentioned Stack Overflow Developer Survey. For
-% each language we defined a pair of regular-expression families. These families include header patterns
-% that identify the start of a stack trace (e.g., ``\texttt{Traceback (most recent call last):}'') and frame patterns that match subsequent call-site lines. 
-% When the header of a trace was found, we looked ahead through a number of lines to count how many frames followed. If at least one frame was detected, 
-% the leaked language is recorded. Results were limited to at most one trace per language per origin.
-
 \subsection{Scanner Implementation \& Validation}
 
 \subsection{Scanner Implementation \& Validation}
@@ -581,23 +484,7 @@ To ensure ethical, non-invasive measurement, the scanner enforces conservative g
 protocol and excluded from subsequent modules. Thus, preventing repeated probing of unstable services. All measurements 
  relied on standard HTTP(S) requests and redirects only, without any exploit payloads.
 
-% \begin{table}[t]
-%   \centering
-%   \caption{Scanner rate limits and timeouts (non-invasive configuration).}
-%   \label{tab:scan_limits}
-%   \small
-%   \setlength{\tabcolsep}{5pt}
-%   \begin{tabular}{lccc}
-%   \toprule
-%   \textbf{Category} & \multicolumn{2}{c}{\textbf{Concurrency limits}} & \textbf{Timeout} \\
-%   \cmidrule(lr){2-3}
-%    & \textbf{Global} & \textbf{Per-origin} &  \\
-%   \midrule
-%   Authorities & 15 & 3 & 3\,s \\
-%   Edu/Fin/Energy & 20 & 5 & 3\,s \\
-%   \bottomrule
-%   \end{tabular}
-%   \end{table}
+
   
 \begin{table}[t]
   \centering
@@ -641,13 +528,12 @@ and misconfigured targets.
 
 \subsection{URL \& Origin Normalization}
 
-The table below illustrates the outcome of our initial resolution stage. 
+Table~\ref{tab:redirect_summary} summarizes the outcome of the initial resolution stage. 
 Input origins and URIs refers to those present in the sourced dataset. Final URIs
 refers to the number of de-duplicated URIs present after resolution. Unique origins
 refers to the number of de-duplicated origins accross both the input and final set of 
-resolved hosts. Finally, the 2xx status column indicates the percentage of redirects
-that ended in a positve status code.
-
+resolved hosts. Lastly, the ``Final (2xx)'' column indicates the percentage of redirects
+that ended in a successful HTTP status code.
 
 \begin{table}[t]
   \caption{Redirect resolution summary (inputs mapped to measured endpoints).}
@@ -681,7 +567,6 @@ that ended in a positve status code.
     \Nuris &
     \Nfinal &
     \NorigIn &
-    % --- unique origins (hardcoded, CSV unchanged)
     \ifnum\pdfstrcmp{\Dataset}{CA Authorities}=0 375\fi%
     \ifnum\pdfstrcmp{\Dataset}{CA Education}=0 103\fi%
     \ifnum\pdfstrcmp{\Dataset}{CA Finance}=0 157\fi%
@@ -699,22 +584,16 @@ that ended in a positve status code.
   }%
   \end{table}
 
-During the resolution pass, final 2xx resolution rates varied substantially across datasets, 
-with CA Authorities exhibiting the lowest success rate 
-(68.4\%) compared to 80–95\% in most other sectors.
-  
+UK Authorities exhibited substantial consolidation after redirect resolution, with 349 input URIs and 348 input origins mapping to 4 unique final origins.
+Across datasets, the final 2xx resolution rate ranged from 68.4\% (CA Authorities) to over 90\% in most education, finance, and energy datasets.
+
 \subsection{Website Security Evaluation}
 
 \subsubsection{Transport Security}
 
-The following two tables (insert ref) summarize the results of the HTTP/HTTPS and HSTS evaluation.
-Notably, many sectors exhibit low percentages
-within the \emph{strong} HSTS bucket (at least one-year max-age with includeSubDomains). 
-Additionally, one should note that ``unreachable'' here is \emph{not} 
-an indicator that the site is offline. Rather, that
-our scanner was repeatedly unable to complete a TLS handshake or receive an HTTP response. 
-Any resulting percentages were only recorded on those sites that did not timeout, or become 
-disabled by the scanner's rate limits. 
+Table~\ref{tab:https_connectivity} reports HTTP and HTTPS reachability outcomes by dataset, including whether HTTP-accessible services redirect to HTTPS.
+All percentages are computed over the set of resolved origins measured after the normalization stage. Note that ``unreachable'' here is \emph{not} 
+an indicator that the site is offline. Rather, that our scanner was repeatedly unable to complete a TLS handshake or receive an HTTP response.
 
 \begin{table}[t]
   \caption{HTTP/HTTPS connectivity outcomes by dataset (percent of origins).}
@@ -757,7 +636,12 @@ disabled by the scanner's rate limits.
   }%
   \end{table}
   
-    
+Among Canadian authority origins, 76.00\% were HTTPS-reachable, while 90.06\% of HTTP-accessible origins redirected to HTTPS and 6.43\% remained on HTTP without redirect.
+UK Authorities showed complete HTTP and HTTPS reachability at the final origin level with 100.00\% of HTTP-accessible origins redirecting to HTTPS. 
+Table~\ref{tab:https_hsts_quality} summarizes HSTS deployment among HTTPS-reachable origins. 
+This table reports overall presence, ``strong'' configurations at least one-year max-age with includeSubDomains, and preload signaling. HSTS 
+parameter specific percentages are reported relative to the HSTS supporting sites.
+
 \begin{table}[t]
   \caption{HSTS adoption and strength among HTTPS-capable origins (percent of HTTPS-ok).}
   \label{tab:https_hsts_quality}
@@ -790,16 +674,8 @@ disabled by the scanner's rate limits.
   }%
 \end{table}
 
-% HTTP/HTTPS connectivity
-% - dataset
-% - https ok
-% - http ok
-% - http -> https redirect
-% - http no redirect
-% - http unreachable
-
-% - HSTS
-% - shares of sites columns
+In Canadian authorities, 59.73\% of HTTPS-reachable origins set HSTS, with 46.29\% meeting the ``strong'' HSTS criteria and 27.43\% indicating preload eligibility.
+Across jurisdictions and sectors, HSTS presence and strength varied substantially, even when HTTPS reachability was high.
 
 The following table summarizes TLS protocol support, and naturally negotiated versions all datasets for each country and sector. 
  
@@ -880,7 +756,9 @@ The following table summarizes TLS protocol support, and naturally negotiated ve
   }%
 \end{table}
 
-The chart below illustrates the negotiated version of TLS recorded in a ``natural'' handshake. This handshake 
+Canadian authority origins negotiated TLS 1.3 in 69.1\% of successful handshakes, with the remaining 30.9\% negotiating TLS 1.2.
+TLS 1.0 and TLS 1.1 support was observed at non-zero rates across all datasets, aside from the UK Authorities. The chart below illustrates the 
+negotiated version of TLS recorded in a ``natural'' handshake across all authority and finance datasets. This handshake 
 represents what a typical user agent (browser) recieves in practice. Canadian authority sites 
 negotiated TLS~1.3 less frequently than the other datasets, with a correspondingly higher share negotiating TLS~1.2
 
@@ -949,87 +827,15 @@ negotiated TLS~1.3 less frequently than the other datasets, with a corresponding
 
 \subsubsection{Vulnerability Disclosure}
 
-\vspace{1em}The next table reports security.txt adoption and field completeness by country and sector. For each origin, the 
-scanner searches standard locations (/.well-known/security.txt and /security.txt) for the presence of a security.txt 
-file per RFC 9116. 
-% \begin{inlinecap}
-% \captionof{table}{Security.txt adoption and field completeness by country and sector.}
-% \label{tab:securitytxt_summary}
-% \centering
-% \small
-% \setlength{\tabcolsep}{3pt}
-% \resizebox{\textwidth}{!}{%
-% \csvreader[
-% tabular=llllrrrrr,
-% table head=\toprule
-% Dataset & Country & Sector &
-% $n$ origins &
-% $n$ with security.txt &
-% Sites w/ security.txt (\%) &
-% Contact field (\%) &
-% Expires field (\%) &
-% Valid expires (\%) \\\midrule,
-% late after line=\\,
-% late after last line=\\\bottomrule
-% ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
-% dataset_label=\Dataset,
-% country=\Country,
-% sector_label=\Sector,
-% n_origins=\Norigins,
-% n_with_securitytxt=\Nwith,
-% pct_sites_with_securitytxt=\Psites,
-% pct_with_contact_among_present=\Pcontact,
-% pct_with_expires_among_present=\Pexpires,
-% pct_valid_expires_among_expires=\Pvalid
-% }{%
-% \Dataset & \Country & \Sector &
-% \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
-% }%
-% }%
-% \end{inlinecap}
+Table~\ref{tab:securitytxt_summary} reports security.txt adoption rates by dataset, including the presence of 
+key fields such as Contact and Expires, and whether Expires values were valid.
 
-% \begin{table}[t]
-%     \caption{Security.txt adoption and field completeness by dataset.}
-%     \label{tab:securitytxt_summary}
-%     \centering
-%     \scriptsize
-%     \setlength{\tabcolsep}{3pt}
-%     \renewcommand{\arraystretch}{1.15}
-    
-%     \resizebox{\columnwidth}{!}{%
-%     \csvreader[
-%       tabular=lllrrrr,
-%       table head=\toprule
-%         Dataset &
-%         $n$ origins &
-%         $n$ with security.txt &
-%         Sites with security.txt (\%) &
-%         Contact field (\%) &
-%         Expires field (\%) &
-%         Valid expires (\%) \\\midrule,
-%       late after line=\\,
-%       late after last line=\\\bottomrule
-%     ]{../results/comparison/securitytxt/securitytxt_summary.csv}{%
-%       dataset_label=\Dataset,
-%       n_origins=\Norigins,
-%       n_with_securitytxt=\Nwith,
-%       pct_sites_with_securitytxt=\Psites,
-%       pct_with_contact_among_present=\Pcontact,
-%       pct_with_expires_among_present=\Pexpires,
-%       pct_valid_expires_among_expires=\Pvalid
-%     }{%
-%       \Dataset  &
-%       \Norigins & \Nwith & \Psites & \Pcontact & \Pexpires & \Pvalid
-%     }%
-%     }%
-%     \end{table}
-    
 \begin{table}[t]
   \caption{Security.txt adoption and field completeness by dataset.}
   \label{tab:securitytxt_summary}
   \centering
   \scriptsize
-  \setlength{\tabcolsep}{2.2pt} % tighter spacing
+  \setlength{\tabcolsep}{2.2pt} 
   \renewcommand{\arraystretch}{1.15}
 
   \resizebox{\columnwidth}{!}{%
@@ -1066,7 +872,6 @@ file per RFC 9116.
   }%
 \end{table}
 
-
 Among Canadian authority origins, only 1.1\% (4 of 375) 
 published a security.txt file. All four files included Contact information and Expires fields, 
 though only 25\% had unexpired dates. US authorities showed higher adoption at 3.5\% (13 of 373), 
@@ -1075,93 +880,47 @@ with 92.3\% of those including Expires fields and 83.3\% maintaining valid expir
 \subsubsection{Security Headers \& Cookies}
 
 The following 2 tables present security header adoption and 
-cookie security flag usage across all datasets. For each successfully reached origin, 
-we analyzed HTTP response headers to identify the presence of key security headers 
-(\texttt{Referrer-Policy}, \texttt{X-Content-Type-Options}, 
-\texttt{X-Frame-Options}, \texttt{Content-Security-Policy}, \texttt{Permissions-Policy}) and 
-cookie security attributes (Secure, HttpOnly, SameSite flags).
+cookie security flag usage across all datasets. 
 
-% % Security Headers Presence Table
-% \begin{inlinecap}
-% \captionof{table}{Security header adoption by country and sector.}
-% \label{tab:security_headers_presence}
-% \centering
-% \tiny
-% \setlength{\tabcolsep}{2pt}
-% \resizebox{\textwidth}{!}{%
-% \csvreader[
-% tabular=llllrrrrr,
-% table head=\toprule
-%   Dataset & Country & Sector &
-%   $n$ sites &
-%   Referrer-Policy (\%) &
-%   X-Content-Type-Options (\%) &
-%   X-Frame-Options (\%) &
-%   CSP frame-ancestors (\%) &
-%   Permissions-Policy (\%) \\\midrule,
-% late after line=\\,
-% late after last line=\\\bottomrule
-% ]{../results/comparison/headers/security_headers_presence.csv}{%
-% dataset_label=\Dataset,
-% country=\Country,
-% sector_label=\Sector,
-% n_sites=\Nsites,
-% pct_referrer_policy_present=\Pref,
-% pct_x_content_type_options_present=\Pxcto,
-% pct_x_frame_options_present=\Pxfo,
-% pct_csp_frame_ancestors_present=\Pcsp,
-% pct_permissions_policy_present=\Pperm
-% }{%
-% \Dataset & \Country & \Sector &
-% \Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
-% }%
-% }%
-% \end{inlinecap}
+Table~\ref{tab:security_headers_presence} summarizes adoption of selected security response
+ headers at final resolved endpoints, including legacy hardening headers and modern user agent enforced policy controls.
 
-% Security Headers Presence Table
 \begin{table}[t]
-    \caption{Security header adoption by country and sector.}
-    \label{tab:security_headers_presence}
-    \centering
-    \tiny
-    \setlength{\tabcolsep}{2pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrrrr,
-      table head=\toprule
-        Dataset & Country & Sector &
-        $n$ sites &
-        Referrer-Policy (\%) &
-        X-Content-Type-Options (\%) &
-        X-Frame-Options (\%) &
-        CSP frame-ancestors (\%) &
-        Permissions-Policy (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/headers/security_headers_presence.csv}{%
-      dataset_label=\Dataset,
-      country=\Country,
-      sector_label=\Sector,
-      n_sites=\Nsites,
-      pct_referrer_policy_present=\Pref,
-      pct_x_content_type_options_present=\Pxcto,
-      pct_x_frame_options_present=\Pxfo,
-      pct_csp_frame_ancestors_present=\Pcsp,
-      pct_permissions_policy_present=\Pperm
-    }{%
-      \Dataset & \Country & \Sector &
-      \Nsites & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
-    }%
-    }%
-    \end{table}
-      
+  \caption{Security header adoption by dataset (percent of final URIs).}
+  \label{tab:security_headers_presence}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.2pt}
+  \renewcommand{\arraystretch}{1.15}
 
-Overall, Canadian authorities show modest but uneven security-header adoption: 
-simple headers are common, but usage drops sharply for more complex policies. 
-US and UK authorities perform noticeably better, and within Canada the education sector generally 
-outperforms authorities.
+  \resizebox{\columnwidth}{!}{%
+  \csvreader[
+    tabular=lccccc,
+    table head=\toprule
+      Dataset &
+      \shortstack{Referrer\\Policy} &
+      \shortstack{X-Content-Type\\Options} &
+      \shortstack{X-Frame\\Options} &
+      \shortstack{CSP\\frame-ancestors} &
+      \shortstack{Permissions\\Policy} \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/comparison/headers/security_headers_presence.csv}{%
+    dataset_label=\Dataset,
+    pct_referrer_policy_present=\Pref,
+    pct_x_content_type_options_present=\Pxcto,
+    pct_x_frame_options_present=\Pxfo,
+    pct_csp_frame_ancestors_present=\Pcsp,
+    pct_permissions_policy_present=\Pperm
+  }{%
+    \Dataset & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
+  }%
+  }%
+\end{table}
+
+Table\ref{tab:cookie_security_flags} displays the cookie security attributes
+ found among endpoints that set cookies as well as the fraction meeting the recommended/sufficient cookie profile. 
+ These attributes including Secure, HttpOnly, and SameSite.
 
 \begin{table}[t]
     \caption{Cookie security flag adoption by country and sector.}
@@ -1173,10 +932,9 @@ outperforms authorities.
     
     \resizebox{\columnwidth}{!}{%
     \csvreader[
-      tabular=lllrrrrrr,
+      tabular=lllrrr,
       table head=\toprule
-        Dataset & Country & Sector &
-        $n$ sites &
+        Dataset &
         Sites w/ cookies (\%) &
         Secure flag (\%) &
         HttpOnly flag (\%) &
@@ -1186,232 +944,157 @@ outperforms authorities.
       late after last line=\\\bottomrule
     ]{../results/comparison/headers/cookie_security_flags_summary.csv}{%
       dataset_label=\Dataset,
-      country=\Country,
-      sector_label=\Sector,
-      n_sites=\Nsites,
       pct_sites_with_cookies=\Pcookies,
       pct_secure_among_cookie_sites=\Psecure,
       pct_httponly_among_cookie_sites=\Phttp,
       pct_samesite_ge_lax_among_cookie_sites=\Psame,
       pct_rec_suff_among_cookie_sites=\Prec
     }{%
-      \Dataset & \Country & \Sector &
-      \Nsites & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
+      \Dataset & \Pcookies & \Psecure & \Phttp & \Psame & \Prec
     }%
     }%
     \end{table}
-    
-    Among Canadian authority origins setting cookies (28.2\% of all origins), 63.5\% used the 
-    Secure flag, 48.7\% used HttpOnly, 15.7\% implemented SameSite at Lax or Strict, and only 
-    3.5\% achieved recommended or sufficient configurations (Secure + HttpOnly + SameSite Strict/Lax). 
-    Canadian energy sites showed stronger cookie security with 74.4\% using Secure and 76.8\% 
-    using HttpOnly, achieving 4.9\% recommended configurations. US authorities showed comparable
-    patterns with 51.6\% Secure, 44.0\% HttpOnly, and 3.3\% recommended. While UK authorities' 
-    limited cookie-setting origins (0.6\% of 348 sites, or approximately 2 origins) 
-    achieved perfect flag implementation but represent insufficient data for meaningful comparison.
-    
-    \subsubsection{Information Leakage}
-    
-    % Revealing Headers Summary Table
-\begin{table}[t]
-    \caption{Distribution of technology-revealing headers by country and sector.}
-    \label{tab:revealing_headers_summary}
-    \centering
-    \scriptsize
-    \setlength{\tabcolsep}{3pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrrrr,
-      table head=\toprule
-        Dataset & Country & Sector &
-        $n$ sites &
-        0 headers (\%) &
-        1 header (\%) &
-        2 headers (\%) &
-        3+ headers (\%) &
-        Any revealing (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/headers/revealing_headers_summary.csv}{%
-      dataset_label=\Dataset,
-      country=\Country,
-      sector_label=\Sector,
-      n_sites=\Nsites,
-      pct_revealing_0=\Pzero,
-      pct_revealing_1=\Pone,
-      pct_revealing_2=\Ptwo,
-      pct_revealing_3_plus=\Pthree,
-      pct_with_any_revealing=\Pany
-    }{%
-      \Dataset & \Country & \Sector &
-      \Nsites & \Pzero & \Pone & \Ptwo & \Pthree & \Pany
-    }%
-    }%
-    \end{table}
-    
-    
-    Technology-revealing headers were present on 94.4\% of Canadian authority origins, 
-    with 51.2\% exposing one header, 32.4\% exposing two, and 10.8\% exposing three or more. 
-    Canadian finance performed best with only 53.5\% revealing any technology information, 
-    while energy (85.5\%) and education (82.4\%) showed lower disclosure rates than authorities. 
-    US authorities demonstrated better information hygiene at 80.6\% disclosure, and UK
-    authorities revealed technology on all origins (100\%), predominantly exposing exactly one
-    header (99.4\%). Only 5.6\% of Canadian authorities exposed no technology-revealing headers,
-    compared to 46.5\% of Canadian finance origins.
-    
-    \vspace{1em}The table below reports information leakage in HTTP error responses. 
-    For each origin, we probed a randomly generated nonexistent path and analyzed the 
-    error response for technology disclosure through framework signatures (Django, Laravel, 
-    Spring Boot, etc.), database identifiers (MySQL, PostgreSQL, MongoDB, etc.), cloud platform banners (AWS, Azure, GCP), version numbers, and full stack traces in seven languages (Python, JavaScript, Java, PHP, Ruby, Go, C\#).
-    
-    % Error Leaks Summary Table
-\begin{table}[t]
-    \caption{Information leakage in HTTP error responses by country and sector.}
-    \label{tab:error_leaks_summary}
-    \centering
-    \scriptsize
-    \setlength{\tabcolsep}{4pt}
-    \renewcommand{\arraystretch}{1.15}
-    
-    \resizebox{\columnwidth}{!}{%
-    \csvreader[
-      tabular=lllrrrr,
-      table head=\toprule
-        Dataset & Country & Sector &
-        $n$ origins &
-        Any tech leak (\%) &
-        Version leak (\%) &
-        Stack trace (\%) \\\midrule,
-      late after line=\\,
-      late after last line=\\\bottomrule
-    ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
-      dataset_label=\Dataset,
-      country=\Country,
-      sector_label=\Sector,
-      n_scanned_origins=\Norigins,
-      pct_any_tech_leak=\Ptech,
-      pct_version_leak=\Pversion,
-      pct_stacktrace=\Pstack
-    }{%
-      \Dataset & \Country & \Sector &
-      \Norigins & \Ptech & \Pversion & \Pstack
-    }%
-    }%
-    \end{table}
-    
-    
-Canadian authorities leaked technology information on 47.2\% of origins, compared with 20.9\% in Canadian finance, 
-with other sectors and countries showing intermediate levels of disclosure. Version numbers were exposed 
-on a minority of origins. Revealing specific software or framework versions enables attackers 
-to directly look up publicly documented vulnerabilities (CVEs) associated with that version without 
-additional probing. Across all datasets, no stack traces were observed.
 
+28.2\% of Canadian authority sites set cookies, of which 63.5\% set Secure, 48.7\% set HttpOnly, and 15.7\% set SameSite $\geq$ Lax.
+Only 3.5\% of Canadian authority cookie-setting sites met the recommended/sufficient cookie configuration criteria. 
+
+\subsubsection{Information Leakage}
+
+Table~\ref{tab:revealing_headers_summary} illustrates the distribution of 
+technology-revealing response headers per origin, including the share exposing
+ at least one such header.
+
+    \begin{table}[t]
+      \caption{Distribution of technology-revealing headers by dataset.}
+      \label{tab:revealing_headers_summary}
+      \centering
+      \scriptsize
+      \setlength{\tabcolsep}{3pt}
+      \renewcommand{\arraystretch}{1.15}
+    
+      \resizebox{\columnwidth}{!}{%
+      \csvreader[
+        tabular=lrrrrrc,
+        table head=\toprule
+          Dataset &
+          $n$ sites &
+          \multicolumn{4}{c}{$n$ revealing headers (\%)} &
+          Any (\%) \\
+          \cmidrule(lr){3-6}
+          & & 0 & 1 & 2 & 3+ & \\\midrule,
+        late after line=\\,
+        late after last line=\\\bottomrule
+      ]{../results/comparison/headers/revealing_headers_summary.csv}{%
+        dataset_label=\Dataset,
+        n_sites=\Nsites,
+        pct_revealing_0=\Pzero,
+        pct_revealing_1=\Pone,
+        pct_revealing_2=\Ptwo,
+        pct_revealing_3_plus=\Pthree,
+        pct_with_any_revealing=\Pany
+      }{%
+        \Dataset &
+        \Nsites &
+        \Pzero &
+        \Pone &
+        \Ptwo &
+        \Pthree &
+        \Pany
+      }%
+      }%
+    \end{table}
+    
+Lastly, the table below illustrates the leaks found in each origin's error page responses.
+94.4\% of Canadian authority origins exposed at least one technology-revealing header, with 10.8\% exposing three or more.
+Notably, all sectors and jurisdictions showed a majority of origins leaking revealing headers. Table~\ref{tab:error_leaks_summary} reports the prevalence
+ of leaked technology in error responses and pages.
+
+    % Error Leaks Summary Table
+    \begin{table}[t]
+      \caption{Information leakage in HTTP error responses by dataset.}
+      \label{tab:error_leaks_summary}
+      \centering
+      \scriptsize
+      \setlength{\tabcolsep}{4pt}
+      \renewcommand{\arraystretch}{1.15}
+      
+      \resizebox{\columnwidth}{!}{%
+      \csvreader[
+        tabular=lrrr,
+        table head=\toprule
+          Dataset &
+          $n$ origins &
+          Any tech leak (\%) &
+          Version leak (\%) \\\midrule,
+        late after line=\\,
+        late after last line=\\\bottomrule
+      ]{../results/comparison/error_leaks/error_leaks_summary.csv}{%
+        dataset_label=\Dataset,
+        n_scanned_origins=\Norigins,
+        pct_any_tech_leak=\Ptech,
+        pct_version_leak=\Pversion
+      }{%
+        \Dataset & \Norigins & \Ptech & \Pversion
+      }%
+      }%
+    \end{table}
+        
+
+In Canadian authorities, 47.2\% of origins exhibited technology leakage in error responses, and 10.7\% disclosed explicit version information.
+Comparable leakage rates were observed across most datasets, including 44.5\% and 50.0\% in US and UK authorities respectively.
 
 
 \section{Discussion}\label{sec:discussion}
 
 
-\subsection{\color{red}{Summary of Results}}
+This study measured the adoption of transport and browser-enforced web security controls across Canadian public-sector and
+critical-sector sites, with cross-jurisdiction comparisons to the United States and United Kingdom.
+Overall, baseline transport security is widely deployed across most datasets, but
+adoption is uneven in Canadian authorities and stronger controls are not consistently enforced.
+Across sectors, modern browser-side hardening remains sparse relative to transport-level adoption. 
+Furthermore, technology disclosure through response metadata and error handling remains common,
+indicating that low-effort fingerprinting opportunities still persist even where HTTPS is present.
 
-This study evaluated 375 Canadian authority origins against web security standards established by the CCCS, 
-OWASP, and international guidance, comparing performance across sectors (education, finance, energy) and 
-jurisdictions (Canada, US, UK). Overall, the results show that Canada has made meaningful progress on core 
-transport controls, but that public-sector web services remain unevenly protected and frequently lag behind 
-both domestic critical-infrastructure providers and international peers.
-
-\subsection{\color{red}{Restate and Answer Main Questions}}
     
+First, the results show that transport protections are common but not ubiquitous. 
+Most measured origins are HTTPS-reachable and the majority of HTTP-accessible services upgrade users to HTTPS (Table~\ref{tab:https_connectivity}), 
+indicating that HTTPS is now the default for much of the Canadian web. Within Canada, non-authority datasets typically
+show stronger transport reachability behavior than authorities (Table~\ref{tab:https_connectivity}).  
+Moreover, in all datasets most services upgrade users via redirection (Table~\ref{tab:https_connectivity}),
+yet a substantial portion of Canadian authority sites still serve HTTP without upgrading (6.43\%). Likewise, Canadian
+authorities remain the lowest-performing Canadian sector on TLS~1.3 compatability and default negotiation (Fig.~\ref{fig:tls_stacked_auth_fin}). 
+Accross jurisdictions, TLS configurations remained quite strong, although a considerable portion still advertises legacy TLS protocol support (Table~\ref{tab:tls_summary}). 
+Most sites in all jurisdictions naturally negotiated the widely recommended TLS~1.3, with 0\% of sites negotiating legacy TLS.
+
+Browser-enforced controls show the largest adoption gaps. At the application layer, Canadian authority endpoints more frequently implement legacy hardening
+ headers such as \texttt{X-Frame-Options} and \texttt{X-Content-Type-Options} than modern policy controls, with notably weaker adoption
+ of CSP \texttt{frame-ancestors} and \texttt{Permissions-Policy} (Table~\ref{tab:security_headers_presence}). HSTS adoption among Canadian
+authority sites is on the lower-end, with over 40\% of sites not supporting HSTS, and of those only 27.43\% appear on the preload list (Table~\ref{tab:https_hsts_quality}).
+Accross all datsets, the fraction of cookies that meet recommended or sufficient attribute profiles was found to be extremely small
+ (only 3.5\% for CA authorities) (Table~\ref{tab:cookie_security_flags}).
+
+Similarlities are present in both information leakage and vulnerability disclosure. A substantial fraction of all datasets contain revealing headers and
+leak technology information in error responses. Additionally, a non-trivial fraction leak version information, including nearly 50\% of the Canadian authority sites evaluated (Table~\ref{tab:revealing_headers_summary} and Table~\ref{tab:error_leaks_summary}). 
+Notably, near-zero origins hosted a \texttt{security.txt} file in all datasets, despite the prevalence of information leakage. Regarding Canadian authorities, 
+only 4 of 375 origins were found to host a \texttt{security.txt} file, of which 75\% contained an expired Expires field (Table~\ref{tab:securitytxt_summary}). 
+This combination is especially consequential because it lowers the cost of reconnaissance while simultaneously reducing the likelihood that external researchers 
+can report issues through a standardized channel.
 
 
-% \item \textbf{RQ1}: To what extent do Canadian public-sector and critical web services
-%     currently implement key web security controls recommended by the CCCS, web security authorities,
-%     and international guidance?
+\subsection{Conclusion}
 
-\paragraph{\color{red}{RQ1: To what extent do Canadian public-sector and critical web services implement key recommended controls?}}
-Canadian authority sites demonstrate meaningful adoption of foundational transport protections, but with clear
-coverage gaps. While most authority origins respond over HTTP and a large share redirect to HTTPS
-(Table~\ref{tab:https_connectivity}), a non-trivial fraction still serves
-HTTP without redirecting. Among HTTPS-capable authorities, HSTS is present on many sites but is not consistently
-strong (Table~\ref{tab:https_hsts_quality}). Similarly,
-while modern TLS is widely available, Canadian
-authorities remain the lowest-performing Canadian sector on TLS~1.3 negotiation, and a measurable minority still advertises 
-legacy protocol support
-(Table~\ref{tab:tls_cipher_summary}, Fig.~\ref{fig:tls_stacked_auth_fin}). These results directly reinforce
-the motivating concern from the introduction: under a recommendation
--driven model, modern controls appear \emph{present}, but not consistently enforced.
+Importantly, these are not exotic mitigations. Many are low-effort, configuration-driven controls 
+that can be deployed at the edge (CDN/WAF/reverse proxy) without application rewrites. The results suggest that the gaps found in 
+Canadian web security is not a lack of
+technical capability, but inconsistent adherence to existing guidance. The CCCS publishes comprehensive, 
+and pragmatic recommendations for securing both the transport and application layer of HTTP. However, the
+contrast with US federal practice is apparent. Our cross-country results 
+reflect the difference in governance models found in the UK and US. The results illustrate a higher and more uniform 
+adoption of the same controls in the US and UK, despite them being recommended in Canada. Web configuration and development 
+is complex and web development remains one of the most rapidly changing areas of IT. Converting recommendations 
+into consistently applied practice would reduce exposure to common attacks and better
+honour the trust that Canadians place in online public services.
 
-%     \vspace{0.4em}
-%     \item \textbf{RQ2}: How does the adoption of these controls vary by sector (government authorities,
-%     finance, education, critical energy infrastructure) and by jurisdiction
-%     (Canada vs.\ US vs.\ UK authorities/financial/educational sites)?
-
-\paragraph{\color{red}{RQ2: How does adoption vary by sector and jurisdiction?}}
-Control adoption varies substantially by both sector and country. Within Canada, education and energy sites often match or
-outperform authorities on multiple controls. Finance in particular exhibits strong transport-layer posture with high TLS~1.3 negotiation and 
-strong TLS~1.2 cipher selection when forced,
-yet still shows gaps in browser-facing hardening (Tables~\ref{tab:tls_cipher_summary} and \ref{tab:security_headers_presence}). Internationally, US and UK datasets
-generally show stronger and more uniform deployment of several controls, including security headers and 
-disclosure mechanisms (Tables~\ref{tab:security_headers_presence} and \ref{tab:securitytxt_summary}). 
-hese comparisons reinforce the policy contrast raised in the introduction,
-where web security is operationalized through enforceable directives, deployments trend toward more consistent
-hardening \cite{omb-m-15-13,cisa_bod_18_01,uk-using-https-service-manual}.
-
-
-
-%     \item \textbf{RQ3}: To what extent do web security control failures occur at the endpoint level
-%     (e.g., across redirect chains, paths, and response behaviors) rather than at the host/origin level?
-\paragraph{\color{red}{RQ3: To what extent do failures occur at the endpoint level rather than the origin level?}}
-A key contribution of this paper is separating \emph{origin-scoped} protections (e.g., TLS versions, cipher choices, HSTS) from \emph{URI-scoped} and
-browser-enforced controls (e.g., CSP, cookie attributes, Permissions-Policy) that govern how users experience security
-during real navigation. Our results show that endpoint-level hardening frequently lags even when transport appears modern. 
-For Canadian authorities, adoption is relatively strong for simpler headers (e.g., \texttt{X-Frame-Options} and \texttt{X-Content-Type-Options}), 
-but sharply lower for modern policy controls such as CSP \texttt{frame-ancestors} and \texttt{Permissions-Policy} (Table~\ref{tab:security_headers_presence}). 
-This matters because users do not interact with ``origins'' in isolation. Canadians interact with redirect chains, endpoint
-behaviors, embedded resources, and browser policy decisions. Consequently, strong cryptography can
-coexist with avoidable weaknesses in clickjacking defence, content isolation, and cross-origin governance.
-
-
-
-%     \item \textbf{RQ4}: Which specific web security controls exhibit the largest adoption gaps across Canadian
-%     public-sector and critical web services (e.g., TLS configuration, HSTS, cookie attributes, and security headers)?
-\paragraph{\color{red}{RQ4: Which controls exhibit the largest adoption gaps in Canada?}}
-The largest Canadian authority gaps are concentrated in controls that reflect the \emph{modern web} and the \emph{modern attacker}.
-First, \texttt{security.txt} adoption is near-zero in Canadian authorities (Table~\ref{tab:securitytxt_summary}),
-limiting the ability of researchers and citizens to responsibly disclose vulnerabilities \cite{rfc9116}. Second,
-modern browser-facing policies are inconsistently deployed, especially CSP \texttt{frame-ancestors}, \texttt{Referrer-Policy}, and
-\texttt{Permissions-Policy} (Table~\ref{tab:security_headers_presence}). Third, cookie hardening is weak
-among authorities that set cookies: only a small fraction achieve recommended or sufficient configurations (Table~\ref{tab:cookie_security_flags}).
-Finally, information leakage remains pervasive. Technology-revealing headers appear on the vast
-majority of Canadian authority sites (Table~\ref{tab:revealing_headers_summary}), and nearly half
-disclose technology identifiers through error responses (Table~\ref{tab:error_leaks_summary}), lowering the
-cost of reconnaissance and targeted exploitation \cite{owasp_secure_headers_project,owasp_http_security_response_headers,cwe_200,cwe_209}.
-
-
-\subsection{What These Results Mean for Canadians}
-
-For Canadians, the practical question is not merely whether government services ``use HTTPS,'' but whether they
-deliver services with consistent protections against modern web threats. Our results suggest that many Canadian
-web services provide secure transit, yet still expose users to avoidable risk through missing
-browser-enforced controls and information leakage.
-
-Three implications stand out. First, transport security is necessary but not sufficient. Even with
-high HTTPS adoption and generally modern TLS negotiation, incomplete HSTS coverage leaves room for
-policy gaps and downgrade opportunities in the long tail of deployments \cite{rfc6797}. 
-Second, the protection gap has shifted upward into the browser layer. Sparse CSP \texttt{frame-ancestors} adoption and
-limited Permissions-Policy deployment mean many sites are not explicitly constraining
-how their content can be embedded or what powerful features can be exercised in a user’s browser, despite
-longstanding best practices \cite{owasp_clickjacking_defense,mdn_csp_guide}.
-Third, \emph{security posture is weakened by low-cost leaks}. Revealing
-headers and error-page disclosures provide attackers with fast fingerprints and candidate exploit paths, enabling efficient
-targeting without deep probing \cite{cwe_200,cwe_209}.
-
-
-% maybe not true
-Importantly, these are not exotic mitigations. Many are low-effort, configuration-driven controls that can be
-deployed at the edge (CDN/WAF/reverse proxy) without application rewrites. This indicates that the limiting factor
-for Canadian authorities is less about feasibility, and more about governance, consistency, and enforcement.
 
 \subsection{Limitations}
 
@@ -1434,27 +1117,6 @@ controls vary across application surfaces. Third, deeper dependency analysis cou
 exposure and content supply-chain risk, complementing prior findings that government sites often rely on external
 infrastructure \cite{hsiao2019cyberautonomy}. Together, these extensions would enable continuous measurement of
 Canada’s public-sector web security maturity, supporting both operational remediation and evidence-based policy.
-
-\subsection{Conclusion}
-
-\vspace{1em}Taken together, the results suggest that the primary challenge for Canada is not a lack of
-technical capability, but inconsistent adherence to existing guidance. CCCS already publishes comprehensive, 
-and pragmatic recommendations for securing both the transport and application layer of HTTP. Furthermore, 
-where CCCS recommendations have been followed, Canadian sites tend to implement them well. Canadian authority
- sites often negotiate modern TLS and redirect users toward HTTPS, yet frequently omit the browser-facing
-controls that mitigate prevalent web attack patterns, and they routinely disclose implementation metadata that lowers the cost of targeting.
-However, the contrast  with US federal practice is apparent. There, comparable technical guidance is backed by BODs and OMB 
-memoranda, which make web security mandatory and time-bound. Our cross-country results 
-reflect this difference, with US authorities generally achieving higher and more uniform 
-adoption of the same controls recommended in Canada. Web configuration is complex, often distributed 
-across multiple teams and vendors, and web development remains one of the most rapidly changing areas of IT.
-In such an environment, partial deployment and configuration drift are to be expected unless there are clear, 
-enforceable incentives.
-
-\vspace{1em}This study shows that meaningful improvements do not require novel tooling. Instead, they depend on better operational
-discipline through secure defaults, routine validation, and incentives that make deployment uniform rather than best-effort.
-Converting recommendations into consistently applied practice would materially reduce exposure to common attacks and better
-honour the trust that Canadians place in online public services.
 
 \section*{Acknowledgment}
 
