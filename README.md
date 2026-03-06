@@ -28,7 +28,7 @@ Project dependencies are defined in `pyproject.toml`.
 Clone the repository and enter it:
 
 ```bash
-git clone Web-Security-Audit-Client
+git clone Website-Scanner
 cd Web-Security-Audit-Client
 ````
 
