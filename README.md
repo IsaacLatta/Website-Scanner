@@ -11,7 +11,7 @@ This repository contains the code, data, scripts, and outputs used for the measu
 - `scripts/` contains the Bash scripts used to run the scans, including the exact scan commands and the scripts used to generate summary data for later analysis and plotting
 - `resources/` contains the input materials used during the project, including CSV files of target URIs and miscellaneous planning and extraction files such as notes and saved HTML sources
 - `results/` contains the scan outputs, organized by country and by measurement category such as TLS, headers, and related models
-- `csa_report/` contains the original LateX source of the report for the CSA Group.
+- `csa_report/` contains the original LateX source of the report for the CSA Group
 
 This repository is intended to preserve the full workflow used for the research, from target collection through final scan outputs.
 
