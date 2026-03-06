@@ -29,7 +29,7 @@ Clone the repository and enter it:
 
 ```bash
 git clone Website-Scanner
-cd Web-Security-Audit-Client
+cd Website-Scanner
 ````
 
 Create and activate a virtual environment:
