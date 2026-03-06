@@ -1,5 +1,3 @@
-# tests/test_error_leaks.py
-
 import pytest
 
 from scanner.modules.error.error_leak import (

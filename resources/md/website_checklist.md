@@ -53,7 +53,7 @@
 
 ### Why?
 
-* Eliminates plaintext and “SSL-strip” downgrade on first visit, blocks click-through on bad certs, locks future requests to HTTPS (and, with **preload**, even first request).
+* Eliminates plaintext and SSL-strip downgrade on first visit, blocks click-through on bad certs, locks future requests to HTTPS (and, with **preload**, even first request).
 
 ### What we will check?
 

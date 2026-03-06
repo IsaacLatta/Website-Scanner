@@ -1,4 +1,3 @@
-# tests/test_targets.py
 import pytest
 
 from scanner.targets import (

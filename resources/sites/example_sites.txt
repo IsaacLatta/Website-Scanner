@@ -1,9 +1,0 @@
-canada.ca
-cra-arc.gc.ca
-servicecanada.gc.ca
-rcmp-grc.gc.ca
-forces.gc.ca
-justice.gc.ca
-tc.gc.ca
-health.canada.ca
-nrcan.gc.ca

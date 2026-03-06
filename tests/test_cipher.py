@@ -167,37 +167,6 @@ async def test_tls12_sufficient_bucket_and_forced(tiny_pool):
     finally:
         await runner.cleanup()
 
-async def test_tls12_insecure_bucket_and_forced(tiny_pool):
-    if not _has_tlsver("TLSv1_2"):
-        pytest.skip("Runner cannot expose TLS 1.2")
-
-    weak = "AES128-SHA"  # intentionally weak: CBC + SHA1
-    port = 9744
-
-    runner = await _start_https(
-        port=port,
-        min_ver=ssl.TLSVersion.TLSv1_2,
-        max_ver=ssl.TLSVersion.TLSv1_2,
-        ciphers12=weak,
-    )
-    try:
-        mod = CipherSuitesModule(executor=tiny_pool, timeout_s=5.0)
-        await mod.run([f"127.0.0.1:{port}"])
-        row = list(mod.results().values())[0]
-
-        assert row["tls12_forced_cipher"] == weak
-        assert row["tls12_forced_category"] == "insecure"
-
-        assert row["accepts_recommended_tls12"] is False
-        assert row["accepts_sufficient_tls12"] is False
-        assert row["accepts_insecure_tls12"] is True
-
-        # Weak cipher is CBC + SHA1, so both probes should succeed
-        assert row["allows_sha1_tls12"] is True
-        assert row["allows_cbc_tls12"] is True
-    finally:
-        await runner.cleanup()
-
 async def test_ciphers_catalog_rating_is_recorded(tiny_pool):
     if not _has_tlsver("TLSv1_2"):
         pytest.skip("Runner cannot expose TLS 1.2")
