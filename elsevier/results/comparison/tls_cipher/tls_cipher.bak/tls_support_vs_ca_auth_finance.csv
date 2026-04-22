@@ -1,0 +1,5 @@
+variant,n_origins,tls13_supported,tls13_supported_pct,tls12_supported,tls12_supported_pct,tls11_supported,tls10_supported,any_legacy,modern_no_legacy,modern_no_legacy_pct
+CA Auth,375,247,65.9,354,94.4,43,36,43,314,83.7
+CA Finance,177,167,94.4,173,97.7,6,4,6,170,96.0
+US Finance,107,90,84.1,103,96.3,2,2,2,104,97.2
+UK Finance,165,146,88.5,162,98.2,7,7,7,156,94.5

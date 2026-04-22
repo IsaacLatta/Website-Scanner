@@ -1,0 +1,154 @@
+{
+  "inputs": {
+    "n_all_origins": 417,
+    "n_entry_origins": 354,
+    "n_final_only_origins": 63,
+    "n_final_origins": 303,
+    "n_input_origins": 354,
+    "n_input_uris": 354,
+    "uris_per_entry_origin": {
+      "count": 354,
+      "max": 1,
+      "mean": 1.0,
+      "median": 1.0,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 27,
+      "503": 1
+    },
+    "http_timeout_buckets": {
+      "0": 303,
+      "1": 126,
+      "2": 6,
+      "3_plus": 26
+    },
+    "n_origins": 461,
+    "n_origins_all_inputs_unreachable": 51,
+    "n_origins_any_timeout": 159,
+    "n_origins_http_dead": 26,
+    "n_origins_http_forbidden": 28,
+    "n_origins_tls_dead": 9,
+    "origins_all_inputs_unreachable": [
+      "www.courttheatre.org.uk",
+      "www.activatelearning.ac.uk",
+      "www.arts.ac.uk",
+      "www.barkingdagenhamcollege.ac.uk",
+      "www.barnetsouthgate.ac.uk",
+      "www.bccoll.uk",
+      "www.bournemouth.ac.uk",
+      "www.bppuniversity.ac.uk",
+      "www.bridgwater.ac.uk",
+      "www.cardiff.ac.uk",
+      "www.chesterfield.ac.uk",
+      "www.chichester.ac.uk",
+      "www.city.ac.uk",
+      "www.cityplym.ac.uk",
+      "www.craven-college.ac.uk",
+      "www.cssd.ac.uk",
+      "www.dundee.ac.uk",
+      "www.eastdurham.ac.uk",
+      "www.gcu.ac.uk",
+      "www.halesowen.ac.uk",
+      "www.iconcollege.com",
+      "www.internationalbusinesscollege.co.uk",
+      "www.kingston.ac.uk",
+      "www.lincolncollege.ac.uk",
+      "www.lon.ac.uk",
+      "www.lsbu.ac.uk",
+      "www.lutherkinghouse.org.uk",
+      "www.mbro.ac.uk",
+      "www.mihe.org.uk",
+      "www.moorlands.ac.uk",
+      "www.nescot.ac.uk",
+      "www.norland.co.uk",
+      "www.ntu.ac.uk",
+      "www.nua.ac.uk",
+      "www.oca-uk.com",
+      "www.rad.org.uk",
+      "www.rada.org",
+      "www.salfordcc.ac.uk",
+      "www.sccb.ac.uk",
+      "www.southdevon.ac.uk",
+      "www.southwales.ac.uk",
+      "www.stran.ac.uk",
+      "www.strode-college.ac.uk",
+      "www.t-lis.org",
+      "www.trafford.ac.uk",
+      "www.trinity-bris.ac.uk",
+      "www.truro-penwith.ac.uk",
+      "www.ucreative.ac.uk",
+      "www.uel.ac.uk",
+      "www.ulip.london.ac.uk",
+      "www.uwe.ac.uk"
+    ],
+    "tls_timeout_buckets": {
+      "0": 451,
+      "1": 1,
+      "2_plus": 9
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 229,
+      "301": 67,
+      "302": 8,
+      "307": 6,
+      "405": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 229,
+      "3xx": 81,
+      "4xx": 1
+    },
+    "final_status_counts": {
+      "200": 302,
+      "307": 4,
+      "405": 1
+    },
+    "final_status_family_counts": {
+      "2xx": 302,
+      "3xx": 4,
+      "4xx": 1
+    },
+    "hop_buckets_all_success": {
+      "0": 230,
+      "1": 67,
+      "2": 5,
+      "3_plus": 1
+    },
+    "hop_buckets_success_non_block": {
+      "0": 230,
+      "1": 67,
+      "2": 5,
+      "3_plus": 1
+    },
+    "hop_counts_all_success": {
+      "count": 303,
+      "max": 3,
+      "mean": 0.264026402640264,
+      "median": 0,
+      "p95": 1
+    },
+    "hop_counts_success_non_block": {
+      "count": 303,
+      "max": 3,
+      "mean": 0.264026402640264,
+      "median": 0,
+      "p95": 1
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 354,
+    "n_timeout_error": 16,
+    "outcome_counts": {
+      "ok_final_2xx": 302,
+      "ok_final_4xx_non_block": 1,
+      "other_error": 35,
+      "timeout_error": 16
+    },
+    "timeout_error_fraction": 4.519774011299435
+  }
+}

@@ -1,0 +1,12 @@
+dataset_label,country,sector_code,sector_label,n_sites,pct_referrer_policy_present,pct_x_content_type_options_present,pct_x_frame_options_present,pct_csp_frame_ancestors_present,pct_permissions_policy_present
+CA Authorities,CA,auth,Authorities,408,17.4,62.3,63.5,17.9,8.6
+CA Education,CA,edu,Education,91,17.6,60.4,54.9,28.6,11.0
+CA Finance,CA,fin,Finance,142,17.6,37.3,39.4,28.9,9.9
+CA Energy,CA,energy,Energy,207,23.7,45.9,43.0,29.0,13.5
+US Authorities,US,auth,Authorities,314,24.5,78.0,81.2,34.7,5.4
+US Education,US,edu,Education,48,20.8,43.8,50.0,27.1,8.3
+US Finance,US,fin,Finance,77,28.6,64.9,67.5,53.2,11.7
+US Energy,US,energy,Energy,120,26.7,76.7,59.2,50.8,10.0
+UK Authorities,UK,auth,Authorities,348,0.0,87.6,87.6,87.4,87.6
+UK Education,UK,edu,Education,303,31.7,54.8,47.5,23.4,8.9
+UK Finance,UK,fin,Finance,125,48.0,80.0,76.0,62.4,24.0

@@ -20,7 +20,9 @@ dependencies = [
   "beautifulsoup4",
   "matplotlib>=3.8.2",
   "pytest",
-  "pytest-asyncio"
+  "pandas",
+  "pytest-asyncio",
+  "scipy"
 ]
 
 [tool.pytest.ini_options]

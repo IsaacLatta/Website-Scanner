@@ -1,0 +1,5 @@
+variant,n_with_version,tls13_negotiated,tls13_negotiated_pct,tls12_negotiated,tls12_negotiated_pct,other_negotiated,other_negotiated_pct
+CA Auth,356,246,69.1,110,30.9,0,0.0
+CA Finance,175,167,95.4,8,4.6,0,0.0
+US Finance,106,90,84.9,16,15.1,0,0.0
+UK Finance,163,147,90.2,16,9.8,0,0.0

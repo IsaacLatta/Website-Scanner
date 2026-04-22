@@ -1,0 +1,118 @@
+{
+  "inputs": {
+    "n_all_origins": 214,
+    "n_entry_origins": 188,
+    "n_final_only_origins": 26,
+    "n_final_origins": 169,
+    "n_input_origins": 188,
+    "n_input_uris": 229,
+    "uris_per_entry_origin": {
+      "count": 188,
+      "max": 36,
+      "mean": 1.2180851063829787,
+      "median": 1.0,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 8,
+      "503": 1
+    },
+    "http_timeout_buckets": {
+      "0": 144,
+      "1": 67,
+      "2": 3,
+      "3_plus": 11
+    },
+    "n_origins": 225,
+    "n_origins_all_inputs_unreachable": 16,
+    "n_origins_any_timeout": 81,
+    "n_origins_http_dead": 11,
+    "n_origins_http_forbidden": 9,
+    "n_origins_tls_dead": 3,
+    "origins_all_inputs_unreachable": [
+      "bluewaterpower.com",
+      "www.csagroup.org",
+      "www.huskyenergy.com",
+      "www.opg.com",
+      "www.sjenergy.com",
+      "ca.linkedin.com",
+      "enercapita.com",
+      "kiwetinohk.com",
+      "www.altagasutilities.com",
+      "www.gfps.com",
+      "www.oecorp.ca",
+      "www.omimex.com",
+      "www.rometlimited.com",
+      "www.taqaglobal.com",
+      "www.tidewatermidstream.com",
+      "www.transmountain.com"
+    ],
+    "tls_timeout_buckets": {
+      "0": 222,
+      "2_plus": 3
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 110,
+      "301": 98,
+      "302": 7,
+      "308": 1,
+      "500": 1,
+      "999": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 110,
+      "3xx": 106,
+      "5xx": 1
+    },
+    "final_status_counts": {
+      "200": 212,
+      "500": 1,
+      "999": 1
+    },
+    "final_status_family_counts": {
+      "2xx": 212,
+      "5xx": 1
+    },
+    "hop_buckets_all_success": {
+      "0": 112,
+      "1": 73,
+      "2": 27,
+      "3_plus": 2
+    },
+    "hop_buckets_success_non_block": {
+      "0": 112,
+      "1": 73,
+      "2": 27,
+      "3_plus": 2
+    },
+    "hop_counts_all_success": {
+      "count": 214,
+      "max": 3,
+      "mean": 0.6214953271028038,
+      "median": 0.0,
+      "p95": 2
+    },
+    "hop_counts_success_non_block": {
+      "count": 214,
+      "max": 3,
+      "mean": 0.6214953271028038,
+      "median": 0.0,
+      "p95": 2
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 229,
+    "n_timeout_error": 2,
+    "outcome_counts": {
+      "ok_final_2xx": 212,
+      "ok_final_5xx": 1,
+      "other_error": 14,
+      "timeout_error": 2
+    },
+    "timeout_error_fraction": 0.8733624454148472
+  }
+}

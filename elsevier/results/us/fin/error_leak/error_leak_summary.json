@@ -1,0 +1,164 @@
+{
+  "category_distribution": {
+    "category_origin_counts": {
+      "cms": 24,
+      "edge_cdn": 13,
+      "frontend": 3,
+      "hyperscale_cloud": 2,
+      "paas_serverless": 2
+    }
+  },
+  "meta": {
+    "big_platform_tech_names": [
+      "WordPress",
+      "Cloudflare",
+      "Drupal"
+    ],
+    "n_error_leak_rows_raw": 45,
+    "n_scanned_origins": 107,
+    "n_stack_rows": 0,
+    "n_stack_rows_ignored": 0,
+    "n_tech_rows": 45,
+    "n_tech_rows_ignored": 0,
+    "stacktrace_display_ignore_list": [],
+    "tech_name_ignore_list": [
+      "Next.js",
+      "Ruby on Rails"
+    ]
+  },
+  "metric_definitions": {
+    "category_distribution.category_origin_counts": "For each tech_category (framework, database, cloud platform, etc.), the number of distinct origins that leaked at least one technology in that category.",
+    "meta.big_platform_tech_names": "List of high-level platforms (e.g., WordPress, Cloudflare, Drupal) that are only excluded from the 'no_wp_cf_drupal' plot but still counted everywhere else.",
+    "meta.n_error_leak_rows_raw": "Total number of rows returned by modules['error_leak'] before any ignore filters are applied.",
+    "meta.n_scanned_origins": "Number of origins in origin_targets['all_origins'], i.e., sites that were in scope for the scan.",
+    "meta.n_stack_rows": "Number of stack-trace rows kept after filtering out display_name values in STACKTRACE_DISPLAY_IGNORE.",
+    "meta.n_stack_rows_ignored": "Number of stack-trace rows that were discarded because their display_name appears in STACKTRACE_DISPLAY_IGNORE.",
+    "meta.n_tech_rows": "Number of technology-leak rows kept after filtering out tech_name values in TECH_NAME_IGNORE.",
+    "meta.n_tech_rows_ignored": "Number of technology-leak rows that were discarded because their tech_name appears in TECH_NAME_IGNORE.",
+    "meta.stacktrace_display_ignore_list": "List of stack-trace display_name values that were treated as false positives and excluded from all statistics.",
+    "meta.tech_name_ignore_list": "List of tech_name values that were treated as false positives and excluded from all statistics.",
+    "stacktrace_overview.n_origins_with_stacktrace": "Number of scanned origins that had at least one stack-trace row (after ignore filtering).",
+    "stacktrace_overview.n_stack_languages": "Number of distinct programming-language families (stack_trace_signatures.language) for which at least one stack trace was observed.",
+    "stacktrace_overview.n_stack_rows": "Number of stack-trace rows kept after ignore filtering (each row is one origin+language-family match).",
+    "stacktrace_overview.pct_origins_with_stacktrace": "Percentage of scanned origins that leaked a recognizable stack trace, relative to n_scanned_origins.",
+    "stacktrace_top.stack_display_counts": "For each stack-trace display_name (e.g., 'JavaScript / Node.js', 'Python'), the number of origins where an error page matched that language's stack-trace patterns.",
+    "stacktrace_top.stack_language_counts": "For each underlying language tag (e.g., 'javascript', 'python'), the number of origins where a stack trace for that language was detected.",
+    "stacktrace_top.top_stack_display": "List of the TOP_N_STACKTRACE display_name entries with the highest counts, represented as [display_name, count] pairs.",
+    "tech_overview.n_origins_with_any_leak": "Number of scanned origins that had either a technology leak or a stack trace leak (union of both sets).",
+    "tech_overview.n_origins_with_tech_leak": "Number of scanned origins that had at least one technology-leak row (after ignore filtering). Each origin is counted once even if it leaked multiple technologies.",
+    "tech_overview.n_origins_with_version_leak": "Number of scanned origins that leaked at least one explicit version string (has_version=True) for any technology.",
+    "tech_overview.n_tech_rows": "Number of technology-leak rows kept after ignore filtering (each row is one origin+signature match).",
+    "tech_overview.n_unique_tech_names": "Number of distinct tech_name values appearing in technology-leak rows after ignore filtering.",
+    "tech_overview.pct_origins_with_any_leak": "Percentage of scanned origins that had any leak (technology or stack trace), relative to n_scanned_origins.",
+    "tech_overview.pct_origins_with_tech_leak": "Percentage of scanned origins that leaked at least one technology, relative to n_scanned_origins.",
+    "tech_overview.pct_origins_with_version_leak": "Percentage of scanned origins that leaked at least one explicit version string, relative to n_scanned_origins.",
+    "tech_top.tech_name_counts": "For each tech_name, the number of origins whose error page body matched that technology signature at least once (after ignore filtering). This is the underlying histogram used for the 'top N' plots.",
+    "tech_top.tech_name_version_counts": "For each tech_name, the number of origins where has_version=True for that technology, i.e., where the error page appeared to leak an explicit version string.",
+    "tech_top.top_tech_all": "List of the TOP_N_TECH technologies with the highest tech_name_counts, represented as [tech_name, count] pairs.",
+    "tech_top.top_tech_excluding_big_platforms": "List of the TOP_N_TECH technologies with the highest counts after excluding any tech_name in BIG_PLATFORM_TECH_NAMES, represented as [tech_name, count] pairs."
+  },
+  "stacktrace_overview": {
+    "n_origins_with_stacktrace": 0,
+    "n_stack_languages": 0,
+    "n_stack_rows": 0,
+    "pct_origins_with_stacktrace": 0.0
+  },
+  "stacktrace_top": {
+    "stack_display_counts": {},
+    "stack_language_counts": {},
+    "top_stack_display": []
+  },
+  "tech_overview": {
+    "n_origins_with_any_leak": 34,
+    "n_origins_with_tech_leak": 34,
+    "n_origins_with_version_leak": 4,
+    "n_tech_rows": 45,
+    "n_unique_tech_names": 9,
+    "pct_origins_with_any_leak": 31.77570093457944,
+    "pct_origins_with_tech_leak": 31.77570093457944,
+    "pct_origins_with_version_leak": 3.7383177570093458
+  },
+  "tech_top": {
+    "tech_name_counts": {
+      "Angular": 1,
+      "AngularJS": 1,
+      "Cloudflare": 13,
+      "Drupal": 3,
+      "Microsoft Azure": 2,
+      "Netlify": 2,
+      "React": 1,
+      "Vue.js": 1,
+      "WordPress": 21
+    },
+    "tech_name_version_counts": {
+      "AngularJS": 1,
+      "Cloudflare": 2,
+      "Vue.js": 1,
+      "WordPress": 1
+    },
+    "top_tech_all": [
+      [
+        "WordPress",
+        21
+      ],
+      [
+        "Cloudflare",
+        13
+      ],
+      [
+        "Drupal",
+        3
+      ],
+      [
+        "Netlify",
+        2
+      ],
+      [
+        "Microsoft Azure",
+        2
+      ],
+      [
+        "Angular",
+        1
+      ],
+      [
+        "AngularJS",
+        1
+      ],
+      [
+        "Vue.js",
+        1
+      ],
+      [
+        "React",
+        1
+      ]
+    ],
+    "top_tech_excluding_big_platforms": [
+      [
+        "Netlify",
+        2
+      ],
+      [
+        "Microsoft Azure",
+        2
+      ],
+      [
+        "Angular",
+        1
+      ],
+      [
+        "AngularJS",
+        1
+      ],
+      [
+        "Vue.js",
+        1
+      ],
+      [
+        "React",
+        1
+      ]
+    ]
+  }
+}

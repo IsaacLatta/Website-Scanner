@@ -1,0 +1,369 @@
+\begin{thebibliography}{50}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Misc
+\bibitem[{{Bank of England – Prudential Regulation
+  Authority}()}]{uk-pra-creditunions-list}
+\bibinfo{author}{{Bank of England – Prudential Regulation Authority}}, .
+\newblock \bibinfo{title}{List of pra-regulated credit unions}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.bankofengland.co.uk/-/media/boe/files/prudential-regulation/authorisations/which-firms-does-the-pra-regulate/2025/list-of-pra-regulated-credit-unions.csv}}.
+%Type = Techreport
+\bibitem[{Barker and Davidson(2019)}]{nist_800_52r2}
+\bibinfo{author}{Barker, E.B.}, \bibinfo{author}{Davidson, W.C.},
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Guidelines for the Selection, Configuration, and Use
+  of {TLS} Implementations}.
+\newblock \bibinfo{type}{Special Publication} \bibinfo{number}{800-52 Revision
+  2}. National Institute of Standards and Technology.
+\newblock \URLprefix
+  \url{https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf}.
+%Type = Misc
+\bibitem[{{Canada Energy Regulator}()}]{cer_pipeline_companies}
+\bibinfo{author}{{Canada Energy Regulator}}, .
+\newblock \bibinfo{title}{Pipeline companies regulated by the cer}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.cer-rec.gc.ca/en/about/who-we-are-what-we-do/pipeline-companies-regulated-cer.html}}.
+%Type = Misc
+\bibitem[{{Canadian Bankers Association}(2024)}]{cba_member_banks_2024}
+\bibinfo{author}{{Canadian Bankers Association}}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{{Member Banks}}.
+\newblock \URLprefix \url{https://cba.ca/article/member-banks}.
+  \bibinfo{note}{the Canadian Bankers Association represents more than 60
+  domestic and foreign banks operating in Canada}.
+%Type = Techreport
+\bibitem[{{Canadian Centre for Cyber Security}(2025a)}]{cccs-itsp-40062}
+\bibinfo{author}{{Canadian Centre for Cyber Security}}, \bibinfo{year}{2025}a.
+\newblock \bibinfo{title}{Guidance on Securely Configuring Network Protocols
+  (ITSP.40.062)}.
+\newblock \bibinfo{type}{Practitioner series}. Canadian Centre for Cyber
+  Security.
+\newblock \URLprefix
+  \url{https://www.cyber.gc.ca/en/guidance/guidance-securely-configuring-network-protocols-itsp40062}.
+%Type = Techreport
+\bibitem[{{Canadian Centre for Cyber Security}(2025b)}]{cccs-itsm-60005}
+\bibinfo{author}{{Canadian Centre for Cyber Security}}, \bibinfo{year}{2025}b.
+\newblock \bibinfo{title}{Security Considerations for Your Website
+  (ITSM.60.005)}.
+\newblock \bibinfo{type}{Management guidance}. Canadian Centre for Cyber
+  Security.
+\newblock \URLprefix
+  \url{https://www.cyber.gc.ca/en/guidance/security-considerations-your-website-itsm60005}.
+%Type = Misc
+\bibitem[{{Canadian Gas Association}()}]{cga_industry_links}
+\bibinfo{author}{{Canadian Gas Association}}, .
+\newblock \bibinfo{title}{Industry links}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.cga.ca/resources/industry-links/}}.
+%Type = Misc
+\bibitem[{{Canadian Nuclear Safety Commission}()}]{cnsc_nuclear_facilities}
+\bibinfo{author}{{Canadian Nuclear Safety Commission}}, .
+\newblock \bibinfo{title}{Nuclear facilities in canada}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.cnsc-ccsn.gc.ca/eng/resources/nuclear-facilities/}}.
+%Type = Techreport
+\bibitem[{{Cybersecurity and Infrastructure Security
+  Agency}(2017)}]{cisa_bod_18_01}
+\bibinfo{author}{{Cybersecurity and Infrastructure Security Agency}},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Enhance Email and Web Security: Binding Operational
+  Directive 18-01}.
+\newblock \bibinfo{type}{Technical Report}. U.S. Department of Homeland
+  Security.
+\newblock \URLprefix \url{https://cyber.dhs.gov/assets/report/bod-18-01.pdf}.
+%Type = Misc
+\bibitem[{{Cybersecurity and Infrastructure Security
+  Agency}(2023)}]{cisa_securitytxt_simple_file_big_value}
+\bibinfo{author}{{Cybersecurity and Infrastructure Security Agency}},
+  \bibinfo{year}{2023}.
+\newblock \bibinfo{title}{security.txt: A simple file with big value}.
+\newblock \URLprefix
+  \url{https://www.cisa.gov/news-events/news/securitytxt-simple-file-big-value}.
+%Type = Article
+\bibitem[{Dunbar()}]{dunbar4240917survey}
+\bibinfo{author}{Dunbar, D.}, .
+\newblock \bibinfo{title}{Survey of united states related domains: secure
+  network protocol analysis}.
+\newblock \bibinfo{journal}{Available at SSRN 4240917} .
+%Type = Misc
+\bibitem[{{Edison Electric Institute}()}]{edison-electric-member-sites}
+\bibinfo{author}{{Edison Electric Institute}}, .
+\newblock \bibinfo{title}{Electric company member websites}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.eei.org/-/media/Project/EEI/Documents/About/member-company-web-sites.pdf}}.
+%Type = Misc
+\bibitem[{{Electricity Canada}()}]{electric_canada_members}
+\bibinfo{author}{{Electricity Canada}}, .
+\newblock \bibinfo{title}{List of members}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.electricity.ca/membership/list-of-members/}}.
+%Type = Misc
+\bibitem[{{Financial Conduct Authority}()}]{uk-fca-api-docs}
+\bibinfo{author}{{Financial Conduct Authority}}, .
+\newblock \bibinfo{title}{Fca public register api documentation}.
+\newblock
+  \bibinfo{howpublished}{\url{https://register.fca.org.uk/Developer/s/}}.
+%Type = Techreport
+\bibitem[{Foudil and Shafranovich(2022)}]{rfc9116}
+\bibinfo{author}{Foudil, E.}, \bibinfo{author}{Shafranovich, Y.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{A File Format to Aid in Security Vulnerability
+  Disclosure}.
+\newblock \bibinfo{type}{RFC} \bibinfo{number}{9116}. Internet Engineering Task
+  Force.
+\newblock \URLprefix \url{https://www.rfc-editor.org/rfc/rfc9116.html},
+  \DOIprefix\doi{10.17487/RFC9116}.
+%Type = Misc
+\bibitem[{{Government Digital Service}(2024)}]{gds_security_overview_websites}
+\bibinfo{author}{{Government Digital Service}}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Security overview for websites}.
+\newblock \URLprefix
+  \url{https://gds-way.digital.cabinet-office.gov.uk/manuals/security-overview-for-websites.html}.
+%Type = Misc
+\bibitem[{{Government of Canada}()}]{ca_emergency_management}
+\bibinfo{author}{{Government of Canada}}, .
+\newblock \bibinfo{title}{Emergency management organizations in canada}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.canada.ca/en/services/policing/emergencies/preparedness/get-prepared/emergency-planning-resources/emergency-management-organizations.html}}.
+%Type = Misc
+\bibitem[{{Government of Canada}(2025)}]{canada_depts}
+\bibinfo{author}{{Government of Canada}}, \bibinfo{year}{2025}.
+\newblock \bibinfo{title}{Departments and agencies}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.canada.ca/en/government/dept.html}}.
+\newblock \bibinfo{note}{Accessed: 2025-09-02}.
+%Type = Misc
+\bibitem[{{Higher Education Statistics Agency}(2024)}]{hesa_discoveruni_2024}
+\bibinfo{author}{{Higher Education Statistics Agency}}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{{Discover Uni Dataset}}.
+\newblock \bibinfo{howpublished}{Online}.
+\newblock \URLprefix
+  \url{https://www.hesa.ac.uk/support/tools-and-downloads/unistats}.
+%Type = Techreport
+\bibitem[{Hodges et~al.(2012)Hodges, Jackson and Barth}]{rfc6797}
+\bibinfo{author}{Hodges, J.}, \bibinfo{author}{Jackson, C.},
+  \bibinfo{author}{Barth, A.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{{HTTP Strict Transport Security (HSTS)}}.
+\newblock \bibinfo{type}{Request for Comments} \bibinfo{number}{6797}. Internet
+  Engineering Task Force.
+\newblock \URLprefix \url{https://www.rfc-editor.org/rfc/rfc6797}.
+%Type = Inproceedings
+\bibitem[{Hsiao et~al.(2019)Hsiao, Kim, Ku, Chang, Chen, Chen, Wang and
+  Jeng}]{hsiao2019cyberautonomy}
+\bibinfo{author}{Hsiao, H.C.}, \bibinfo{author}{Kim, T.H.J.},
+  \bibinfo{author}{Ku, Y.M.}, \bibinfo{author}{Chang, C.M.},
+  \bibinfo{author}{Chen, H.F.}, \bibinfo{author}{Chen, Y.J.},
+  \bibinfo{author}{Wang, C.W.}, \bibinfo{author}{Jeng, W.},
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{An investigation of cyber autonomy on government
+  websites}, in: \bibinfo{booktitle}{Proceedings of the Web Conference 2019
+  (WWW '19)}, \bibinfo{publisher}{ACM}, \bibinfo{address}{San Francisco, CA,
+  USA}.
+\newblock \URLprefix \url{https://doi.org/10.1145/3308558.3313645},
+  \DOIprefix\doi{10.1145/3308558.3313645}.
+%Type = Misc
+\bibitem[{Latta and Keshvadi(2026)}]{latta_scanner_2026}
+\bibinfo{author}{Latta, I.}, \bibinfo{author}{Keshvadi, S.},
+  \bibinfo{year}{2026}.
+\newblock \bibinfo{title}{{Website-Scanner}: An automated framework for
+  multi-layer web security benchmarking}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/IsaacLatta/Website-Scanner}}.
+\newblock \bibinfo{note}{Source code and raw measurement datasets for Canadian,
+  US, and UK public-sector web services}.
+%Type = Misc
+\bibitem[{{MITRE Corporation}(2024)}]{cwe_209}
+\bibinfo{author}{{MITRE Corporation}}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Cwe-209: Information exposure through an error
+  message}.
+\newblock \URLprefix \url{https://cwe.mitre.org/data/definitions/209.html}.
+%Type = Techreport
+\bibitem[{Moriarty and Farrell(2021)}]{rfc8996}
+\bibinfo{author}{Moriarty, K.}, \bibinfo{author}{Farrell, S.},
+  \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Deprecating {TLS} 1.0 and {TLS} 1.1}.
+\newblock \bibinfo{type}{RFC} \bibinfo{number}{8996}. Internet Engineering Task
+  Force.
+\newblock \URLprefix \url{https://www.rfc-editor.org/rfc/rfc8996}.
+%Type = Misc
+\bibitem[{{Mozilla}(2026)}]{tool_mozilla_observatory}
+\bibinfo{author}{{Mozilla}}, \bibinfo{year}{2026}.
+\newblock \bibinfo{title}{Mozilla http observatory}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/mozilla/http-observatory}}.
+\newblock \bibinfo{note}{Accessed: 2026-01-18}.
+%Type = Misc
+\bibitem[{{Mozilla Developer Network}(2024a)}]{mdn_csp_guide}
+\bibinfo{author}{{Mozilla Developer Network}}, \bibinfo{year}{2024}a.
+\newblock \bibinfo{title}{Content security policy ({CSP}) guide}.
+\newblock \URLprefix
+  \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP}.
+%Type = Misc
+\bibitem[{{Mozilla Developer Network}(2024b)}]{mdn_sts_header}
+\bibinfo{author}{{Mozilla Developer Network}}, \bibinfo{year}{2024}b.
+\newblock \bibinfo{title}{Strict-transport-security — http header reference}.
+\newblock \URLprefix
+  \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security}.
+%Type = Misc
+\bibitem[{{Mozilla Developer Network}(2025)}]{mdn_secure_cookie_configuration}
+\bibinfo{author}{{Mozilla Developer Network}}, \bibinfo{year}{2025}.
+\newblock \bibinfo{title}{Secure cookie configuration}.
+\newblock \URLprefix
+  \url{https://developer.mozilla.org/en-US/docs/Web/Security/Practical_implementation_guides/Cookies}.
+%Type = Techreport
+\bibitem[{{National Security Agency}(2021)}]{nsa_eliminating_obsolete_tls}
+\bibinfo{author}{{National Security Agency}}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Eliminating Obsolete {TLS}}.
+\newblock \bibinfo{type}{Technical Report}. National Security Agency.
+\newblock \URLprefix
+  \url{https://media.defense.gov/2021/Jan/05/2002560140/-1/-1/0/ELIMINATING_OBSOLETE_TLS_UOO197443-20.PDF}.
+%Type = Techreport
+\bibitem[{{Office of Management and Budget}(2015)}]{omb-m-15-13}
+\bibinfo{author}{{Office of Management and Budget}}, \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{M-15-13: Policy to Require Secure Connections across
+  Federal Websites and Web Services}.
+\newblock \bibinfo{type}{OMB Memorandum} \bibinfo{number}{M-15-13}. Executive
+  Office of the President of the United States.
+\newblock \URLprefix
+  \url{https://obamawhitehouse.archives.gov/sites/default/files/omb/memoranda/2015/m-15-13.pdf}.
+%Type = Misc
+\bibitem[{{OWASP Foundation}(2024a)}]{owasp_csp_cheatsheet}
+\bibinfo{author}{{OWASP Foundation}}, \bibinfo{year}{2024}a.
+\newblock \bibinfo{title}{Content security policy (csp) cheat sheet}.
+\newblock \URLprefix
+  \url{https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html}.
+%Type = Misc
+\bibitem[{{OWASP Foundation}(2024b)}]{owasp_http_security_response_headers}
+\bibinfo{author}{{OWASP Foundation}}, \bibinfo{year}{2024}b.
+\newblock \bibinfo{title}{Http security response headers cheat sheet}.
+\newblock \URLprefix
+  \url{https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html}.
+%Type = Misc
+\bibitem[{{OWASP Foundation}(2024c)}]{owasp_secure_headers_project}
+\bibinfo{author}{{OWASP Foundation}}, \bibinfo{year}{2024}c.
+\newblock \bibinfo{title}{Owasp secure headers project}.
+\newblock \URLprefix \url{https://owasp.org/www-project-secure-headers/}.
+%Type = Misc
+\bibitem[{{OWASP Foundation}(2024d)}]{owasp_session_management_cookies}
+\bibinfo{author}{{OWASP Foundation}}, \bibinfo{year}{2024}d.
+\newblock \bibinfo{title}{Session management cheat sheet — cookies}.
+\newblock \URLprefix
+  \url{https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies}.
+%Type = Misc
+\bibitem[{{Qualys SSL Labs}()}]{SSLPulse}
+\bibinfo{author}{{Qualys SSL Labs}}, .
+\newblock \bibinfo{title}{{SSL Pulse}}.
+\newblock \bibinfo{howpublished}{Qualys SSL Labs Projects}.
+\newblock \URLprefix \url{https://www.ssllabs.com/ssl-pulse/}.
+  \bibinfo{note}{accessed: 2026-01-18}.
+%Type = Misc
+\bibitem[{{Qualys SSL Labs}(2026)}]{tool_ssllabs_ssltest}
+\bibinfo{author}{{Qualys SSL Labs}}, \bibinfo{year}{2026}.
+\newblock \bibinfo{title}{Ssl server test}.
+\newblock \bibinfo{howpublished}{\url{https://www.ssllabs.com/ssltest/}}.
+\newblock \bibinfo{note}{Accessed: 2026-01-18}.
+%Type = Techreport
+\bibitem[{Rescorla(2018)}]{rfc8446}
+\bibinfo{author}{Rescorla, E.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{The Transport Layer Security (TLS) Protocol Version
+  1.3}.
+\newblock \bibinfo{type}{RFC} \bibinfo{number}{8446}. Internet Engineering Task
+  Force.
+\newblock \URLprefix \url{https://datatracker.ietf.org/doc/html/rfc8446},
+  \DOIprefix\doi{10.17487/RFC8446}.
+%Type = Article
+\bibitem[{Schiavone(2024)}]{schiavone2024municipality2https}
+\bibinfo{author}{Schiavone, A.G.}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Municipality2https: A study on https protocol's usage
+  in italian municipalities’ websites}.
+\newblock \bibinfo{journal}{Computers \& Security} \bibinfo{volume}{137},
+  \bibinfo{pages}{103592}.
+%Type = Misc
+\bibitem[{{Scott Helme}(2026)}]{tool_securityheaders}
+\bibinfo{author}{{Scott Helme}}, \bibinfo{year}{2026}.
+\newblock \bibinfo{title}{Securityheaders.com}.
+\newblock \bibinfo{howpublished}{\url{https://securityheaders.com/}}.
+\newblock \bibinfo{note}{Accessed: 2026-01-18}.
+%Type = Misc
+\bibitem[{{Transport Canada}(2025a)}]{maritime_ports}
+\bibinfo{author}{{Transport Canada}}, \bibinfo{year}{2025}a.
+\newblock \bibinfo{title}{List of canada port authorities}.
+\newblock \URLprefix
+  \url{https://tc.canada.ca/en/marine-transportation/ports-harbours-anchorages/list-canada-port-authorities}.
+  \bibinfo{note}{accessed list of maritime port authorities}.
+%Type = Misc
+\bibitem[{{Transport Canada}(2025b)}]{ca_airports}
+\bibinfo{author}{{Transport Canada}}, \bibinfo{year}{2025}b.
+\newblock \bibinfo{title}{List of small airports owned by transport canada}.
+\newblock \URLprefix
+  \url{https://tc.canada.ca/en/aviation/operating-airports-aerodromes/list-airports-owned-transport-canada}.
+  \bibinfo{note}{accessed list of small airport authorities}.
+%Type = Misc
+\bibitem[{{Treasury Board of Canada Secretariat}(2025a)}]{crown_corps}
+\bibinfo{author}{{Treasury Board of Canada Secretariat}},
+  \bibinfo{year}{2025}a.
+\newblock \bibinfo{title}{List of crown corporations}.
+\newblock \URLprefix
+  \url{https://www.canada.ca/en/treasury-board-secretariat/services/guidance-crown-corporations/list-crown-corporations.html}.
+  \bibinfo{note}{accessed list of Crown corporations}.
+%Type = Misc
+\bibitem[{{Treasury Board of Canada Secretariat}(2025b)}]{canada_institutions}
+\bibinfo{author}{{Treasury Board of Canada Secretariat}},
+  \bibinfo{year}{2025}b.
+\newblock \bibinfo{title}{List of government of canada institutions}.
+\newblock \URLprefix
+  \url{https://www.canada.ca/en/treasury-board-secretariat/services/access-information-privacy/access-information/info-source/list-institutions.html}.
+  \bibinfo{note}{accessed federal institutions list}.
+%Type = Misc
+\bibitem[{{UK Government Digital Service}(a)}]{uk-gov-collections-api-docs}
+\bibinfo{author}{{UK Government Digital Service}}, a.
+\newblock \bibinfo{title}{Collections api documentation}.
+\newblock
+  \bibinfo{howpublished}{\url{https://docs.publishing.service.gov.uk/repos/collections/api.html}}.
+%Type = Misc
+\bibitem[{{UK Government Digital Service}(b)}]{uk-gov-collections-api}
+\bibinfo{author}{{UK Government Digital Service}}, b.
+\newblock \bibinfo{title}{Collections api endpoint}.
+\newblock \bibinfo{howpublished}{\url{https://www.gov.uk/api/collections}}.
+%Type = Misc
+\bibitem[{{Universities Canada}()}]{ca_unis_list}
+\bibinfo{author}{{Universities Canada}}, .
+\newblock \bibinfo{title}{Our members -- list of canadian universities}.
+\newblock
+  \bibinfo{howpublished}{\url{https://univcan.ca/about-universities-canada/our-members/}}.
+%Type = Misc
+\bibitem[{{U.S. Census Bureau}()}]{us-population-stats}
+\bibinfo{author}{{U.S. Census Bureau}}, .
+\newblock \bibinfo{title}{Population statistics and demographic data}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.census.gov/topics/population.html}}.
+%Type = Misc
+\bibitem[{{U.S. Department of Education}()}]{us-college-scorecard-docs}
+\bibinfo{author}{{U.S. Department of Education}}, .
+\newblock \bibinfo{title}{College scorecard api documentation}.
+\newblock
+  \bibinfo{howpublished}{\url{https://collegescorecard.ed.gov/data/api-documentation}}.
+%Type = Misc
+\bibitem[{{U.S. Federal Deposit Insurance Corporation}()}]{fdic-bankfind-api}
+\bibinfo{author}{{U.S. Federal Deposit Insurance Corporation}}, .
+\newblock \bibinfo{title}{Fdic bankfind api endpoint}.
+\newblock
+  \bibinfo{howpublished}{\url{https://api.fdic.gov/banks/institutions}}.
+%Type = Misc
+\bibitem[{{U.S. Government}()}]{usa-agency-index}
+\bibinfo{author}{{U.S. Government}}, .
+\newblock \bibinfo{title}{A--z index of u.s. government departments and
+  agencies}.
+\newblock \bibinfo{howpublished}{\url{https://www.usa.gov/agency-index}}.
+
+\end{thebibliography}

@@ -1,0 +1,4 @@
+variant,n_origins,tls13_supported,tls13_supported_pct,tls12_supported,tls12_supported_pct,tls11_supported,tls10_supported,any_legacy,modern_no_legacy,modern_no_legacy_pct
+CA Auth,375,247,65.9,354,94.4,43,36,43,314,83.7
+CA Energy,214,180,84.1,204,95.3,13,12,13,195,91.1
+US Energy,141,111,78.7,139,98.6,4,4,4,135,95.7

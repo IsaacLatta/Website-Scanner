@@ -1,0 +1,12 @@
+dataset_label,sector_label,n_https_ok,n_has_hsts,pct_has_hsts_among_https_ok,pct_hsts_maxage_1yr_among_hsts,pct_hsts_include_subdomains_among_hsts,pct_hsts_preload_among_hsts,pct_hsts_strong_among_hsts
+CA Authorities,Authorities,293,175,59.73,70.86,54.29,27.43,46.29
+CA Education,Education,97,54,55.67,81.48,33.33,20.37,33.33
+CA Finance,Finance,168,132,78.57,45.45,86.36,23.48,34.85
+CA Energy,Energy,195,114,58.46,81.58,57.02,21.05,49.12
+US Authorities,Authorities,273,245,89.74,89.39,68.57,55.51,64.90
+US Education,Education,50,31,62.00,64.52,25.81,22.58,19.35
+US Finance,Finance,90,70,77.78,68.57,47.14,22.86,38.57
+US Energy,Energy,119,90,75.63,78.89,64.44,21.11,53.33
+UK Authorities,Authorities,4,1,25.00,100.00,0.00,100.00,0.00
+UK Education,Education,374,205,54.81,64.88,42.93,23.41,35.12
+UK Finance,Finance,149,128,85.91,79.69,60.94,34.38,52.34

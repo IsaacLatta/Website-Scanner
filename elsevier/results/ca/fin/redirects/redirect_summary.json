@@ -1,0 +1,118 @@
+{
+  "inputs": {
+    "n_all_origins": 177,
+    "n_entry_origins": 155,
+    "n_final_only_origins": 22,
+    "n_final_origins": 142,
+    "n_input_origins": 155,
+    "n_input_uris": 156,
+    "uris_per_entry_origin": {
+      "count": 155,
+      "max": 2,
+      "mean": 1.0064516129032257,
+      "median": 1,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 6,
+      "503": 1
+    },
+    "http_timeout_buckets": {
+      "0": 134,
+      "1": 46,
+      "2": 5,
+      "3_plus": 5
+    },
+    "n_origins": 190,
+    "n_origins_all_inputs_unreachable": 13,
+    "n_origins_any_timeout": 56,
+    "n_origins_http_dead": 5,
+    "n_origins_http_forbidden": 6,
+    "n_origins_tls_dead": 0,
+    "origins_all_inputs_unreachable": [
+      "drivingruralprosperity.ca",
+      "www.bmo.com",
+      "www.homeequitybank.ca",
+      "www.icicibank.ca",
+      "www.integriscu.ca",
+      "www.kindredcu.com",
+      "www.laurentianbank.ca",
+      "www.manulifebank.ca",
+      "www.northerncu.com",
+      "www.northsave.com",
+      "www.pathwise.ca",
+      "www.stabil.com",
+      "www.ubs.com"
+    ],
+    "tls_timeout_buckets": {
+      "0": 189,
+      "1": 1
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 75,
+      "301": 56,
+      "302": 10,
+      "308": 1,
+      "404": 1,
+      "500": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 75,
+      "3xx": 67,
+      "4xx": 1,
+      "5xx": 1
+    },
+    "final_status_counts": {
+      "200": 139,
+      "404": 3,
+      "500": 1
+    },
+    "final_status_family_counts": {
+      "2xx": 139,
+      "4xx": 3,
+      "5xx": 1
+    },
+    "hop_buckets_all_success": {
+      "0": 77,
+      "1": 45,
+      "2": 18,
+      "3_plus": 3
+    },
+    "hop_buckets_success_non_block": {
+      "0": 77,
+      "1": 45,
+      "2": 18,
+      "3_plus": 3
+    },
+    "hop_counts_all_success": {
+      "count": 143,
+      "max": 3,
+      "mean": 0.6293706293706294,
+      "median": 0,
+      "p95": 2
+    },
+    "hop_counts_success_non_block": {
+      "count": 143,
+      "max": 3,
+      "mean": 0.6293706293706294,
+      "median": 0,
+      "p95": 2
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 156,
+    "n_timeout_error": 7,
+    "outcome_counts": {
+      "ok_final_2xx": 139,
+      "ok_final_4xx_non_block": 3,
+      "ok_final_5xx": 1,
+      "other_error": 6,
+      "timeout_error": 7
+    },
+    "timeout_error_fraction": 4.487179487179487
+  }
+}

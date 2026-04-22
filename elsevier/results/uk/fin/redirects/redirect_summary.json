@@ -1,0 +1,107 @@
+{
+  "inputs": {
+    "n_all_origins": 165,
+    "n_entry_origins": 140,
+    "n_final_only_origins": 25,
+    "n_final_origins": 125,
+    "n_input_origins": 140,
+    "n_input_uris": 141,
+    "uris_per_entry_origin": {
+      "count": 140,
+      "max": 2,
+      "mean": 1.0071428571428571,
+      "median": 1.0,
+      "p95": 1
+    }
+  },
+  "origin_health": {
+    "http_statuses_for_forbidden": {
+      "403": 12
+    },
+    "http_timeout_buckets": {
+      "0": 125,
+      "1": 36,
+      "2": 3,
+      "3_plus": 13
+    },
+    "n_origins": 177,
+    "n_origins_all_inputs_unreachable": 15,
+    "n_origins_any_timeout": 52,
+    "n_origins_http_dead": 13,
+    "n_origins_http_forbidden": 12,
+    "n_origins_tls_dead": 0,
+    "origins_all_inputs_unreachable": [
+      "www.icicibank.co.uk",
+      "www.bankofbarodauk.com",
+      "www.blme.com",
+      "www.cafonline.org",
+      "www.efgl.com",
+      "www.fcebank.com",
+      "www.ghanabank.co.uk",
+      "www.hib.uk.com",
+      "www.investec.com",
+      "www.itau.com.br",
+      "www.onesavingsbank.co.uk",
+      "www.osb.co.uk",
+      "www.persiabank.co.uk",
+      "www.smbcgroup.com",
+      "www.ubs.com"
+    ],
+    "tls_timeout_buckets": {
+      "0": 177
+    }
+  },
+  "redirects": {
+    "blocked_403_503_fraction": 0.0,
+    "entry_status_counts": {
+      "200": 80,
+      "301": 31,
+      "302": 15,
+      "307": 1
+    },
+    "entry_status_family_counts": {
+      "2xx": 80,
+      "3xx": 47
+    },
+    "final_status_counts": {
+      "200": 125
+    },
+    "final_status_family_counts": {
+      "2xx": 125
+    },
+    "hop_buckets_all_success": {
+      "0": 80,
+      "1": 32,
+      "2": 11,
+      "3_plus": 2
+    },
+    "hop_buckets_success_non_block": {
+      "0": 80,
+      "1": 32,
+      "2": 11,
+      "3_plus": 2
+    },
+    "hop_counts_all_success": {
+      "count": 125,
+      "max": 4,
+      "mean": 0.488,
+      "median": 0,
+      "p95": 2
+    },
+    "hop_counts_success_non_block": {
+      "count": 125,
+      "max": 4,
+      "mean": 0.488,
+      "median": 0,
+      "p95": 2
+    },
+    "n_blocked_403_503": 0,
+    "n_resolutions": 141,
+    "n_timeout_error": 0,
+    "outcome_counts": {
+      "ok_final_2xx": 125,
+      "other_error": 16
+    },
+    "timeout_error_fraction": 0.0
+  }
+}

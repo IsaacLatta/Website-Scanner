@@ -1,0 +1,5 @@
+variant,n_tls12_forced_attempted,recommended,recommended_pct,sufficient,sufficient_pct,phase_out,phase_out_pct,insecure,insecure_pct,unknown,unknown_pct
+CA Auth,354,265,74.9,6,1.7,12,3.4,0,0.0,71,20.1
+CA Finance,173,155,89.6,1,0.6,1,0.6,0,0.0,16,9.2
+US Finance,103,66,64.1,0,0.0,3,2.9,0,0.0,34,33.0
+UK Finance,162,118,72.8,1,0.6,0,0.0,0,0.0,43,26.5

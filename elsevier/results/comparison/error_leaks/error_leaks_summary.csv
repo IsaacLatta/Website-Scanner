@@ -1,0 +1,12 @@
+dataset_label,country,sector_code,sector_label,n_scanned_origins,pct_any_tech_leak,pct_version_leak,pct_stacktrace
+CA Authorities,CA,auth,Authorities,375,47.2,10.7,0.0
+CA Education,CA,edu,Education,103,45.6,10.7,0.0
+CA Finance,CA,fin,Finance,177,20.9,8.5,0.0
+CA Energy,CA,energy,Energy,214,39.3,13.1,0.0
+US Authorities,US,auth,Authorities,373,44.5,6.4,0.0
+US Education,US,edu,Education,53,32.1,15.1,0.0
+US Finance,US,fin,Finance,107,31.8,3.7,0.0
+US Energy,US,energy,Energy,141,36.2,7.1,0.0
+UK Authorities,UK,auth,Authorities,4,50.0,0.0,0.0
+UK Education,UK,edu,Education,417,35.0,7.9,0.0
+UK Finance,UK,fin,Finance,165,24.8,5.5,0.0
