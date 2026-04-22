@@ -1130,6 +1130,55 @@ Throughout this study, we distinguish between three related units of analysis: \
     The resulting pattern is consistent with a two-tier posture: Canada has broadly adopted baseline encryption for many services, but lags in the configuration-driven, defense-in-depth controls that transform ``HTTPS present'' into ``HTTPS enforced and hardened''. 
     This compliance gap motivates the discussion in Section~5 on how configuration standards and governance mechanisms could be translated into more uniform operational practice across Canadian public-sector web services.
 
+\begin{table}[t]
+  \caption{Statistical support for principal comparative claims.}
+  \label{tab:stats_summary}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{1.15}
+
+  \begin{adjustbox}{max width=\columnwidth}
+  \csvreader[
+    tabular=llccrc,
+    table head=\toprule
+      Theme &
+      Metric &
+      CA Authorities &
+      Comparator &
+      $\Delta$ (pp) &
+      $p$-value \\\midrule,
+    late after line=\\,
+    late after last line=\\\bottomrule
+  ]{../results/stats_analysis.csv}{%
+    theme=\Theme,
+    metric_label=\Metric,
+    base_display=\BaseDisplay,
+    comparator_dataset=\ComparatorDataset,
+    comparator_display=\ComparatorDisplay,
+    delta_pp_display=\DeltaPP,
+    p_value_display=\PValue
+  }{%
+    \Theme &
+    \Metric &
+    \BaseDisplay &
+    \shortstack{\ComparatorDataset\\\ComparatorDisplay} &
+    \DeltaPP &
+    \PValue
+  }%
+  \end{adjustbox}
+
+  \vspace{2mm}
+  \footnotesize
+  \emph{Notes:} Entries report the Canadian authority estimate and comparator
+  estimate as percentage with Wilson 95\% confidence interval. $\Delta$ is
+  computed as Canadian authorities minus comparator (percentage points).
+  Fisher's exact test was used for sparse comparisons; otherwise a chi-square
+  test of independence was used. UK authority comparisons are not included in
+  this summary table because their results are strongly shaped by centralized
+  GOV.UK hosting rather than organization-level deployment.
+\end{table}
+
 \section{Discussion, Implications, and Limitations}~\label{sec:discussion}
 
     This section interprets the empirical results and distills their implications for both operators and policymakers. 

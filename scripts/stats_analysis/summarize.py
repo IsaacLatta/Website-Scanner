@@ -60,6 +60,11 @@ Output schema:
 The output is designed so LaTeX can render a concise summary table directly from
 the formatted display columns, while still keeping the raw numeric columns
 available for debugging or alternate formatting.
+
+Important formatting note:
+- The display fields intentionally avoid commas inside the cell text
+  (e.g., "59.7 [54.0--65.2]" instead of "59.7 [54.0, 65.2]") so the
+  CSV remains easy for LaTeX/csvsimple to parse.
 """
 
 import argparse
@@ -141,7 +146,8 @@ def choose_test(x1: int, n1: int, x2: int, n2: int) -> Tuple[str, float]:
 
 
 def fmt_pct_ci(pct: float, lo: float, hi: float) -> str:
-    return f"{pct:.1f} [{lo:.1f}, {hi:.1f}]"
+    # Avoid commas in CSV display fields so LaTeX csv readers parse safely.
+    return f"{pct:.1f} [{lo:.1f}--{hi:.1f}]"
 
 
 def fmt_p_value(p: float) -> str:
