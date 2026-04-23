@@ -56,7 +56,10 @@
 
 % Abstract (Max 250 words)
 \begin{abstract}
-Public-sector websites are trusted entry points for high-consequence services, yet their security posture depends on layered controls that extend beyond HTTPS adoption. We present a standards-aligned, non-invasive measurement study of web security configuration across Canadian public-sector authority websites, compared against domestic critical sectors (finance, education, and energy) and peer public-sector datasets in the United States and United Kingdom. In this paper, we distinguish origin-scoped transport controls (HTTPS enforcement, TLS posture, HSTS, disclosure signaling) from endpoint-scoped browser protections (security headers and cookie attributes) to reflect how users experience security after redirects. Across 375 Canadian authority origins, foundational transport protections are widespread but uneven: only 59.73\% of HTTPS-reachable authority origins deploy HSTS, and authorities negotiate TLS 1.3 less frequently than comparable peers. Defense-in-depth is weakest at the application layer: modern policy headers (CSP frame-ancestors, Permissions-Policy) and hardened cookie defaults are rarely deployed. Only 1.1\% of Canadian authority origins publish security.txt, while reconnaissance surfaces remain common. These results indicate that the primary gap is inconsistent implementation of low-cost, configuration-driven controls. Cross-sector and cross-jurisdiction comparisons suggest that more enforceable governance environments are associated with more uniform adoption of defense-in-depth protections.
+% Public-sector websites are trusted entry points for high-consequence services, yet their security posture depends on layered controls that extend beyond HTTPS adoption. We present a standards-aligned, non-invasive measurement study of web security configuration across Canadian public-sector authority websites, compared against domestic critical sectors (finance, education, and energy) and peer public-sector datasets in the United States and United Kingdom.
+Public-sector websites are trusted entry points for high-consequence services, yet their security posture depends on layered controls that extend beyond HTTPS adoption. We present a standards-aligned, non-invasive measurement study of web security configuration across Canadian public-sector authority websites, compared against domestic critical sectors (finance, education, and energy) and international benchmark datasets, with U.S.\ authorities serving as the principal public-sector comparator. Additionally, U.K.\ authority results were recorded but are interpreted separately due to centralized GOV.UK hosting. In this paper, we distinguish origin-scoped transport controls (HTTPS enforcement, TLS posture, HSTS, disclosure signaling) from endpoint-scoped browser protections (security headers and cookie attributes) to reflect how users experience security after redirects. Across 375 Canadian authority origins, foundational transport protections are widespread but uneven: only 59.73\% of HTTPS-reachable authority origins deploy HSTS, and authorities negotiate TLS 1.3 less frequently than comparable peers. Defense-in-depth is weakest at the application layer: modern policy headers (CSP frame-ancestors, Permissions-Policy) and hardened cookie defaults are rarely deployed. Only 1.1\% of Canadian authority origins publish security.txt, while reconnaissance surfaces remain common. These results indicate that the primary gap is inconsistent implementation of low-cost, configuration-driven controls. 
+% Cross-sector and cross-jurisdiction comparisons suggest that more enforceable governance environments are associated with more uniform adoption of defense-in-depth protections.
+Cross-sector comparisons and the Canada--U.S.\ authority comparison indicate statistically supported differences in several low-cost, configuration-driven controls, consistent with more uniform adoption under more explicit public-web security requirements.
 \end{abstract}
 
 % Research highlights (3 to 5 bullets, max 85 chars per bullet)
@@ -66,8 +69,8 @@ Public-sector websites are trusted entry points for high-consequence services, y
 % \item Quantified performance gaps between recommendation- and mandate-driven models.
 \item Foundational transport protections are widespread but uneven across Canadian public authorities: only 59.73\% deploy HSTS and TLS~1.3 is negotiated less frequently than in domestic critical sectors and international peers.
 \item Defense-in-depth remains weakest at the application layer, with modern browser policy headers (CSP \texttt{frame-ancestors}, \texttt{Permissions-Policy}) and hardened cookie attributes rarely deployed, and only 1.1\% of authorities publishing \texttt{security.txt}.
-\item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and mandate-driven peers in the US and UK, indicating that recommendation-driven governance is associated with less consistent implementation of low-cost web security controls.
-
+% \item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and mandate-driven peers in the US and UK, indicating that recommendation-driven governance is associated with less consistent implementation of low-cost web security controls.
+\item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and U.S.\ authorities on several low-cost, configuration-driven controls.
 \end{highlights}
 
 % Keywords (5 to 10 keywords)
@@ -84,19 +87,27 @@ Web Security Measurement \sep Public-Sector Websites \sep Web Security Benchmark
     % 
     HSTS, for example, is standardized in RFC~6797 and prevents SSL-stripping by enforcing HTTPS-only access at the user-agent level~\cite{rfc6797,mdn_sts_header}. Similarly, contemporary guidance recommends prioritizing TLS~1.3 and disabling legacy protocol versions due to known weaknesses and downgrade risks \cite{rfc8446,rfc8996,nist_800_52r2,nsa_eliminating_obsolete_tls,cccs-itsp-40062}. Beyond transport, defense-in-depth is achieved through browser-side hardening controls such as Content Security Policy (CSP), clickjacking protections, and Permissions-Policy \cite{owasp_http_security_response_headers,owasp_csp_cheatsheet,mdn_csp_guide}, alongside secure cookie attributes that mitigate token theft \cite{mdn_secure_cookie_configuration,owasp_session_management_cookies}. Finally, coordinated vulnerability disclosure is increasingly operationalized through standardized channels such as \texttt{security.txt} (RFC~9116), providing a low-cost mechanism to publish disclosure contacts \cite{rfc9116,cisa_securitytxt_simple_file_big_value}. Taken together, these layers imply that the practical question is no longer whether a site uses HTTPS, but whether it delivers robust, defense-in-depth protections across the web stack. 
 
-    Across jurisdictions, approaches to securing public-sector web services vary in the extent to which best practices are enforced. The United States and the United Kingdom have increasingly adopted mandate-driven approaches, relying on enforceable instruments such as the U.S.\ HTTPS-only policy (OMB Memorandum M-15-13) and Binding Operational Directives (BODs), as well as the UK Government Digital Service (GDS) security standards \cite{omb-m-15-13,cisa_bod_18_01,gds_security_overview_websites}. In contrast, Canada operates primarily under a recommendation-driven model in which the Canadian Centre for Cyber Security (CCCS) issues technical guidance---for example, on securely configuring network protocols and related web-service protections---without an accompanying, centralized legal mandate that compels uniform adoption \cite{cccs-itsp-40062,cccs-itsm-60005}. This divergence motivates the central research question of this study: to what extent do Canadian authority websites implement these recommended best practices, and how does their implementation quality compare to other critical domestic sectors and international peers?
+    % Across jurisdictions, approaches to securing public-sector web services vary in the extent to which best practices are enforced. The United States and the United Kingdom have increasingly adopted mandate-driven approaches, relying on enforceable instruments such as the U.S.\ HTTPS-only policy (OMB Memorandum M-15-13) and Binding Operational Directives (BODs), as well as the UK Government Digital Service (GDS) security standards \cite{omb-m-15-13,cisa_bod_18_01,gds_security_overview_websites}. In contrast, Canada operates primarily under a recommendation-driven model in which the Canadian Centre for Cyber Security (CCCS) issues technical guidance---for example, on securely configuring network protocols and related web-service protections---without an accompanying, centralized legal mandate that compels uniform adoption \cite{cccs-itsp-40062,cccs-itsm-60005}. This divergence motivates the central research question of this study: to what extent do Canadian authority websites implement these recommended best practices, and how does their implementation quality compare to other critical domestic sectors and international peers?
 
-    This paper addresses this question through a large-scale, automated benchmarking study. We collected data from 375 Canadian authority origins and performed parallel data collection across Canadian critical sectors (finance, education, and energy) as well as the equivalent sectors in the United States and the United Kingdom. Our evaluation framework integrates CCCS guidance with widely adopted standards to assess: (i) transport-layer protections; (ii) application-layer hardening; (iii) information-disclosure surfaces, including technology-revealing headers and error handling \cite{owasp_secure_headers_project,cwe_209}; and (iv) operational transparency via \texttt{security.txt} \cite{rfc9116}. A key design choice in our measurement is to distinguish \emph{origin-scoped} controls (e.g., TLS configuration and HTTPS enforcement) from \emph{endpoint-scoped} controls (e.g., security headers and cookie attributes observed at the final resolved landing page), to reflect on how protections are applied at different layers of the web stack.
+    Across jurisdictions, approaches to securing public-sector web services vary in how explicitly web-facing controls are required and operationalized. In the United States, HTTPS-only deployment is formalized through OMB Memorandum M-15-13 and reinforced through Binding Operational Directives (BODs), providing a comparatively explicit mandate environment for public web security controls~\cite{omb-m-15-13,cisa_bod_18_01}. In contrast, the Canadian governance picture is more mixed: federal organizations operate under binding Treasury Board digital policy instruments, while the Canadian Centre for Cyber Security (CCCS) provides detailed technical guidance on securely configuring network protocols and related protections. However, for the specific web-facing controls evaluated in this study, Canadian adoption appears more weakly and less explicitly mandated than in the United States~\cite{cccs-itsp-40062,cccs-itsm-60005}. This divergence motivates the central research question of this study: to what extent do Canadian authority websites implement these recommended best practices, and how does their implementation quality compare to other critical domestic sectors and international peers?
 
-    Our findings indicate that although Canadian public-sector sites have broadly adopted foundational transport controls, they lag behind both international peers and domestic critical sectors in deploying more advanced defense-in-depth protections. This paper makes the following contributions:
+    This paper addresses this question through a large-scale, automated benchmarking study.
+    %  We collected data from 375 Canadian authority origins and performed parallel data collection across Canadian critical sectors (finance, education, and energy) as well as the equivalent sectors in the United States and the United Kingdom. 
+    We collected data from 375 Canadian authority origins and performed parallel data collection across Canadian critical sectors (finance, education, and energy) as well as comparison datasets in the United States and the United Kingdom. We include the U.S.\ as the principal public-sector comparator because it provides a more explicit federal web-security policy environment, and we retain the U.K.\ as descriptive context because it illustrates the effect of centralized public-service hosting, even though U.K.\ authority results are not used as the primary governance comparison.
+    Our evaluation framework integrates CCCS guidance with widely adopted standards to assess: (i) transport-layer protections; (ii) application-layer hardening; (iii) information-disclosure surfaces, including technology-revealing headers and error handling \cite{owasp_secure_headers_project,cwe_209}; and (iv) operational transparency via \texttt{security.txt} \cite{rfc9116}. A key design choice in our measurement is to distinguish \emph{origin-scoped} controls (e.g., TLS configuration and HTTPS enforcement) from \emph{endpoint-scoped} controls (e.g., security headers and cookie attributes observed at the final resolved landing page), to reflect on how protections are applied at different layers of the web stack.
+
+    % Our findings indicate that although Canadian public-sector sites have broadly adopted foundational transport controls, they lag behind both international peers and domestic critical sectors in deploying more advanced defense-in-depth protections. This paper makes the following contributions:
+
+    Our findings indicate that although Canadian public-sector sites have broadly adopted foundational transport controls, they lag behind domestic critical sectors and, in several important measures, U.S.\ authority benchmarks in deploying more advanced defense-in-depth protections.
 
     \begin{enumerate}
     % \item We develop and validate a multi-layer evaluation methodology that operationalizes security specifications from the Canadian Centre for Cyber Security (CCCS) alongside OWASP and MDN guidance into an automated scanning framework.
     % \item We present the first large-scale empirical analysis of the Canadian public-sector web ecosystem, evaluating 375 authority origins alongside critical sectors such as finance, education, and energy.
     % \item We conduct an empirical measurement study that quantifies differences between Canada's recommendation-driven governance model and the mandate-driven models employed in the United States and the United Kingdom.
     \item Foundational transport protections are widespread but uneven across Canadian public authorities: only 59.73\% deploy HSTS and TLS~1.3 is negotiated less frequently than in domestic critical sectors and international peers.
-\item Defense-in-depth remains weakest at the application layer, with modern browser policy headers (CSP \texttt{frame-ancestors}, \texttt{Permissions-Policy}) and hardened cookie attributes rarely deployed, and only 1.1\% of authorities publishing \texttt{security.txt}.
-\item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and mandate-driven peers in the US and UK, indicating that recommendation-driven governance is associated with less consistent implementation of low-cost web security controls.
+    \item Defense-in-depth remains weakest at the application layer, with modern browser policy headers (CSP \texttt{frame-ancestors}, \texttt{Permissions-Policy}) and hardened cookie attributes rarely deployed, and only 1.1\% of authorities publishing \texttt{security.txt}.
+% \item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and mandate-driven peers in the US and UK, indicating that recommendation-driven governance is associated with less consistent implementation of low-cost web security controls.
+    \item Canadian authorities underperform both domestic critical sectors (finance, education, energy) and U.S.\ authorities on several low-cost, configuration-driven controls. U.K.\ authority results are retained as descriptive context but interpreted separately due to centralized hosting.
 \end{enumerate}
 
 
@@ -138,7 +149,8 @@ The remainder of the paper is organized as follows. Section~\ref{sec:background}
     % Gaps addressed by this study
     Despite these advancements, the Canadian public-sector ecosystem remains significantly understudied. 
     Most longitudinal analyses emphasize the U.S.\ and European landscapes, where binding mandates (e.g., BOD 18-01) often dictate security requirements. 
-    This leaves a critical gap in understanding how a recommendation-driven model, such as Canada's, performs in comparison to mandate-driven peers. 
+    % This leaves a critical gap in understanding how a recommendation-driven model, such as Canada's, performs in comparison to mandate-driven peers. 
+    This leaves a critical gap in understanding how Canadian public-sector web posture compares with domestic critical sectors and international public-service datasets constructed under different governance and hosting environments.
     Moreover, few studies integrate transport security, browser-side policy controls (CSP/HSTS), and operational disclosure readiness into a single unified framework aligned to specific national guidance. 
     This paper addresses these gaps by providing a comparative analysis of Canadian authority and critical-sector websites against their U.S.\ and U.K.\ counterparts, utilizing a non-invasive scanner designed to operationalize CCCS, OWASP, and MDN specifications~\cite{cccs-itsp-40062,cccs-itsm-60005,owasp_http_security_response_headers,mdn_sts_header}.
 
@@ -285,7 +297,7 @@ Throughout this study, we distinguish between three related units of analysis: \
     
     % Negotiated version under a ``natural'' handshake
     For each origin, the scanner attempts constrained handshakes for TLS~1.3, TLS~1.2, TLS~1.1, and TLS~1.0 to record protocol support (success/failure per version). 
-    To approximate what typical users receive, we also perform a single \emph{natural} handshake using a modern client configuration and record the negotiated protocol version. We report negotiated TLS versions rather than attempting to infer security from certificate properties or application-layer behavior, as our goal is to measure externally observable deployment posture at the transport layer.
+    To approximate what typical users receive, we also perform a single \emph{natural} handshake using a modern client configuration and record the negotiated protocol version. We report negotiated TLS versions rather than attempting to infer security from certificate properties or application-layer behavior, as our goal is to measure externally observable deployment posture at the transport layer. 
 
 % ------------------------------------------------------------
 % Optional (kept for reviewer requests): TLS 1.2 cipher analysis
@@ -307,7 +319,8 @@ Throughout this study, we distinguish between three related units of analysis: \
     \begin{itemize}
     \item \texttt{Referrer-Policy}, which limits cross-origin referrer leakage and can reduce inadvertent disclosure of sensitive URL paths or parameters.
     \item \texttt{X-Content-Type-Options: nosniff}, which mitigates MIME-sniffing and content-type confusion behaviors in browsers.
-    \item Clickjacking defenses via either \texttt{X-Frame-Options} or \texttt{Content-Security-Policy} framing restrictions. Because CSP offers the modern framing control, our CSP analysis focuses specifically on whether a \texttt{Content-Security-Policy} header includes the \texttt{frame-ancestors} directive; we record \texttt{X-Frame-Options} as a legacy but still-deployed control.
+    % \item Clickjacking defenses via either \texttt{X-Frame-Options} or \texttt{Content-Security-Policy} framing restrictions. Because CSP offers the modern framing control, our CSP analysis focuses specifically on whether a \texttt{Content-Security-Policy} header includes the \texttt{frame-ancestors} directive; we record \texttt{X-Frame-Options} as a legacy but still-deployed control.
+    \item Because CSP offers the modern framing control, our CSP analysis focuses specifically on whether a \texttt{Content-Security-Policy} header includes the \texttt{frame-ancestors} directive; we record \texttt{X-Frame-Options} as a legacy but still-deployed control. We therefore treat CSP only as a framing-control measurement in this study, not as a general assessment of CSP strength against script injection or XSS.
     \item \texttt{Permissions-Policy}, which restricts access to powerful browser features (e.g., camera, microphone, geolocation) and can reduce privacy and abuse surface in composite applications.
     \end{itemize}
     These tests are endpoint-scoped because header policies may vary by path, application component, or response type, and the final landing page represents the most consistent user-facing entry point for comparative measurement.
@@ -320,6 +333,8 @@ Throughout this study, we distinguish between three related units of analysis: \
 
     To summarize adoption, we compute attribute prevalence among cookie-setting endpoints and classify cookie posture using a simple rule set: endpoints are considered \emph{recommended} when cookies include \texttt{Secure} and \texttt{HttpOnly} and enforce a strict cross-site policy (e.g., \texttt{SameSite=Strict}); \emph{sufficient} when \texttt{Secure} and \texttt{HttpOnly} are present with \texttt{SameSite=Lax} or stronger; and otherwise \emph{insufficient}. 
     Because cookie behavior can vary across application paths and user states, this study evaluates cookies on the public landing response only, and interprets results as an indicator of baseline hygiene rather than a complete session audit.
+    This classification reflects baseline cookie-hardening guidance from the CCCS, which recommends the use of the \texttt{Secure}, \texttt{HttpOnly}, and \texttt{SameSite} cookie flags, together with MDN guidance that treats \texttt{SameSite=Lax} as an acceptable baseline and \texttt{SameSite=Strict} as the stronger setting for restricting cross-site transmission~\cite{cccs-itsm-60005, mdn_secure_cookie_configuration}.
+
 
 \subsubsection{Vulnerability Disclosure (origin-scoped)}\label{sec:securitytxt}
     We assess operational readiness for coordinated vulnerability disclosure by probing for \texttt{security.txt}, a standardized, machine-parsable disclosure file defined in RFC~9116~\cite{rfc9116}. 
@@ -362,7 +377,7 @@ Throughout this study, we distinguish between three related units of analysis: \
 
     \paragraph{Vantage point and scan window}
     Measurements were conducted from a single external scanning vantage point hosted on the Google Cloud Platform (GCP) within the us-central1 region.
-    The results therefore represent a cross-sectional snapshot of observable posture. 
+    The results therefore represent a cross-sectional snapshot of observable posture. The measurements reported in this paper were conducted on November 18, 2025, beginning at approximately 8:30\,PM from the stated scanning vantage point.
     The scanner records the scan start/end timestamps, software version, and configuration parameters (timeouts, concurrency limits, redirect depth, stop thresholds) to support reproducibility and interpretation of unreachable outcomes. 
     Where services rate-limit, geofence, or block automated clients, our conservative stop rules capture this as an externally observable availability constraint rather than attempting to bypass defenses.
 
@@ -521,16 +536,16 @@ Throughout this study, we distinguish between three related units of analysis: \
     Redirect resolution often maps multiple input URIs to a smaller number of final destinations which reflects common operational patterns such as canonicalization (e.g., \texttt{www} $\rightarrow$ \texttt{apex}), centralized publishing platforms, and domain consolidation.
     This phenomenon is especially pronounced for U.K.\ authorities: hundreds of input URIs collapse to only a handful of unique final origins (348 origins mapping to 4 unique final origins), consistent with centralized government hosting and shared web infrastructure. 
     We report both input and post-resolution counts to make this consolidation transparent and to avoid implicitly treating multiple redirected aliases as independent services. 
-    In later sections, origin-scoped results are computed over the set of unique origins and endpoint-scoped results over the set of final resolved URIs, reflecting the appropriate measurement unit for each control family. 
+    In later sections, origin-scoped results are computed over the set of unique origins and endpoint-scoped results over the set of final resolved URIs, reflecting the appropriate measurement unit for each control family. Thus, for Canadian authorities, the effective input to origin-scoped tests is 375 unique origins, whereas the effective input to endpoint-scoped tests is 408 final resolved URIs; the 68.4\% figure in Table~\ref{tab:redirect_summary} refers only to the share of input URIs that resolved to a final \texttt{2xx} landing response.
     
     \paragraph{The ``unreachable'' phenomenon and its implications}
-    Across jurisdictions, authority datasets tend to exhibit higher rates of unreachable outcomes relative to other sectors. 
-    Importantly, ``unreachable'' does not necessarily imply that a service is offline; rather, it indicates that repeated attempts could not complete the relevant HTTP response or TLS handshake within the imposed timeout, retry, and concurrency constraints. 
-    This pattern is consistent with the possibility that authority domains more frequently deploy aggressive bot-mitigation, WAF/CDN filtering, or rate-limiting policies that selectively degrade automated measurement traffic, even when the service is available to typical users. 
-    While we do not attempt to bypass these defensive controls, these outcomes remain relevant from an external perspective: if automated and low-interaction clients are systematically blocked, a non-trivial class of legitimate users and monitoring systems may experience practical availability barriers.
-    At the same time, some fraction of these outcomes may reflect genuine configuration errors or intermittent operational issues. 
-    For transparency, we treat unreachable outcomes as a distinct category in denominators and avoid inferring availability beyond what is observable from the measurement vantage point.
-
+    % Across jurisdictions, authority datasets tend to exhibit higher rates of unreachable outcomes relative to other sectors. 
+    % Importantly, ``unreachable'' does not necessarily imply that a service is offline; rather, it indicates that repeated attempts could not complete the relevant HTTP response or TLS handshake within the imposed timeout, retry, and concurrency constraints. 
+    % This pattern is consistent with the possibility that authority domains more frequently deploy aggressive bot-mitigation, WAF/CDN filtering, or rate-limiting policies that selectively degrade automated measurement traffic, even when the service is available to typical users. 
+    % While we do not attempt to bypass these defensive controls, these outcomes remain relevant from an external perspective: if automated and low-interaction clients are systematically blocked, a non-trivial class of legitimate users and monitoring systems may experience practical availability barriers.
+    % At the same time, some fraction of these outcomes may reflect genuine configuration errors or intermittent operational issues. 
+    % For transparency, we treat unreachable outcomes as a distinct category in denominators and avoid inferring availability beyond what is observable from the measurement vantage point.
+    Across jurisdictions, authority datasets tend to exhibit higher rates of unreachable outcomes relative to other sectors. Importantly, ``unreachable'' does not necessarily imply that a service is offline; rather, it indicates that repeated attempts could not complete the relevant HTTP response or TLS handshake within the imposed timeout, retry, and concurrency constraints. These outcomes may reflect filtering or rate-limiting behavior, but may also reflect genuine configuration or operational issues. For transparency, we treat unreachable outcomes as a distinct category in denominators and avoid inferring availability beyond what is observable from the measurement vantage point.
 
     % NOTE: Here I hardcoded the number of unique entries from the final + input origins
 % for each sector. Reason being is I forgot to record it in the data,
@@ -590,8 +605,8 @@ Throughout this study, we distinguish between three related units of analysis: \
   This subsection characterizes origin-scoped transport protections, establishing the baseline security posture that underpins all subsequent browser- and application-layer controls. 
   We report 
   (i) HTTPS reachability and HTTP$\rightarrow$HTTPS upgrade behavior, 
-  (ii) TLS protocol-version support and negotiated versions under a modern ``natural'' handshake, 
-  (iii) (where measured) TLS~1.2 cipher-suite quality, and 
+  (ii) TLS protocol-version support and negotiated versions under a modern ``natural'' handshake, and 
+  % (iii) (where measured) TLS~1.2 cipher-suite quality, and 
   (iv) HSTS deployment and configuration strength. 
   Unless otherwise stated, transport results are computed over the set of unique origins produced after preprocessing (Section~\ref{sec:measurement_units}). 
 
@@ -599,9 +614,11 @@ Throughout this study, we distinguish between three related units of analysis: \
   Table~\ref{tab:https_connectivity} summarizes HTTP and HTTPS reachability by dataset, including whether HTTP-accessible services redirect users to HTTPS.
   Across most sectors, HTTPS is widely reachable and HTTP access typically redirects to HTTPS, indicating that encrypted transport is the default user experience.
   However, authority datasets exhibit weaker HTTPS reachability than other sectors.
-  In particular, Canadian authority origins exhibit noticeable gaps relative to domestic critical sectors and international peers: a non-trivial fraction of authority origins remain unreachable over HTTPS from our vantage point, and a measurable share of HTTP-accessible origins do not upgrade users to HTTPS.
-  This ``HTTP without upgrade'' behavior represents a persistent cleartext entry surface that contradicts modern HTTPS-only deployment expectations.
-
+  % In particular, Canadian authority origins exhibit noticeable gaps relative to domestic critical sectors and international peers: 
+  % In particular, Canadian authority origins exhibit noticeable gaps relative to domestic critical sectors and the U.S.\ authority benchmark: a non-trivial fraction of authority origins remain unreachable over HTTPS from our vantage point, and a measurable share of HTTP-accessible origins do not upgrade users to HTTPS.
+  Canadian authority origins exhibit noticeable gaps relative to domestic critical sectors and the U.S.\ authority benchmark; for HTTP$\rightarrow$HTTPS upgrade, the Canada--U.S.\ difference is statistically significant in Table~\ref{tab:stats_summary}.
+  % This ``HTTP without upgrade'' behavior represents a persistent cleartext entry surface that contradicts modern HTTPS-only deployment expectations.
+  These transport differences are also supported in Table~\ref{tab:stats_summary}, particularly for HTTP$\rightarrow$HTTPS upgrade, negotiated TLS~1.3, and HSTS adoption.  
 
 % table for https connectivity
   \begin{table}[t]
@@ -785,7 +802,8 @@ Throughout this study, we distinguish between three related units of analysis: \
 \paragraph{HSTS deployment and policy quality}
     Finally, we evaluate whether HTTPS-capable origins deploy HSTS and whether policies meet common strength expectations. 
     Table~\ref{tab:https_hsts_quality} reports HSTS presence among HTTPS-reachable origins and summarizes configuration strength using the presence of long-lived policies (via \texttt{max-age}), subdomain coverage (\texttt{includeSubDomains}), and preload signaling. 
-    A clear cross-jurisdiction gap emerges in authority datasets: Canadian authorities deploy HSTS less consistently than mandate-driven peers, and a substantial share of HTTPS-capable origins do not provide an HSTS policy at all.
+    % A clear cross-jurisdiction gap emerges in authority datasets: Canadian authorities deploy HSTS less consistently than mandate-driven peers, and a substantial share of HTTPS-capable origins do not provide an HSTS policy at all.
+    A clear cross-dataset gap emerges in authority benchmarks: Canadian authorities deploy HSTS less consistently than U.S.\ authorities, and a substantial share of HTTPS-capable origins do not provide an HSTS policy at all.
     Among those that do, a subset meet strong-policy criteria (long duration with subdomain coverage), and an even smaller fraction signal preload eligibility, indicating that HTTPS is often deployed without the browser-enforced ``safety net'' that helps prevent downgrade and mixed-entry risks.
 
 % table for hsts quality
@@ -805,7 +823,7 @@ Throughout this study, we distinguish between three related units of analysis: \
       Dataset &
       Any HSTS (\%)&
       Strong HSTS (\%)&
-      Preload (\%)\\\midrule,
+      Preload Signaling (\%)\\\midrule,
     late after line=\\,
     late after last line=\\\bottomrule
   ]{./results/comparison/https_hsts/hsts_quality_summary.csv}{%
@@ -838,10 +856,11 @@ Throughout this study, we distinguish between three related units of analysis: \
 \paragraph{Security header prevalence summary}
     Table~\ref{tab:security_headers_presence} summarizes adoption of key response headers that provide defense-in-depth against common web threats and privacy leakage: \texttt{Referrer-Policy}, \texttt{X-Content-Type-Options}, \texttt{X-Frame-Options}, CSP with an explicit \texttt{frame-ancestors} directive, and \texttt{Permissions-Policy}.
     Across datasets, we observe a consistent pattern: ``low-friction'' headers that can be enabled with minimal application knowledge are deployed substantially more often than complex policy headers. 
-    In particular, \texttt{X-Content-Type-Options} and \texttt{X-Frame-Options} are commonly present across sectors, whereas \texttt{Content-Security-Policy} (CSP) and \texttt{Permissions-Policy} appear far less frequently. This gap is most pronounced in the Canadian authority dataset, where the adoption of modern browser policy controls lags behind both domestic critical sectors and international peers.
+    In particular, \texttt{X-Content-Type-Options} and \texttt{X-Frame-Options} are commonly present across sectors, whereas \texttt{Content-Security-Policy} (CSP) and \texttt{Permissions-Policy} appear far less frequently. 
+    % This gap is most pronounced in the Canadian authority dataset, where the adoption of modern browser policy controls lags behind both domestic critical sectors and international peers.
+    This gap is most pronounced in the Canadian authority dataset, where the adoption of modern browser policy controls lags behind both domestic critical sectors and the U.S.\ authority benchmark.
 
-% table for security headers presence
-\begin{table}[t]
+    \begin{table}[t]
   \caption{Security header adoption by dataset (percent of final URIs).}
   \label{tab:security_headers_presence}
   \centering
@@ -850,16 +869,15 @@ Throughout this study, we distinguish between three related units of analysis: \
   \renewcommand{\arraystretch}{1.15}
 
   \begin{adjustbox}{max width=\columnwidth}
-  % \resizebox{\columnwidth}{!}{%
   \csvreader[
     tabular=lccccc,
     table head=\toprule
       Dataset &
-      \shortstack{Referrer\\Policy} &
-      \shortstack{X-Content-Type\\Options} &
-      \shortstack{X-Frame\\Options} &
-      \shortstack{CSP\\frame-ancestors} &
-      \shortstack{Permissions\\Policy} \\\midrule,
+      \shortstack{Referrer\\Policy (\%)} &
+      \shortstack{X-Content-Type\\Options (\%)} &
+      \shortstack{X-Frame\\Options (\%)} &
+      \shortstack{CSP\\frame-ancestors (\%)} &
+      \shortstack{Permissions\\Policy (\%)} \\\midrule,
     late after line=\\,
     late after last line=\\\bottomrule
   ]{./results/comparison/headers/security_headers_presence.csv}{%
@@ -873,7 +891,7 @@ Throughout this study, we distinguish between three related units of analysis: \
     \Dataset & \Pref & \Pxcto & \Pxfo & \Pcsp & \Pperm
   }%
   \end{adjustbox}
-  \end{table}
+\end{table}
 
 \paragraph{Adoption and Configuration of Security Headers.}
     A consistent pattern emerges when contrasting ``low-friction'' headers with more ``high-complexity'' policies controls. 
@@ -881,14 +899,17 @@ Throughout this study, we distinguish between three related units of analysis: \
     However, adoption drops significantly for controls that require deliberate policy specification or iterative tuning, such as \texttt{Referrer-Policy}, \texttt{Content-Security-Policy} (CSP), and \texttt{Permissions-Policy}.
     For example, CSP often requires iterative tuning to avoid breaking legitimate resource loads, and \texttt{Permissions-Policy} requires explicit decisions about which browser capabilities should be restricted for the top-level page and embedded contexts.
     The result is a visible ``defense-in-depth gap'' in which many sites deploy baseline hardening but fail to adopt stronger policy mechanisms enforced by modern browsers.
-    For example, in the Canadian authority dataset, adoption rates for \texttt{X-Frame-Options} and \texttt{X-Content-Type-Options} are in the low-to-mid 60\% range, whereas \texttt{Referrer-Policy} (17.4\%), CSP \texttt{frame-ancestors} (17.9\%), and \texttt{Permissions-Policy} (8.6\%) are observed at substantially lower rates.
+    For example, in the Canadian authority dataset, adoption rates for \texttt{X-Frame-Options} and \texttt{X-Content-Type-Options} are in the low-to-mid 60\% range, whereas \texttt{Referrer-Policy} (17.4\%), CSP \texttt{frame-ancestors} (17.9\%), and \texttt{Permissions-Policy} (8.6\%) are observed at substantially lower rates. The low prevalence of \texttt{Referrer-Policy} is also relevant to information governance, because in its absence browsers may disclose full referring URLs, thus potentially exposing sensitive paths and query parameters to external destinations.
     
-    Because CSP policies differ widely in expressive power, rather than treating CSP as a binary indicator we specifically measure whether the policy includes \texttt{frame-ancestors}, which directly implements modern framing restrictions (clickjacking defense) at the browser level.
+    % Because CSP policies differ widely in expressive power, rather than treating CSP as a binary indicator we specifically measure whether the policy includes \texttt{frame-ancestors}, which directly implements modern framing restrictions (clickjacking defense) at the browser level.
+    Because CSP policies differ widely in expressive power, rather than treating CSP as a binary indicator we specifically measure whether the policy includes \texttt{frame-ancestors}, which directly implements modern framing restrictions (clickjacking defense) at the browser level. Accordingly, the CSP results reported here should be interpreted as evidence about framing protection, not as a general assessment of CSP-based XSS mitigation.
     Furthermore, we find that the prevalence of CSP \texttt{frame-ancestors} is significantly lower than that of the legacy \texttt{X-Frame-Options} header, indicating that many endpoints either omit CSP entirely or deploy it without the specific restrictions required for robust embedding control.
     
     \texttt{Permissions-Policy} is the least prevalent of these controls.
-    This low adoption is notable because, unlike CSP, \texttt{Permissions-Policy} is a low-cost mechanism to reduce exposure to powerful browser features (e.g., camera, microphone, geolocation) and can often be deployed incrementally by disabling unused features, including for embedded third-party content.
+    Accordingly, \texttt{Permissions-Policy} is discussed here as a low-adoption descriptive finding rather than as a principal inferential comparison.
+    However, this low adoption is notable because, unlike CSP, \texttt{Permissions-Policy} is a low-cost mechanism to reduce exposure to powerful browser features (e.g., camera, microphone, geolocation) and can often be deployed incrementally by disabling unused features, including for embedded third-party content.
     Single-digit adoption suggests that proactive feature restriction is not yet standard practice in public-sector and critical-sector web deployments.
+    At the same time, the practical severity of a missing \texttt{Permissions-Policy} depends on site functionality. Omission of \texttt{Permissions-Policy} is more consequential for interactive services that expose powerful browser features or embed third-party content than for static informational pages that do not use those APIs.
     As with CSP, presence does not guarantee a restrictive configuration. However, the rarity of the header implies that most measured endpoints are not explicitly declaring feature restrictions at all.
     
     Overall, the comparative results suggest that while many services have adopted foundational hardening headers, modern browser policy mechanisms that require deliberate configuration remain under-deployed, particularly within the Canadian authority ecosystem. 
@@ -909,7 +930,7 @@ Throughout this study, we distinguish between three related units of analysis: \
     \texttt{SameSite} is the least consistently deployed. 
     In Canadian authorities, approximately two-thirds (63.5\%) of cookie-setting sites include the \texttt{Secure} flag and about half (48.7\%) include \texttt{HttpOnly}, while only a small minority (15.7\%) set \texttt{SameSite} to at least \texttt{Lax}. 
     Critical-sector datasets (e.g., energy and finance) show different mixes of cookie issuance and attribute adoption, but none approach universal full hardening on issued cookies (e.g., the energy sector achieves only 4.9\% recommended configurations). 
-    This pattern is operationally consequential because \texttt{HttpOnly} reduces exposure of session identifiers to JavaScript-accessible theft in the presence of XSS, while \texttt{SameSite} provides a browser-level mitigation against cross-site request flows that can enable CSRF-style state changes.
+    This pattern is operationally consequential because \texttt{HttpOnly} reduces exposure of session identifiers to JavaScript-accessible theft in the presence of XSS, while \texttt{SameSite} provides a browser-level mitigation against cross-site request flows that can enable CSRF-style state changes. One atypical pattern appears in Canadian finance, where \texttt{HttpOnly} is substantially more common than \texttt{Secure}. This may be due to a mix of cookie types and deployment factors, such as legacy HTTP support, TLS termination at proxies, or defaults that apply \texttt{HttpOnly} more consistently than \texttt{Secure}.
 
     To summarize whether cookie-setting endpoints achieve a minimal ``gold standard'' for baseline cookie protection, we compute the fraction of cookie-setting sites for which \emph{all observed cookies} on the landing response satisfy the triple-attribute profile: \texttt{Secure} + \texttt{HttpOnly} + \texttt{SameSite} set to at least \texttt{Lax} (reported as ``Recommended/Sufficient'' in Table~\ref{tab:cookie_security_flags}). 
     The resulting rates are extremely low: for Canadian authorities, only about 3.5\% of cookie-setting endpoints meet the recommended/sufficient profile despite much higher partial adoption of \texttt{Secure} and \texttt{HttpOnly}. 
@@ -964,8 +985,8 @@ Throughout this study, we distinguish between three related units of analysis: \
     Table~\ref{tab:securitytxt_summary} shows that only a small fraction of origins publish a \texttt{security.txt} file at standard locations, indicating that standardized disclosure is not yet routine practice for public-facing services. 
     Canadian authorities are a clear outlier on the low end: only 1.1\% of Canadian authority origins (4 of 375) publish \texttt{security.txt}. 
     Among those few files, field completeness is generally good (all include \texttt{Contact} and \texttt{Expires}), but expiration hygiene is weak: only 25\% of Canadian authority files have an unexpired \texttt{Expires} value at scan time. 
-    In contrast, peer authority datasets show higher adoption (e.g., U.S.\ authorities at 3.5\%) and better maintenance among the files that do exist. 
-    Taken together, these results suggest that the primary limiting factor for Canadian authorities is \emph{adoption} rather than syntactic correctness once deployed.
+    % In contrast, peer authority datasets show higher adoption (e.g., U.S.\ authorities at 3.5\%) and better maintenance among the files that do exist. 
+    In contrast, U.S.\ authorities show higher adoption (3.5\%), and the Canada--U.S.\ difference in \texttt{security.txt} presence is statistically significant in Table~\ref{tab:stats_summary}. Among the application- and disclosure-layer comparisons emphasized in this paper, the Canada--U.S.\ gaps for CSP \texttt{frame-ancestors} and \texttt{security.txt} are likewise supported in Table~\ref{tab:stats_summary}. Taken together, these results suggest that the primary limiting factor for Canadian authorities is \emph{adoption} rather than syntactic correctness once deployed. 
 
 % table for security.txt summary
 \begin{table}[t]
@@ -1098,13 +1119,15 @@ Throughout this study, we distinguish between three related units of analysis: \
 \subsection{Cross-Sectoral and International Comparative Analysis}
 \label{sec:comparative_synthesis}
 
-    This subsection synthesizes the sectoral and cross-jurisdiction results to answer the central question of the study: whether a recommendation-driven model yields deployment outcomes comparable to mandate-driven peers, and where the largest practical gaps in defense-in-depth remain. 
+    % This subsection synthesizes the sectoral and cross-jurisdiction results to answer the central question of the study: whether a recommendation-driven model yields deployment outcomes comparable to mandate-driven peers, and where the largest practical gaps in defense-in-depth remain. 
+    This subsection synthesizes the sectoral and cross-jurisdiction results to answer the central question of the study: whether Canadian public-sector deployment outcomes differ from environments with more explicit public-web security requirements, and where the largest practical gaps in defense-in-depth remain.
     We focus on two comparisons: (i) 
     \emph{Canada public vs.\ domestic critical sectors} (authorities vs.\ finance/energy) to assess whether public-sector posture lags behind regulated or market-incentivized sectors; and 
-    (ii) \emph{Canada vs.\ mandate-driven peers} (U.S.\ and U.K.) to contextualize Canadian adoption patterns against jurisdictions with enforceable HTTPS and related security requirements. 
+    (ii) \emph{Canada vs.\ U.S.\ authorities} to contextualize Canadian adoption patterns against jurisdictions with enforceable HTTPS and related security requirements. 
     In the United States, HTTPS-only deployment is formalized through OMB Memorandum M-15-13 and reinforced through binding operational directives (e.g., BOD 18-01) that require concrete progress on web security controls. 
-    In the United Kingdom, central government guidance similarly requires HTTPS-only service delivery and recommends HSTS configurations suitable for preloading. 
-    In Canada, CCCS provides detailed technical guidance, but adoption is largely recommendation-driven rather than mandated across all public-sector web properties~\cite{omb-m-15-13,cisa_bod_18_01,cccs-itsp-40062,cccs-itsm-60005}. 
+    % In the United Kingdom, central government guidance similarly requires HTTPS-only service delivery and recommends HSTS configurations suitable for preloading. 
+    % In Canada, CCCS provides detailed technical guidance, but adoption is largely recommendation-driven rather than mandated across all public-sector web properties~\cite{omb-m-15-13,cisa_bod_18_01,cccs-itsp-40062,cccs-itsm-60005}. 
+    In Canada, CCCS provides detailed technical guidance and federal organizations operate within a broader Treasury Board digital policy environment, but for the specific public-web controls evaluated here adoption appears more weakly and less explicitly mandated than in the U.S.\ environment~\cite{omb-m-15-13,cisa_bod_18_01,cccs-itsp-40062,cccs-itsm-60005}.
 
     Within Canada, the most consistent pattern across layers is that \emph{authorities underperform critical sectors} on several defense-in-depth controls. 
     Canadian finance and energy sites generally exhibit stronger transport posture (higher HTTPS reachability, greater TLS~1.3 negotiation rates, and more uniform upgrade behavior) than authority sites (Sections~\ref{sec:transport_results}--\ref{sec:reachability_resolution}). 
@@ -1113,14 +1136,17 @@ Throughout this study, we distinguish between three related units of analysis: \
     Taken together, these patterns suggest that the Canadian public sector is not constrained by a lack of technical feasibility (since domestic critical sectors achieve stronger baselines), but rather by inconsistent adherence and configuration governance across authority web properties.
 
     Cross-jurisdiction comparisons reinforce the hypothesis that governance environments shape observable deployment. 
-    Relative to U.S.\ (and U.K.\ authority datasets), Canadian authorities show lower HSTS adoption and weaker coverage of modern browser policy headers, alongside comparably low operational disclosure readiness (\texttt{security.txt}). 
+    Relative to U.S.\, Canadian authorities show lower HSTS adoption and weaker coverage of modern browser policy headers, alongside comparably low operational disclosure readiness (\texttt{security.txt}). 
     These gaps align most clearly with controls that are low-cost yet require explicit policy decisions or centralized configuration management (e.g., HSTS, disclosure channels, and policy headers). 
-    This contrast is consistent with differences in enforcement regimes: U.S.\ federal policy requires secure connections for public services (OMB M-15-13) and DHS/CISA binding directives define compulsory actions and timelines for agency web security programs, while U.K.\ service guidance explicitly calls for HTTPS-only and HSTS configurations appropriate for preloading \cite{omb-m-15-13,cisa_bod_18_01}. 
-    Canada’s CCCS guidance is comparable in technical substance, but without an analogous centralized mandate for uniform adoption across authority properties~\cite{cccs-itsp-40062,cccs-itsm-60005}. 
-    While measurement cannot prove causality, the convergence between 
-    (i) systematically higher adoption in mandate-driven peers and 
-    (ii) weaker and more variable adoption in recommendation-driven environments 
-    provides evidence that enforceability and accountability mechanisms are associated with more uniform deployment outcomes.
+    % This contrast is consistent with differences in enforcement regimes: U.S.\ federal policy requires secure connections for public services (OMB M-15-13) and DHS/CISA binding directives define compulsory actions and timelines for agency web security programs, while U.K.\ service guidance explicitly calls for HTTPS-only and HSTS configurations appropriate for preloading \cite{omb-m-15-13,cisa_bod_18_01}. 
+    This contrast is consistent with differences in policy explicitness: U.S.\ federal policy requires secure connections for public services (OMB M-15-13) and DHS/CISA binding directives define compulsory actions and timelines for agency web security programs~\cite{omb-m-15-13,cisa_bod_18_01}.
+    % Canada’s CCCS guidance is comparable in technical substance, but without an analogous centralized mandate for uniform adoption across authority properties~\cite{cccs-itsp-40062,cccs-itsm-60005}. 
+    Canada’s CCCS guidance is comparable in technical substance, but for the specific public-web controls evaluated here the Canadian environment appears less explicitly mandated for uniform adoption across authority properties~\cite{cccs-itsp-40062,cccs-itsm-60005}.
+    % While measurement cannot prove causality, the convergence between 
+    % (i) systematically higher adoption in mandate-driven peers and 
+    % (ii) weaker and more variable adoption in recommendation-driven environments 
+    % provides evidence that enforceability and accountability mechanisms are associated with more uniform deployment outcomes.
+    While measurement cannot prove causality, the observed alignment between more explicit U.S.\ public-web requirements and more uniform adoption, versus weaker and more variable adoption in Canadian authorities, is consistent with the view that enforceability and accountability mechanisms can contribute to more uniform deployment outcomes.
 
     Across multiple layers, Canadian authorities fall below most visibly on 
     (i) HSTS presence and strength, 
@@ -1170,14 +1196,10 @@ Throughout this study, we distinguish between three related units of analysis: \
 
   \vspace{2mm}
   \footnotesize
-  \emph{Notes:} Entries report the Canadian authority estimate and comparator
-  estimate as percentage with Wilson 95\% confidence interval. $\Delta$ is
-  computed as Canadian authorities minus comparator (percentage points).
-  Fisher's exact test was used for sparse comparisons; otherwise a chi-square
-  test of independence was used. UK authority comparisons are not included in
-  this summary table because their results are strongly shaped by centralized
-  GOV.UK hosting rather than organization-level deployment.
+  \emph{Notes:} Entries report the Canadian authority estimate and comparator estimate as percentages with Wilson 95\% confidence intervals. $\Delta$ is computed as Canadian authorities minus comparator (percentage points). For each highlighted comparison, we constructed a 2$\times$2 table of successes versus failures using the table-specific numerator and denominator for the corresponding metric, then applied Fisher's exact test when any observed cell count was below 5 and a chi-square test of independence otherwise. UK authority comparisons are not included in this summary table because their results are strongly shaped by centralized GOV.UK hosting rather than organization-level deployment.
 \end{table}
+
+Table~\ref{tab:stats_summary} reports statistical support for the manuscript's principal comparative claims. The largest Canada--U.S.\ authority contrasts emphasized in the discussion—particularly for HTTP$\rightarrow$HTTPS upgrade, negotiated TLS~1.3, HSTS, CSP \texttt{frame-ancestors}, \texttt{security.txt}, and reconnaissance exposure—remain statistically significant at conventional thresholds. Comparisons not supported in this summary table are treated descriptively rather than inferentially in the surrounding text.
 
 \section{Discussion, Implications, and Limitations}~\label{sec:discussion}
 
@@ -1189,7 +1211,8 @@ Throughout this study, we distinguish between three related units of analysis: \
 
 \subsection{Key Findings}\label{sec:key_findings}
     Our results reveal a consistent, cross-layer pattern: 
-    Canadian public-sector services have largely adopted foundational transport protections, but advanced, configuration-driven defenses are uneven and often under-deployed—particularly among authority websites—relative to both domestic critical sectors and mandate-driven international peers. 
+    % Canadian public-sector services have largely adopted foundational transport protections, but advanced, configuration-driven defenses are uneven and often under-deployed—particularly among authority websites—relative to both domestic critical sectors and mandate-driven international peers. 
+    Canadian public-sector services have largely adopted foundational transport protections, but advanced, configuration-driven defenses are uneven and often under-deployed—particularly among authority websites—relative to both domestic critical sectors and the U.S.\ authority benchmark.
     This produces a two-tier posture in which ``HTTPS present'' is common, yet ``HTTPS enforced and hardened'' is not.
 
 % \paragraph{Transport security is widespread, but not uniformly enforced among authorities.}
@@ -1220,7 +1243,8 @@ Throughout this study, we distinguish between three related units of analysis: \
 % \paragraph{Synthesis: governance and implementation incentives appear to shape uniformity.}
     Cross-sector and cross-jurisdiction comparisons converge on the same interpretation. 
     Within Canada, finance and energy often achieve stronger and more consistent posture than authorities, suggesting that regulatory pressure and operational maturity can translate guidance into practice. 
-    Internationally, U.S.\ and U.K.\ authority datasets generally show more uniform adoption of several configuration-driven controls (notably HSTS and modern browser policies) than Canadian authorities. 
+    % Internationally, U.S.\ and U.K.\ authority datasets generally show more uniform adoption of several configuration-driven controls (notably HSTS and modern browser policies) than Canadian authorities. 
+    Internationally, the U.S.\ authority dataset generally shows more uniform adoption of several configuration-driven controls than Canadian authorities, while the U.K.\ authority dataset is retained as descriptive context but interpreted separately because it is strongly shaped by centralized GOV.UK hosting.
     While measurement alone cannot establish causality, the systematic alignment between mandate-driven environments and more uniform adoption, versus recommendation-driven environments and more variable adoption, supports the central thesis of this paper: the remaining gaps are less about technical feasibility and more about incentives, standardization, and consistent implementation.
 
 \subsection{Explanations \& Governance Interpretation}\label{sec:explanations_governance}
@@ -1252,7 +1276,8 @@ Throughout this study, we distinguish between three related units of analysis: \
     
 \subsection{Recommendations (Operators + Policy)}\label{sec:recommendations}
 
-The results suggest that many gaps in Canadian public-sector web posture are not driven by a lack of technical capability, but by inconsistent operationalization of well-known configuration practices. Importantly, several of the most impactful improvements can be implemented at the edge (e.g., CDN/WAF/reverse proxy) without application rewrites, while more complex policies can be deployed incrementally (e.g., introducing CSP framing restrictions first, then expanding CSP coverage). 
+The results suggest that many gaps in Canadian public-sector web posture are not driven by a lack of technical capability, but by inconsistent operationalization of well-known configuration practices.
+Importantly, several of the most impactful improvements can be implemented at the edge (e.g., CDN/WAF/reverse proxy) without application rewrites, while more complex policies can be deployed incrementally (e.g., introducing CSP framing restrictions first, then expanding CSP coverage). 
 At a minimum, the baseline should include: HTTPS-only service delivery with strong HSTS, retirement of deprecated TLS versions and prioritization of TLS~1.3, a required set of browser-enforced hardening headers (with CSP \texttt{frame-ancestors} as the preferred framing control), default hardened cookie attributes for session/state cookies, mandatory publication of \texttt{security.txt}, and suppression of avoidable technology disclosure through response headers and error pages. Such a baseline can be implemented in stages (starting with edge-deployable controls) and integrated into routine operational monitoring to reduce configuration drift and improve uniformity across agencies and vendors. 
 
 % \paragraph{Operator-facing recommendations (prioritized by effort and impact).}
@@ -1301,7 +1326,9 @@ As a result, reported adoption rates should be interpreted as a snapshot of what
 Second, this work measures \emph{deployment and configuration posture}, not exploitability. 
 The absence of a control (e.g., HSTS, a policy header, or cookie attributes) indicates increased exposure to certain classes of web threats, but does not by itself establish the presence of a specific vulnerability or successful attack path. 
 Conversely, the presence of a control does not guarantee correct implementation: for example, a site may emit a CSP header that is permissive, may apply secure cookie attributes to some cookies but not those relevant to authentication, or may deploy headers inconsistently across different application routes. 
-Our results therefore represent a configuration-level benchmark rather than a penetration test or full compliance audit.
+Our results therefore represent a configuration-level benchmark rather than a penetration test or full compliance audit. 
+
+In particular, our TLS analysis is limited to protocol support and negotiated version behavior. We do not evaluate certificate-chain validity, trust-anchor correctness, hostname verification outcomes, or cipher-suite quality, so the TLS results should be interpreted as a transport-configuration snapshot rather than a complete assessment of server authenticity or cryptographic strength.
 
 Third, endpoint-scoped measurements were performed on the \emph{final resolved landing response} only. 
 Some web applications may enforce stricter controls on authenticated pages, transactional flows, or high-value endpoints (e.g., login, payments, or account portals) that are not reachable without user interaction. 
@@ -1312,6 +1339,8 @@ Fourth, our \texttt{security.txt} discovery is intentionally conservative and ma
 We probe the standard RFC~9116 locations on each origin but do not follow cross-origin redirects for \texttt{security.txt} discovery. 
 Organizations that host disclosure metadata on a shared or centralized disclosure domain may therefore be underrepresented. 
 Additionally, our validity checks emphasize the presence and freshness of key fields (e.g., \texttt{Contact}, \texttt{Expires}); they do not assess whether the referenced channels are actively monitored or whether reported issues receive timely responses.
+
+An additional limitation concerns the sampling strategy used for large U.S.\ sector datasets, particularly finance and education. Restricting eligibility to institutions drawn from the ten most populous states kept data collection tractable and ensured broad geographic coverage, but it may bias the U.S.\ baseline toward larger, better-resourced, or more technologically mature institutions. 
 
 Finally, the study is cross-sectional rather than longitudinal. 
 Web configurations evolve rapidly due to platform migrations, CDN policy changes, certificate renewals, and incident-driven hardening. 
@@ -1324,7 +1353,9 @@ Longitudinal measurement would be necessary to quantify improvement over time, i
 
 \section{Conclusion and Future Work}\label{sec:conclusion_future}
 
-This paper benchmarked the security posture of Canadian public-sector web services using a standards-aligned, non-invasive measurement methodology, with comparative baselines from the United States and the United Kingdom and additional comparison to domestic critical sectors (finance, education, and energy). By distinguishing origin-scoped transport controls from endpoint-scoped browser-enforced policies, session-cookie attributes, disclosure readiness, and information leakage surfaces, we provide a reproducible picture of what typical users and external observers encounter on the public web.
+This paper benchmarked the security posture of Canadian public-sector web services using a standards-aligned, non-invasive measurement methodology, with the United States serving as the principal public-sector comparator, additional descriptive context from the United Kingdom, and further comparison to domestic critical sectors (finance, education, and energy).
+% This paper benchmarked the security posture of Canadian public-sector web services using a standards-aligned, non-invasive measurement methodology, with comparative baselines from the United States and the United Kingdom and additional comparison to domestic critical sectors (finance, education, and energy). 
+By distinguishing origin-scoped transport controls from endpoint-scoped browser-enforced policies, session-cookie attributes, disclosure readiness, and information leakage surfaces, we provide a reproducible picture of what typical users and external observers encounter on the public web.
 
 The results show that Canada has broadly adopted foundational transport protections, but that defense-in-depth remains uneven and frequently under-deployed within authority websites. 
 While HTTPS is widely available and modern TLS versions are commonly negotiated by contemporary clients, enforcement and hardening controls are not consistently deployed. 
@@ -1332,9 +1363,12 @@ In particular, HSTS remains incomplete among Canadian authority origins that are
 Cookie hardening exhibits the same pattern: although many authority endpoints set cookies, only a very small fraction meet a minimal baseline profile with \texttt{Secure}+\texttt{HttpOnly}+\texttt{SameSite} configured consistently. 
 At the same time, information exposure remains pervasive: most Canadian authority origins emit technology-revealing headers and a substantial fraction disclose platform or version details in error responses, lowering the cost of attacker reconnaissance even when stack traces are correctly suppressed.
 
-Cross-sector and cross-jurisdiction comparisons converge on a clear interpretation: the primary challenge is less about technical feasibility and more about incentives, standardization, and consistent implementation. 
-Within Canada, regulated or market-incentivized critical sectors often achieve stronger or more uniform posture than authority websites, and internationally, mandate-driven environments exhibit more consistent deployment of several configuration-driven controls. 
-Although measurement alone cannot establish causality, the alignment between enforceability and uniform adoption supports the central thesis of this work: closing the remaining gaps requires translating well-established guidance into consistently applied baselines, supported by accountability and continuous monitoring. 
+Cross-sector comparisons and the Canada--U.S.\ authority comparison converge on a clear interpretation: the primary challenge is less about technical feasibility alone and more about incentives, standardization, and consistent implementation.
+% Cross-sector and cross-jurisdiction comparisons converge on a clear interpretation: the primary challenge is less about technical feasibility and more about incentives, standardization, and consistent implementation. 
+% Within Canada, regulated or market-incentivized critical sectors often achieve stronger or more uniform posture than authority websites, and internationally, mandate-driven environments exhibit more consistent deployment of several configuration-driven controls. 
+Within Canada, regulated or market-incentivized critical sectors often achieve stronger or more uniform posture than authority websites, and internationally, the U.S.\ authority benchmark exhibits more consistent deployment of several configuration-driven controls.
+% Although measurement alone cannot establish causality, the alignment between enforceability and uniform adoption supports the central thesis of this work: closing the remaining gaps requires translating well-established guidance into consistently applied baselines, supported by accountability and continuous monitoring. 
+Although measurement alone cannot establish causality, the alignment between more explicit U.S.\ public-web requirements and more uniform adoption supports the central thesis of this work: closing the remaining gaps requires translating well-established guidance into consistently applied baselines, supported by accountability and continuous monitoring.
 This study provides an evidence-based baseline for that effort and a practical foundation for operators and policymakers seeking to strengthen the trust Canadians place in digital public services.
 
 \paragraph{Future Work.}
@@ -1343,15 +1377,15 @@ First, longitudinal measurements would quantify change over time, detect configu
 Second, expanding endpoint coverage beyond landing pages (for example, authentication and other high-value workflows) would better capture how header policies and cookie attributes vary across application surfaces and user states. 
 Third, multi-vantage scanning (e.g., from additional geographic regions and network environments) would help disentangle genuine unreachability from location-dependent filtering and bot-mitigation effects, improving interpretability of ``unreachable'' outcomes. 
 Fourth, deeper directive-level analysis of policy headers (e.g., CSP source restrictions beyond \texttt{frame-ancestors}, and \texttt{Referrer-Policy} directive strictness) would allow posture assessment to move beyond presence/absence toward policy strength. 
-Finally, integrating certificate-chain validation, certificate transparency signals, and basic DNS posture checks (e.g., CAA, DNSSEC where applicable) would provide a more holistic view of web service trust configuration beyond protocol negotiation alone.
+% Finally, integrating certificate-chain validation, certificate transparency signals, and basic DNS posture checks (e.g., CAA, DNSSEC where applicable) would provide a more holistic view of web service trust configuration beyond protocol negotiation alone.
+Finally, integrating certificate-chain validation, hostname-verification outcomes, certificate transparency signals, and basic DNS posture checks (e.g., CAA, DNSSEC where applicable), along with optional cipher-suite analysis for legacy TLS deployments, would provide a more holistic view of web-service trust configuration beyond protocol negotiation alone.
 
 \section*{Data \& Code Availability}
 The scanner implementation, configuration templates, analysis scripts, and aggregated results used to generate the tables and figures in this paper are available in our public repository~\cite{latta_scanner_2026}. 
 As part of this project, we also produced an extended technical report and recommendations deliverable in collaboration with the CSA Group, and this deliverable is included in the same repository.
 
 \section*{Ethics Statement}
-All measurements were designed to be non-invasive and configuration-focused. The scanner issued only standard HTTP(S) \texttt{GET} requests, performed protocol handshakes, and followed redirects within a bounded depth. The study evaluates externally observable configuration posture and information exposure surfaces, and it does not attempt to validate exploitability or to access non-public resources. We did not authenticate, submit forms, issue state-changing requests (e.g., \texttt{POST}), or attempt exploitation. To minimize operational impact, we enforced conservative global and per-origin concurrency limits, short client-side timeouts, and strict stop thresholds for repeated failures.
-
+All measurements were designed to be non-invasive and configuration-focused. The scanner issued only standard HTTP(S) \texttt{GET} requests, performed protocol handshakes, and followed redirects within a bounded depth. The study evaluates externally observable configuration posture and information exposure surfaces, and it does not attempt to validate exploitability or to access non-public resources. We did not authenticate, submit forms, issue state-changing requests (e.g., \texttt{POST}), or attempt exploitation. To minimize operational impact, we enforced conservative global and per-origin concurrency limits, short client-side timeouts, and strict stop thresholds for repeated failures. Because this study examined publicly accessible web-service configurations using non-invasive, unauthenticated requests and did not involve human participants, personal data collection, or interaction with private systems, institutional ethics review was not sought. Furthermore, we did not notify affected operators or CCCS about version-disclosure observations, as the study was designed as a broad measurement of publicly observable configuration posture rather than a coordinated disclosure exercise.
 
 \section*{CRediT Author Statement}
 Isaac Latta: Conceptualization, Methodology, Software, Data Curation, Investigation, Formal analysis, Visualization, Writing -- original draft. 

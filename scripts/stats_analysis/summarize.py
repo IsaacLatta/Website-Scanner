@@ -7,11 +7,11 @@ This script reads the long-form Wilson CI CSVs generated for Tables 3-10 and
 builds a compact comparison summary CSV for LaTeX.
 
 Design goals:
-- Include only the principal comparative claims discussed in the paper.
-- Exclude UK Authorities from the default summary comparisons, because reviewer
-  feedback indicates that UK authority outcomes are heavily confounded by
-  GOV.UK centralization and should not be used as a primary governance-level
-  comparator in the main inferential table.
+- Use CA Authorities vs US Authorities as the primary cross-jurisdiction
+  comparison throughout the summary table.
+- Exclude UK Authorities from the summary comparisons.
+- Retain selected CA Authorities vs CA Finance comparisons where they support
+  the paper's domestic critical-sector argument.
 - Reuse the precomputed success_count / total_count / CI values from the
   per-table Wilson outputs.
 - Add a 2x2 statistical test for each selected comparison:
@@ -57,14 +57,10 @@ Output schema:
 - p_value_display
 - rationale
 
-The output is designed so LaTeX can render a concise summary table directly from
-the formatted display columns, while still keeping the raw numeric columns
-available for debugging or alternate formatting.
-
 Important formatting note:
-- The display fields intentionally avoid commas inside the cell text
-  (e.g., "59.7 [54.0--65.2]" instead of "59.7 [54.0, 65.2]") so the
-  CSV remains easy for LaTeX/csvsimple to parse.
+- Display fields intentionally avoid commas inside the cell text
+  (e.g., "59.7 [54.0--65.2]") so the CSV remains easy for LaTeX/csvsimple
+  to parse.
 """
 
 import argparse
@@ -146,7 +142,6 @@ def choose_test(x1: int, n1: int, x2: int, n2: int) -> Tuple[str, float]:
 
 
 def fmt_pct_ci(pct: float, lo: float, hi: float) -> str:
-    # Avoid commas in CSV display fields so LaTeX csv readers parse safely.
     return f"{pct:.1f} [{lo:.1f}--{hi:.1f}]"
 
 
@@ -184,7 +179,6 @@ def comparison_row(
     hi2 = float(comp["ci_high_pct"])
 
     test_name, p_value = choose_test(x1, n1, x2, n2)
-
     delta_pp = p1 - p2
 
     return {
@@ -220,12 +214,12 @@ def build_summary_rows(idx: Dict[Tuple[str, str, str], dict]) -> List[dict]:
             idx,
             order=1,
             theme="Transport",
-            metric_label="Any HSTS",
-            source_table="table5_hsts_quality",
-            metric="any_hsts",
+            metric_label="HTTP→HTTPS upgrade",
+            source_table="table3_https_connectivity",
+            metric="http_to_https",
             base_dataset="CA Authorities",
             comparator_dataset="US Authorities",
-            rationale="Primary cross-jurisdiction HSTS comparison highlighted in paper and reviews.",
+            rationale="Primary cross-jurisdiction comparison for HTTPS upgrade behavior.",
         ),
         comparison_row(
             idx,
@@ -235,19 +229,19 @@ def build_summary_rows(idx: Dict[Tuple[str, str, str], dict]) -> List[dict]:
             source_table="table4_tls_summary",
             metric="tls13_negotiated",
             base_dataset="CA Authorities",
-            comparator_dataset="CA Finance",
-            rationale="Supports claim that domestic critical sectors show stronger modern TLS posture.",
+            comparator_dataset="US Authorities",
+            rationale="Primary cross-jurisdiction comparison for modern TLS negotiation.",
         ),
         comparison_row(
             idx,
             order=3,
             theme="Transport",
-            metric_label="HTTP→HTTPS upgrade",
-            source_table="table3_https_connectivity",
-            metric="http_to_https",
+            metric_label="Any HSTS",
+            source_table="table5_hsts_quality",
+            metric="any_hsts",
             base_dataset="CA Authorities",
-            comparator_dataset="CA Finance",
-            rationale="Supports claim that domestic critical sectors show more uniform upgrade behavior.",
+            comparator_dataset="US Authorities",
+            rationale="Primary cross-jurisdiction HSTS comparison highlighted in paper and reviews.",
         ),
         comparison_row(
             idx,
@@ -262,7 +256,7 @@ def build_summary_rows(idx: Dict[Tuple[str, str, str], dict]) -> List[dict]:
         ),
         comparison_row(
             idx,
-            order=5,
+            order=6,
             theme="Disclosure",
             metric_label="security.txt present",
             source_table="table8_securitytxt",
@@ -273,7 +267,40 @@ def build_summary_rows(idx: Dict[Tuple[str, str, str], dict]) -> List[dict]:
         ),
         comparison_row(
             idx,
-            order=6,
+            order=7,
+            theme="Reconnaissance",
+            metric_label="Any revealing headers",
+            source_table="table9_revealing_headers",
+            metric="revealing_headers_any",
+            base_dataset="CA Authorities",
+            comparator_dataset="US Authorities",
+            rationale="Cross-jurisdiction comparison for reconnaissance exposure.",
+        ),
+        # comparison_row(
+        #     idx,
+        #     order=8,
+        #     theme="Reconnaissance",
+        #     metric_label="Any revealing headers",
+        #     source_table="table9_revealing_headers",
+        #     metric="revealing_headers_any",
+        #     base_dataset="CA Authorities",
+        #     comparator_dataset="CA Finance",
+        #     rationale="Domestic critical-sector comparison for reconnaissance exposure.",
+        # ),
+        comparison_row(
+            idx,
+            order=11,
+            theme="Error leakage",
+            metric_label="Version leak",
+            source_table="table10_error_leaks",
+            metric="version_leak",
+            base_dataset="CA Authorities",
+            comparator_dataset="US Authorities",
+            rationale="Supports discussion of leakage surfaced by the 404-probe measurement.",
+        ),
+        comparison_row(
+            idx,
+            order=7,
             theme="Reconnaissance",
             metric_label="Any revealing headers",
             source_table="table9_revealing_headers",
@@ -284,7 +311,7 @@ def build_summary_rows(idx: Dict[Tuple[str, str, str], dict]) -> List[dict]:
         ),
         comparison_row(
             idx,
-            order=7,
+            order=9,
             theme="Error leakage",
             metric_label="Version leak",
             source_table="table10_error_leaks",
